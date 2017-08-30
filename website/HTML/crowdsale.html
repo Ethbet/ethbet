@@ -45,6 +45,26 @@
 
     <!-- BODY -->
     <body>
+        <script>
+        var countDownDate = new Date("Sep 10, 2017 20:00:00 UTC").getTime();
+        var x = setInterval(function() {
+
+          var now = new Date().getTime();
+          var distance = countDownDate - now;
+          var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+          var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+          document.getElementById("timer").innerHTML = "Crowdsale active in: " + days + "d " + hours + "h "
+          + minutes + "m " + seconds + "s ";
+
+          if (distance < 0) {
+            clearInterval(x);
+            document.getElementById("timer").innerHTML = "crowdsale now active!";
+          }
+        }, 1000);
+    </script>
 
         <!--========== HEADER ==========-->
         <header class="header navbar-fixed-top">
@@ -133,9 +153,10 @@
                                         per ETH that you send. The current investor bonus is displayed below.
                                     </div>
                                 <div class="margin-b-20">
-                                    <a class="btn-theme btn-theme-sm btn-white-brd text-uppercase">
+                                    <a id="timer" class="btn-theme btn-theme-sm btn-white-brd text-uppercase">
                                         Crowdsale not yet active
                                     </a>
+
                                 </div>
                                     <div class="margin-b-20">
                                         Do <b>not</b> send ETH from an exchange wallet such as Coinbase, Poloniex, and
@@ -205,14 +226,14 @@
                                     <div class="margin-b-20">
                                         The Ethbet token is fully ERC20-compliant, ensuring that it will already be supported
                                         with a large amount of wallets and exchanges the day of the crowdsale.
-                                    </div>
-                                    <div class="margin-b-20">
                                         Additional tokens will not be created after the crowdsale, and unsold tokens
                                         will be deleted to prevent token dilution.
+                                        For more information about Ethbet and its crowdsale, please read the <a href="whitepaper.pdf">whitepaper</a>.
                                     </div>
                                 <div class="margin-b-20">
-                                    For more information about Ethbet and its crowdsale, please read the <a href="whitepaper.pdf">whitepaper</a>.
+                                    Information about the project and its crowdsale is also summarized in the infographic below.
                                 </div>
+                                <img src="img/infographic.jpg">
 
                             </div>
                             <div class="swiper-slide">
