@@ -40,8 +40,8 @@ contract EthbetToken is SafeMath {
     uint8 public decimals = 0; // no deciminals - token CANNOT be subdivided
     uint256 public totalSupply;
     address public owner;
-    /* tokens may be transfered post-Crowdsale, Oct 1st 2017 8PM UTC */
-    uint256 public crowdsaleCompletedTime = 1506888000;
+    /* tokens may be transfered post-Crowdsale, Oct 15th 2017 8PM UTC */
+    uint256 public crowdsaleCompletedTime = 1508097600;
     /* set to true when tokens have been burned after crowdsale */
     bool burned;
 
