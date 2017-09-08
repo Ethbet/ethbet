@@ -1,0 +1,22 @@
+{
+  "contract_name": "InsecureTargetMock",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "checkInvariant",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    }
+  ],
+  "unlinked_binary": "0x60606040523415600e57600080fd5b5b60928061001d6000396000f300606060405263ffffffff7c0100000000000000000000000000000000000000000000000000000000600035041663e79487da8114603c575b600080fd5b3415604657600080fd5b604c6060565b604051901515815260200160405180910390f35b60005b905600a165627a7a723058208d700befe195039a16da1e5eb27b7a956832898f263928dc6c57e39ae9e1db600029",
+  "networks": {},
+  "schema_version": "0.0.5",
+  "updated_at": 1504829003502
+}

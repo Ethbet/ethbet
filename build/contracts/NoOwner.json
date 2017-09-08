@@ -1,0 +1,111 @@
+{
+  "contract_name": "NoOwner",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "token",
+          "type": "address"
+        }
+      ],
+      "name": "reclaimToken",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "contractAddr",
+          "type": "address"
+        }
+      ],
+      "name": "reclaimContract",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "reclaimEther",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "from_",
+          "type": "address"
+        },
+        {
+          "name": "value_",
+          "type": "uint256"
+        },
+        {
+          "name": "data_",
+          "type": "bytes"
+        }
+      ],
+      "name": "tokenFallback",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "payable": false,
+      "type": "fallback"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    }
+  ],
+  "unlinked_binary": "0x60606040525b5b60008054600160a060020a03191633600160a060020a03161790555b341561002d57600080fd5b5b5b6104408061003e6000396000f3006060604052361561005c5763ffffffff60e060020a60003504166317ffc320811461006b5780632aed7f3f1461008c5780638da5cb5b146100ad5780639f727c27146100dc578063c0ee0b8a146100f1578063f2fde38b14610122575b341561006757600080fd5b5b5b005b341561007657600080fd5b610067600160a060020a0360043516610143565b005b341561009757600080fd5b610067600160a060020a03600435166101f9565b005b34156100b857600080fd5b6100c0610286565b604051600160a060020a03909116815260200160405180910390f35b34156100e757600080fd5b610067610295565b005b34156100fc57600080fd5b61006760048035600160a060020a03169060248035916044359182019101356102ea565b005b341561012d57600080fd5b610067600160a060020a03600435166102f5565b005b6000805433600160a060020a0390811691161461015f57600080fd5b81600160a060020a03166370a082313060006040516020015260405160e060020a63ffffffff8416028152600160a060020a039091166004820152602401602060405180830381600087803b15156101b657600080fd5b6102c65a03f115156101c757600080fd5b50505060405180516000549092506101f39150600160a060020a0384811691168363ffffffff61038e16565b5b5b5050565b6000805433600160a060020a0390811691161461021557600080fd5b506000548190600160a060020a038083169163f2fde38b911660405160e060020a63ffffffff8416028152600160a060020a039091166004820152602401600060405180830381600087803b151561026c57600080fd5b6102c65a03f1151561027d57600080fd5b5050505b5b5050565b600054600160a060020a031681565b60005433600160a060020a039081169116146102b057600080fd5b600054600160a060020a039081169030163180156108fc0290604051600060405180830381858888f1935050505015156102e657fe5b5b5b565b600080fd5b50505050565b60005433600160a060020a0390811691161461031057600080fd5b600160a060020a038116151561032557600080fd5b600054600160a060020a0380831691167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a36000805473ffffffffffffffffffffffffffffffffffffffff1916600160a060020a0383161790555b5b50565b82600160a060020a031663a9059cbb838360006040516020015260405160e060020a63ffffffff8516028152600160a060020a0390921660048301526024820152604401602060405180830381600087803b15156103eb57600080fd5b6102c65a03f115156103fc57600080fd5b50505060405180519050151561040e57fe5b5b5050505600a165627a7a72305820be1ec2de2b2ef49b97bae16fa6f2878b20410ee6ce51ac3a31e76833d13cb17c0029",
+  "networks": {},
+  "schema_version": "0.0.5",
+  "updated_at": 1504829003501
+}

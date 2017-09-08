@@ -1,0 +1,30 @@
+{
+  "contract_name": "LimitBalanceMock",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "limitedDeposit",
+      "outputs": [],
+      "payable": true,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "limit",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    }
+  ],
+  "unlinked_binary": "0x60606040526103e85b60008190555b505b60cb8061001e6000396000f300606060405263ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166386f3d0cd81146046578063a4d66daf14604e575b600080fd5b604c6070565b005b3415605857600080fd5b605e6099565b60405190815260200160405180910390f35b60005473ffffffffffffffffffffffffffffffffffffffff3016311115609557600080fd5b5b5b565b600054815600a165627a7a72305820cbe9b6c79794a13470a71a42d94ad93953949c158b0697184b04de56d6179a7e0029",
+  "networks": {},
+  "schema_version": "0.0.5",
+  "updated_at": 1504829003502
+}

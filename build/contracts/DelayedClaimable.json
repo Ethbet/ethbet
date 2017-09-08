@@ -1,0 +1,116 @@
+{
+  "contract_name": "DelayedClaimable",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "claimOwnership",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "start",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_start",
+          "type": "uint256"
+        },
+        {
+          "name": "_end",
+          "type": "uint256"
+        }
+      ],
+      "name": "setLimits",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "pendingOwner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "end",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    }
+  ],
+  "unlinked_binary": "0x60606040525b60008054600160a060020a03191633600160a060020a03161790555b5b610308806100316000396000f300606060405236156100805763ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416634e71e0c881146100855780638da5cb5b1461009a578063be9a6555146100c9578063c4590d3f146100ee578063e30c397814610109578063efbe1c1c14610138578063f2fde38b1461015d575b600080fd5b341561009057600080fd5b61009861017e565b005b34156100a557600080fd5b6100ad610232565b604051600160a060020a03909116815260200160405180910390f35b34156100d457600080fd5b6100dc610241565b60405190815260200160405180910390f35b34156100f957600080fd5b610098600435602435610247565b005b341561011457600080fd5b6100ad61027f565b604051600160a060020a03909116815260200160405180910390f35b341561014357600080fd5b6100dc61028e565b60405190815260200160405180910390f35b341561016857600080fd5b610098600160a060020a0360043516610294565b005b60015433600160a060020a0390811691161461019957600080fd5b60025443111580156101ad57506003544310155b15156101b857600080fd5b600154600054600160a060020a0391821691167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a3600180546000805473ffffffffffffffffffffffffffffffffffffffff19908116600160a060020a0384161782559091169091556002555b5b565b600054600160a060020a031681565b60035481565b60005433600160a060020a0390811691161461026257600080fd5b8082111561026f57600080fd5b600281905560038290555b5b5050565b600154600160a060020a031681565b60025481565b60005433600160a060020a039081169116146102af57600080fd5b6001805473ffffffffffffffffffffffffffffffffffffffff1916600160a060020a0383161790555b5b505600a165627a7a723058203639c28897a0bf34f2a23f461484701a4b4fdccbc323f0b2bdbe5272b9ad59e10029",
+  "networks": {},
+  "schema_version": "0.0.5",
+  "updated_at": 1504829003501
+}

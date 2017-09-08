@@ -1,0 +1,69 @@
+{
+  "contract_name": "HasNoEtherTest",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "reclaimEther",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "payable": true,
+      "type": "constructor"
+    },
+    {
+      "payable": false,
+      "type": "fallback"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    }
+  ],
+  "unlinked_binary": "0x60606040525b5b5b60008054600160a060020a03191633600160a060020a03161790555b341561002e57600080fd5b5b5b5b6101f1806100406000396000f300606060405236156100545763ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416638da5cb5b81146100635780639f727c2714610092578063f2fde38b146100a7575b341561005f57600080fd5b5b5b005b341561006e57600080fd5b6100766100c8565b604051600160a060020a03909116815260200160405180910390f35b341561009d57600080fd5b61005f6100d7565b005b34156100b257600080fd5b61005f600160a060020a036004351661012c565b005b600054600160a060020a031681565b60005433600160a060020a039081169116146100f257600080fd5b600054600160a060020a039081169030163180156108fc0290604051600060405180830381858888f19350505050151561012857fe5b5b5b565b60005433600160a060020a0390811691161461014757600080fd5b600160a060020a038116151561015c57600080fd5b600054600160a060020a0380831691167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a36000805473ffffffffffffffffffffffffffffffffffffffff1916600160a060020a0383161790555b5b505600a165627a7a7230582018caef9e274a2df45ca1c14f4d3804441a5ab51f574cf4ff7ea50b4236bf2a310029",
+  "networks": {},
+  "schema_version": "0.0.5",
+  "updated_at": 1504829003502
+}

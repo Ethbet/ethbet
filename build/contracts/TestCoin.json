@@ -1,0 +1,35 @@
+{
+  "contract_name": "TestCoin",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    }
+  ],
+  "unlinked_binary": "0x60606040525b60008054600160a060020a03191633600160a060020a03161790555b5b610121806100316000396000f300606060405263ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416638da5cb5b81146046578063f2fde38b146072575b600080fd5b3415605057600080fd5b60566090565b604051600160a060020a03909116815260200160405180910390f35b3415607c57600080fd5b608e600160a060020a0360043516609f565b005b600054600160a060020a031681565b60005433600160a060020a0390811691161460b957600080fd5b600160a060020a0381161560f0576000805473ffffffffffffffffffffffffffffffffffffffff1916600160a060020a0383161790555b5b5b505600a165627a7a72305820b37089de21713dfe3304756d15c17716a7d17b758ef6d4bf468d1e6af4dff8600029",
+  "networks": {},
+  "schema_version": "0.0.5",
+  "updated_at": 1504829877738
+}

@@ -1,0 +1,73 @@
+{
+  "contract_name": "SafeMathMock",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "a",
+          "type": "uint256"
+        },
+        {
+          "name": "b",
+          "type": "uint256"
+        }
+      ],
+      "name": "multiply",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "a",
+          "type": "uint256"
+        },
+        {
+          "name": "b",
+          "type": "uint256"
+        }
+      ],
+      "name": "subtract",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "result",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "a",
+          "type": "uint256"
+        },
+        {
+          "name": "b",
+          "type": "uint256"
+        }
+      ],
+      "name": "add",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    }
+  ],
+  "unlinked_binary": "0x6060604052341561000f57600080fd5b5b61019c8061001f6000396000f300606060405263ffffffff7c0100000000000000000000000000000000000000000000000000000000600035041663165c4a16811461005e5780633ef5e445146100795780636537214714610094578063771602f7146100b9575b600080fd5b341561006957600080fd5b6100776004356024356100d4565b005b341561008457600080fd5b6100776004356024356100e6565b005b341561009f57600080fd5b6100a76100f8565b60405190815260200160405180910390f35b34156100c457600080fd5b6100776004356024356100fe565b005b6100de8282610110565b6000555b5050565b6100de828261013f565b6000555b5050565b60005481565b6100de8282610156565b6000555b5050565b600082820283158061012c575082848281151561012957fe5b04145b151561013457fe5b8091505b5092915050565b60008282111561014b57fe5b508082035b92915050565b60008282018381101561013457fe5b8091505b50929150505600a165627a7a72305820f2b74480219733458b6a68093e933f8cff4fe45b266d49e2a679397edfadf3860029",
+  "networks": {},
+  "schema_version": "0.0.5",
+  "updated_at": 1504829003503
+}

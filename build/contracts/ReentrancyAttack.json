@@ -1,0 +1,22 @@
+{
+  "contract_name": "ReentrancyAttack",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "data",
+          "type": "bytes4"
+        }
+      ],
+      "name": "callSender",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    }
+  ],
+  "unlinked_binary": "0x6060604052341561000f57600080fd5b5b60dd8061001e6000396000f300606060405263ffffffff60e060020a6000350416630a2df1ed81146023575b600080fd5b3415602d57600080fd5b60587fffffffff0000000000000000000000000000000000000000000000000000000060043516605a565b005b73ffffffffffffffffffffffffffffffffffffffff331660e060020a82046040518163ffffffff1660e060020a02815260040160006040518083038160008761646e5a03f192505050151560ad57600080fd5b5b505600a165627a7a72305820e2159017edf6152321c7f66ff24be688822e30a1520c63f4187170d7f257d8110029",
+  "networks": {},
+  "schema_version": "0.0.5",
+  "updated_at": 1504829003502
+}
