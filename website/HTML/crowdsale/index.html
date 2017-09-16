@@ -20,6 +20,7 @@
 
         <!-- THEME STYLES -->
         <link href="https://ethbet.io/css/layout.css" rel="stylesheet" type="text/css"/>
+        <link href="crowdsale.css" rel="stylesheet" type="text/css"/>
 
         <!-- Favicon -->
         <link rel="shortcut icon" href="https://ethbet.io/favicon.ico"/>
@@ -67,6 +68,15 @@
             document.getElementById("timer").innerHTML = "crowdsale now active!";
           }
         }, 1000);
+
+        function crowdsale() {
+            if (document.getElementById('check1').checked && document.getElementById('check2').checked && document.getElementById('check3').checked && document.getElementById('check4').checked && document.getElementById('check5').checked ) {
+                document.getElementById('address').innerHTML = "<h3>Address: Crowdsale Not Yet Active.<h3>";
+            }
+            else {
+                alert("You must check all checkboxes in order to access the crowdsale contribution address.")
+            }
+        }
     </script>
 
         <!--========== HEADER ==========-->
@@ -119,6 +129,63 @@
         </div>
         <!--========== PARALLAX ==========-->
 
+        <!-- Crowdsale Modal -->
+        <div class="modal fade" id="crowdsaleModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content crowdsale">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="crowdsaleModalLabel">Read and confirm to contribute</h4>
+                    </div>
+                    <div class="modal-body">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" id="check1">
+                <p>I am not a U.S. citizen/permanent resident/representing U.S. company or a citizen/permanent resident/representing company of any U.S. jurisdiction.</p>
+            </label>
+          </div>
+
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" id="check2">
+                    <p>I have read and fully understand the <a target="_blank" href="https://ethbet.io/risks.html">risks</a> of contributing to the Ethbet crowdsale.</p>
+                </label>
+            </div>
+
+
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" id="check3">
+                    <p>I have read and fully understand the Ethbet <a target="_blank" href="https://ethbet.io/whitepaper.pdf">whitepaper</a>.</p>
+                </label>
+            </div>
+
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" id="check4">
+                    <p>I have read and fully understand the <a target="_blank" href="#">terms</a> of the crowdsale.</p>
+                </label>
+            </div>
+
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" id="check5">
+                    <p>I have read and fully understand the <a target="_blank" href="https://medium.com/@ethbet/official-ethbet-crowdsale-guide-and-faq-baeb145fa737">
+                        Crowdsale Guide and FAQ</a> and <b>will not send ETH from an exchange</b>.</p>
+                </label>
+            </div>
+
+            <p id="address"></p>
+
+
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" onclick="crowdsale()">Reveal Crowdsale Address</button>
+        </div>
+                </div>
+            </div>
+        </div>
+        </div>
         <!--========== PAGE LAYOUT ==========-->
         <!-- Testimonials -->
         <div class="content-lg container">
@@ -133,9 +200,10 @@
                                 <p class="alert">Notice: Official Crowdsale guide and FAQ: <a target="_blank" href="https://medium.com/@ethbet/official-ethbet-crowdsale-guide-and-faq-baeb145fa737">https://medium.com/@ethbet/official-ethbet-crowdsale-guide-and-faq-baeb145fa737</a></p>
                                 The Ethbet Crowdsale is scheduled to begin on September 17, 2017, 8PM UTC. It will
                                 last for exactly four weeks after this period.
+                                <noscript><h3>You must have Javascript enabled in order to proceed.</h3></noscript>
                             </div>
                             <div class="margin-b-20">
-                                <a id="timer" class="btn-theme btn-theme-sm btn-white-brd text-uppercase">
+                                <a data-toggle="modal" data-target="#crowdsaleModal" id="timer" class="btn-theme btn-theme-sm btn-white-brd text-uppercase">
                                     Crowdsale not yet active
                                 </a>
                                 </div>
@@ -169,6 +237,11 @@
                                     <tr><td>Third Week Bonus</td><td>+25%</td><td>1,250 EBET = 1 ETH</td></tr>
                                     <tr><td>Final Week Bonus</td><td>+15%</td><td>1,150 EBET = 1 ETH</td></tr>
                                 </table>
+                            </div>
+                            <div class="margin-b-20">
+                                The crowdsale's smart contract is open-source and available on <a target="_blank" href="https://github.com/Ethbet/ethbet/blob/master/contracts/EthbetToken_Full.sol">Github</a>.
+                                <br />
+                                The crowdsale has passed an independent security audit and has also had bug bounties available on <a target="_blank" href="https://www.reddit.com/r/ethdev/comments/706yt2/bug_bounty_available_for_simple_crowdsale/">Reddit</a>.
                             </div>
                             <!-- End Swiper Wrapper -->
                             <!-- Pagination -->
