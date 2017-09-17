@@ -48,30 +48,22 @@
     <!-- BODY -->
     <body>
         <script>
-        var countDownDate = new Date("Sep 17, 2017 20:00:00 UTC").getTime();
+        var countUpDate = new Date("Sep 17, 2017 20:00:00 UTC").getTime();
         var x = setInterval(function() {
 
           var now = new Date().getTime();
-          var distance = countDownDate - now;
-          var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+          distance = now - countUpDate;
           var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
           var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
           var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-          document.getElementById("timer").innerHTML = "Crowdsale active in: " + days + "d " + hours + "h "
-          + minutes + "m " + seconds + "s ";
+          //document.getElementById("timer").innerHTML = "The crowdsale has been live for: " + hours + "h " + minutes + "m " + seconds + "s ";
 
-          document.getElementById("timer2").innerHTML = "" + days + " days and " + hours + " hours";
-
-          if (distance < 0) {
-            clearInterval(x);
-            document.getElementById("timer").innerHTML = "crowdsale now active!";
-          }
         }, 1000);
 
         function crowdsale() {
             if (document.getElementById('check1').checked && document.getElementById('check2').checked && document.getElementById('check3').checked && document.getElementById('check4').checked && document.getElementById('check5').checked ) {
-                document.getElementById('address').innerHTML = "<h3>Address: Crowdsale Not Yet Active.<h3>";
+                document.getElementById('address').innerHTML = "<h3 class='text-center'>Crowdsale Address:</h3><h5 class='text-center'>0x1e932ce1e5167c4747196517783c2bc8106656f4</h5><p class='text-center'><b>The crowdsale is not yet live.</b> Do not send before block 4285025. This message will be removed after the crowdsale begins.</p><p class='text-center'><a href='https://etherscan.io/address/0x1e932ce1e5167c4747196517783c2bc8106656f4#readContract'>Link to track crowdsale status on etherscan</a></p>";
             }
             else {
                 alert("You must check all checkboxes in order to access the crowdsale contribution address.")
@@ -124,7 +116,7 @@
         <div class="parallax-window" data-parallax="scroll" data-image-src="https://ethbet.io/img/1920x1080/01.jpg">
             <div class="parallax-content container">
                 <h1 class="carousel-title">Crowdsale</h1>
-                    The Ethbet Crowdsale is set to begin on September 17 2017 8PM UTC, lasting for only four weeks
+                The Ethbet Crowdsale begins on September 17th at 8PM UTC. The current investor bonus is +50% for first-day investors.
             </div>
         </div>
         <!--========== PARALLAX ==========-->
@@ -148,22 +140,23 @@
             <div class="checkbox">
                 <label>
                     <input type="checkbox" id="check2">
-                    <p>I have read and fully understand the <a target="_blank" href="https://ethbet.io/risks.html">risks</a> of contributing to the Ethbet crowdsale.</p>
-                </label>
-            </div>
-
-
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" id="check3">
                     <p>I have read and fully understand the Ethbet <a target="_blank" href="https://ethbet.io/whitepaper.pdf">whitepaper</a>.</p>
                 </label>
             </div>
 
             <div class="checkbox">
                 <label>
+                    <input type="checkbox" id="check3">
+                    <p>I have read and fully understand the <a target="_blank" href="https://ethbet.io/risks.html">risks</a> of contributing to the Ethbet crowdsale.</p>
+                </label>
+            </div>
+
+
+
+            <div class="checkbox">
+                <label>
                     <input type="checkbox" id="check4">
-                    <p>I have read and fully understand the <a target="_blank" href="#">terms</a> of the crowdsale.</p>
+                    <p>I have read and fully understand the <a target="_blank" href="https://ethbet.io/terms.pdf">terms</a> of the crowdsale.</p>
                 </label>
             </div>
 
@@ -185,7 +178,6 @@
                 </div>
             </div>
         </div>
-        </div>
         <!--========== PAGE LAYOUT ==========-->
         <!-- Testimonials -->
         <div class="content-lg container">
@@ -197,16 +189,24 @@
                     <div class="swiper-wrapper">
                         <div class="swiper-slide">
                             <div class="margin-b-20">
-                                <p class="alert">Notice: Official Crowdsale guide and FAQ: <a target="_blank" href="https://medium.com/@ethbet/official-ethbet-crowdsale-guide-and-faq-baeb145fa737">https://medium.com/@ethbet/official-ethbet-crowdsale-guide-and-faq-baeb145fa737</a></p>
-                                The Ethbet Crowdsale is scheduled to begin on September 17, 2017, 8PM UTC. It will
-                                last for exactly four weeks after this period.
+                                <br /><br />
+                                <h3>Read the <a href="https://medium.com/@ethbet/official-ethbet-crowdsale-guide-and-faq-baeb145fa737">Official Crowdsale Guide and FAQ</a> Before Contributing.</h3>
+                                <br /><br />
+                                <br /><br />
                                 <noscript><h3>You must have Javascript enabled in order to proceed.</h3></noscript>
                             </div>
                             <div class="margin-b-20">
-                                <a data-toggle="modal" data-target="#crowdsaleModal" id="timer" class="btn-theme btn-theme-sm btn-white-brd text-uppercase">
-                                    Crowdsale not yet active
-                                </a>
-                                </div>
+                                <h3 class="text-center">The crowdsale is starting soon and the address is now available.</h3>
+                                <p class="text-center">The starting block will be block 4285025. This may be up to several minutes after (or before) 8PM UTC.</p>
+                                <p class="text-center">To find the current block, check <a href="https://etherscan.io">etherscan.io</a>. This message will be removed after the starting block has been reached.</p>
+                                <br /><br /><br />
+                                <button data-toggle="modal" data-target="#crowdsaleModal" class="btn btn-primary btn-lg center-block">Contribute to Crowdsale</button>
+                                <br /><br /><br />
+                            </div>
+                            <div class="margin-b-20">
+                                <p id="timer"></p>
+                                <br /><br />
+                            </div>
                             <div class="margin-b-20">
                                 The symbol for Ethbet Tokens is EBET. Of the 10,000,000 available tokens,
                                 75% are available during the crowdsale, with 5% going to our bounty and the community, 10% to our
@@ -319,15 +319,17 @@
                     <div class="swiper-wrapper">
                         <div class="swiper-slide">
                             <div class="margin-b-20">
-                                1. Wait until September 17th, 8PM UTC. This will occur in <a id="timer2"></a>.
+                            Please read the <a target="_blank"  href="https://medium.com/@ethbet/official-ethbet-crowdsale-guide-and-faq-baeb145fa737">Official Crowdsale Guide+FAQ</a> for detailed
+                                instructions and information on how to contribute to the crowdsale.
                             </div>
                             <div class="margin-b-20">
-                                2. Use a wallet that supports tokens, such as <a target="_blank"
+
+                                1. Use a wallet that supports tokens, such as <a target="_blank"
                                     href="https://www.myetherwallet.com/">MyEtherWallet</a>, Metamask, Parity, or
                                 Mist.
                             </div>
                             <div class="margin-b-20">
-                                3. Move Ethereum into your wallet. Ethereum is the only currency that is
+                                2. Move Ethereum into your wallet. Ethereum is the only currency that is
                                 accepted in the Ethbet crowdsale. If you do not have Ethereum, you can buy it
                                 from websites such as <a target="_blank" href="https://coinbase.com">Coinbase</a>, or use a
                                 service such as <a target="_blank" href="https://shapeshift.io">Shapeshift</a> or cryptocurrency
@@ -337,14 +339,10 @@
                                 private key.</b>
                             </div>
                             <div class="margin-b-20">
-                                4. Send the desired amount of ETH to the crowdsale wallet address below (not yet
+                                3. Send the desired amount of ETH to the crowdsale wallet address below (not yet
                                 shown).
                                 You will receive 1,000 EBET plus an early investor bonus
-                                per ETH that you send. The current investor bonus will be displayed.
-                            </div>
-                            <div class="margin-b-20">
-                                More detailed information will be posted prior to the date of the crowdsale. If you have
-                                any questions about the crowdsale, don't hesitate to <a href="mailto:team@ethbet.io">send us an email</a>.
+                                per ETH that you send.
                             </div>
                             <div class="margin-b-20">
                                 Do <b>not</b> send ETH from an exchange wallet such as Coinbase, Poloniex, and
@@ -352,18 +350,6 @@
                                 wallets do <b>not</b> support ERC20 tokens, including Ethbet. Your tokens will
                                 be lost if you use a wallet that does not support tokens.
                             </div>
-                            <div class="margin-b-20">
-                                Do <b>not</b> participate in the crowdsale if you have not read or do not
-                                understand the <a target="_blank" href="https://ethbet.io/risks.html">risks</a> involved with
-                                platforms such as Ethereum and Ethbet.
-                            </div>
-                            <div class="margin-b-20">
-                                Do <b>not</b> attempt to participate in the crowdsale if you are a resident of
-                                the United States. Although our token is likely no longer considered a security federally
-                                and by all or most states, there are still many other potential legal complications involved with selling
-                                to US residents.
-                            </div>
-
                         </div>
                     </div>
                 </div>
