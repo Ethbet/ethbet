@@ -57,13 +57,13 @@
           var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
           var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-          //document.getElementById("timer").innerHTML = "The crowdsale has been live for: " + hours + "h " + minutes + "m " + seconds + "s ";
+          document.getElementById("timer").innerHTML = "<h3 class='text-center'>Crowdsale Live For: " + hours + " hours, " + minutes + " minutes, " + seconds + " seconds</h3>";
 
         }, 1000);
 
         function crowdsale() {
             if (document.getElementById('check1').checked && document.getElementById('check2').checked && document.getElementById('check3').checked && document.getElementById('check4').checked && document.getElementById('check5').checked ) {
-                document.getElementById('address').innerHTML = "<h3 class='text-center'>Crowdsale Address:</h3><h5 class='text-center'>0x1e932ce1e5167c4747196517783c2bc8106656f4</h5><p class='text-center'><b>The crowdsale is not yet live.</b> Do not send before block 4285025. This message will be removed after the crowdsale begins.</p><p class='text-center'><a href='https://etherscan.io/address/0x1e932ce1e5167c4747196517783c2bc8106656f4#readContract'>Link to track crowdsale status on etherscan</a></p>";
+                document.getElementById('address').innerHTML = "<h3 class='text-center'>Crowdsale Address:</h3><h5 class='text-center'>0x1e932ce1e5167c4747196517783c2bc8106656f4</h5><p class='text-center'><b>Do not send from an exchange.</b><br /><a href='https://etherscan.io/address/0x1e932ce1e5167c4747196517783c2bc8106656f4#readContract'>Link to track crowdsale status on etherscan</a></p>";
             }
             else {
                 alert("You must check all checkboxes in order to access the crowdsale contribution address.")
@@ -116,7 +116,7 @@
         <div class="parallax-window" data-parallax="scroll" data-image-src="https://ethbet.io/img/1920x1080/01.jpg">
             <div class="parallax-content container">
                 <h1 class="carousel-title">Crowdsale</h1>
-                The Ethbet Crowdsale begins on September 17th at 8PM UTC. The current investor bonus is +50% for first-day investors.
+                The Ethbet Crowdsale began on September 17th at 8PM UTC and is currently running. The current investor bonus is +50% for first-day investors.
             </div>
         </div>
         <!--========== PARALLAX ==========-->
@@ -183,31 +183,28 @@
         <div class="content-lg container">
             <div class="row">
                 <div class="col-sm-9">
-                    <h2>Crowdsale Information</h2>
                     <!-- Swiper Testimonials -->
                     <!-- Swiper Wrapper -->
                     <div class="swiper-wrapper">
                         <div class="swiper-slide">
                             <div class="margin-b-20">
                                 <br /><br />
-                                <h3>Read the <a href="https://medium.com/@ethbet/official-ethbet-crowdsale-guide-and-faq-baeb145fa737">Official Crowdsale Guide and FAQ</a> Before Contributing.</h3>
-                                <br /><br />
-                                <br /><br />
+                                <h3 class="text-center">Read the <a href="https://medium.com/@ethbet/official-ethbet-crowdsale-guide-and-faq-baeb145fa737">Official Crowdsale Guide and FAQ</a> Before Contributing.</h3>
                                 <noscript><h3>You must have Javascript enabled in order to proceed.</h3></noscript>
                             </div>
                             <div class="margin-b-20">
-                                <h3 class="text-center">The crowdsale is starting soon and the address is now available.</h3>
-                                <p class="text-center">The starting block will be block 4285025. This may be up to several minutes after (or before) 8PM UTC.</p>
-                                <p class="text-center">To find the current block, check <a href="https://etherscan.io">etherscan.io</a>. This message will be removed after the starting block has been reached.</p>
+                                <p id="timer"></p>
                                 <br /><br /><br />
                                 <button data-toggle="modal" data-target="#crowdsaleModal" class="btn btn-primary btn-lg center-block">Contribute to Crowdsale</button>
                                 <br /><br /><br />
                             </div>
                             <div class="margin-b-20">
-                                <p id="timer"></p>
+                                <p>The Ethbet crowdsale sold over a third of available tokens within the first 15 minutes and has received over 2300 ETH in contributions.</p>
+                                <p>The currently bonus for early investors is: <b>50%</b>. This bonus ends on September 18th at approximately 8PM UTC.</p>
                                 <br /><br />
                             </div>
                             <div class="margin-b-20">
+                                <h2>Crowdsale Information</h2>
                                 The symbol for Ethbet Tokens is EBET. Of the 10,000,000 available tokens,
                                 75% are available during the crowdsale, with 5% going to our bounty and the community, 10% to our
                                 partners, and 10% to Ethbet.
@@ -339,10 +336,8 @@
                                 private key.</b>
                             </div>
                             <div class="margin-b-20">
-                                3. Send the desired amount of ETH to the crowdsale wallet address below (not yet
-                                shown).
-                                You will receive 1,000 EBET plus an early investor bonus
-                                per ETH that you send.
+                                3. Send the desired amount of ETH to the crowdsale wallet address obtainable via the large button at the top of this page.
+                                You will receive 1,000 EBET plus an early investor bonus per ETH that you send.
                             </div>
                             <div class="margin-b-20">
                                 Do <b>not</b> send ETH from an exchange wallet such as Coinbase, Poloniex, and
