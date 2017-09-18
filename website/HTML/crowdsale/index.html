@@ -57,7 +57,10 @@
           var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
           var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-          document.getElementById("timer").innerHTML = "<h3 class='text-center'>Crowdsale Live For: " + hours + " hours, " + minutes + " minutes, " + seconds + " seconds</h3>";
+          document.getElementById("timer").innerHTML = "<h3 class='text-center'>Crowdsale Live For: 1 day, " + hours + " hours, " + minutes + " minutes, " + seconds + " seconds</h3>";
+
+
+
 
         }, 1000);
 
@@ -199,8 +202,9 @@
                                 <br /><br /><br />
                             </div>
                             <div class="margin-b-20">
-                                <p class="text-center">With over 2500 ETH contributed in the first six hours, less than half of the token supply remains.</p>
-                                <p class="text-center">The currentl bonus for early investors is: <b>50%</b>. This bonus ends on September 18th at 8PM UTC.</p>
+                                <p class="text-center">With over 2500 ETH contributed in the first six hours, less than 32% of the token supply still remains.</p>
+                                <p class="text-center">The current investor for week-one investors is: <b>40%</b>.</p>
+                                <p id="timer2"></p>
                                 <br /><br />
                             </div>
                             <div class="margin-b-20">
@@ -236,7 +240,7 @@
                                 </table>
                             </div>
                             <div class="margin-b-20">
-                                The crowdsale's smart contract is open-source and available on <a target="_blank" href="https://github.com/Ethbet/ethbet/blob/master/contracts/EthbetToken_Full.sol">Github</a>.
+                                The crowdsale's smart contract is open-source and available on <a target="_blank" href="https://github.com/Ethbet/ethbet/blob/master/contracts/EBETtokenSale.sol">Github</a>.
                                 <br />
                                 The crowdsale has passed an independent security audit and has also had bug bounties available on <a target="_blank" href="https://www.reddit.com/r/ethdev/comments/706yt2/bug_bounty_available_for_simple_crowdsale/">Reddit</a>.
                             </div>
