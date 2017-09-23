@@ -47,33 +47,6 @@
 
     <!-- BODY -->
     <body>
-        <script>
-        var countUpDate = new Date("Sep 17, 2017 20:00:00 UTC").getTime();
-        var x = setInterval(function() {
-
-          var now = new Date().getTime();
-          distance = now - countUpDate;
-          var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-          var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-          var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-          document.getElementById("timer").innerHTML = "<h3 class='text-center'>Crowdsale Live For: " + days + " days, " + hours + " hours, " + minutes + " minutes, " + seconds + " seconds</h3>";
-
-
-
-
-        }, 1000);
-
-        function crowdsale() {
-            if (document.getElementById('check1').checked && document.getElementById('check2').checked && document.getElementById('check3').checked && document.getElementById('check4').checked && document.getElementById('check5').checked ) {
-                document.getElementById('address').innerHTML = "<h3 class='text-center'>Crowdsale Address:</h3><h5 class='text-center'>0x1e932ce1e5167c4747196517783c2bc8106656f4</h5><p class='text-center'><b>Do not send from an exchange.</b><br /><a href='https://etherscan.io/address/0x1e932ce1e5167c4747196517783c2bc8106656f4#readContract'>Link to track crowdsale status on etherscan</a></p>";
-            }
-            else {
-                alert("You must check all checkboxes in order to access the crowdsale contribution address.")
-            }
-        }
-    </script>
 
         <!--========== HEADER ==========-->
         <header class="header navbar-fixed-top">
@@ -120,68 +93,11 @@
         <div class="parallax-window" data-parallax="scroll" data-image-src="https://ethbet.io/img/1920x1080/01.jpg">
             <div class="parallax-content container">
                 <h1 class="carousel-title">Crowdsale</h1>
-                The Ethbet Crowdsale began on September 17th at 8PM UTC and is still running. The current investor bonus is +40% for week-one investors.
+                The Ethbet Crowdsale began on September 17th at 8PM UTC and closed 4.6 days later after all tokens were purchased.
             </div>
         </div>
         <!--========== PARALLAX ==========-->
 
-        <!-- Crowdsale Modal -->
-        <div class="modal fade" id="crowdsaleModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content crowdsale">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="crowdsaleModalLabel">Read and confirm to contribute</h4>
-                    </div>
-                    <div class="modal-body">
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" id="check1">
-                <p>I am not a U.S. citizen/permanent resident/representing U.S. company or a citizen/permanent resident/representing company of any U.S. jurisdiction.</p>
-            </label>
-          </div>
-
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" id="check2">
-                    <p>I have read and fully understand the Ethbet <a target="_blank" href="https://ethbet.io/whitepaper.pdf">whitepaper</a>.</p>
-                </label>
-            </div>
-
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" id="check3">
-                    <p>I have read and fully understand the <a target="_blank" href="https://ethbet.io/risks.html">risks</a> of contributing to the Ethbet crowdsale.</p>
-                </label>
-            </div>
-
-
-
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" id="check4">
-                    <p>I have read and fully understand the <a target="_blank" href="https://ethbet.io/terms.pdf">terms</a> of the crowdsale.</p>
-                </label>
-            </div>
-
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" id="check5">
-                    <p>I have read and fully understand the <a target="_blank" href="https://medium.com/@ethbet/official-ethbet-crowdsale-guide-and-faq-baeb145fa737">
-                        Crowdsale Guide and FAQ</a> and <b>will not send ETH from an exchange</b>.</p>
-                </label>
-            </div>
-
-            <p id="address"></p>
-
-
-        </div>
-        <div class="modal-footer">
-            <button type="submit" class="btn btn-primary" onclick="crowdsale()">Reveal Crowdsale Address</button>
-        </div>
-                </div>
-            </div>
-        </div>
         <!--========== PAGE LAYOUT ==========-->
         <!-- Testimonials -->
         <div class="content-lg container">
@@ -192,57 +108,37 @@
                     <div class="swiper-wrapper">
                         <div class="swiper-slide">
                             <div class="margin-b-20">
-                                <br /><br />
-                                <h3 class="text-center">Read the <a href="https://medium.com/@ethbet/official-ethbet-crowdsale-guide-and-faq-baeb145fa737">Official Crowdsale Guide and FAQ</a> Before Contributing.</h3>
+                                <h3 class="text-center">The crowdsale has closed to new investors after all tokens have been purchased.</h3>
+                                <h3 class="text-center">To see statistics on the crowdsale, please read <a target="_blank" href="https://medium.com/@ethbet/ethbet-crowdsale-statistics-d7bec8961160">this post</a>.</h3>
                                 <noscript><h3>You must have Javascript enabled in order to proceed.</h3></noscript>
                             </div>
                             <div class="margin-b-20">
                                 <p id="timer"></p>
                                 <br /><br /><br />
-                                <button data-toggle="modal" data-target="#crowdsaleModal" class="btn btn-primary btn-lg center-block">Contribute to Crowdsale</button>
-                                <br /><br /><br />
                             </div>
                             <div class="margin-b-20">
-                                <p class="text-center">With 70% of all tokens being purchased during the first day for 3500ETH, less than 30% of the token supply still remains.</p>
-                                <p class="text-center">The current investor bonus for week-one investors is: <b>40%</b>.</p>
-                                <p id="timer2"></p>
+                                <div class="progress">
+                                  <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                                    <span class="sr-only">100% Complete</span>
+                                  </div>
+                                </div>
+                                <p class="text-center">100% of the 7,500,000 available tokens were purchased in 4.6 days and the crowdsale is now permaneantly closed to new investors.</p>
+                                <p class="text-center">If you would still like to purchase EBET, please check out <a target="_blank" href="https://etherdelta.com">EtherDelta</a>. More exchanges will come soon.</p>
                                 <br /><br />
                             </div>
                             <div class="margin-b-20">
                                 <h2>Crowdsale Information</h2>
                                 The symbol for Ethbet Tokens is EBET. Of the 10,000,000 available tokens,
-                                75% are available during the crowdsale, with 5% going to our bounty and the community, 10% to our
+                                75% were available during the crowdsale, with 5% going to our bounty and the community, 10% to our
                                 partners, and 10% to Ethbet.
-                            </div>
-                            <div class="margin-b-20">
-                                With a maximum possible sale of 7,500,000 tokens at the best rate of 1,500 EBET per ETH, the Ethbet crowdsale will reach
-                                its hard cap and will close to new investors after a total of 5,000 ETH have been contributed to it. This low hard cap ensures
-                                that we will not be significantly over-funded and that our token holders will each be able to own a large proportion of EBET.
-                                In the unlikely scenario that the crowdsale receives less than 300 ETH in contributions, it will be deemed to have been
-                                insufficiently funded, and all crowdsale contributions will be returned to investors by smart contract.
-                            </div>
-                            <div class="margin-b-20">
-                                Ethbet has had no pre-crowdsale and will not have an additional crowdsale. Ethbet's portion of EBET will be locked by
-                                smart contract for 6 months to ensure our incentives are alongside our investors. Any unsold tokens after the crowdsale
-                                will be burnt to prevent token dilution.
-                            </div>
-                            <div class="margin-b-20">
-                                The base exchange rate is 1,000 EBET per ETH. There is no minimum investment although it is encouraged to send at least 0.1 or 1 ETH.
-                                The early investor bonuses remaining are listed in the following table.
-                            </div>
-                            <div class="margin-b-20">
-                                <table class="table">
-                                    <thead><tr><th>Duration</th><th>Bonus</th><th>Effective Rate</th></tr></thead>
-                                    <tr><td><b>First Week Bonus</b></td><td><b>+40%</b></td><td><b>1,400 EBET = 1 ETH</b></td></tr>
-                                    <tr><td>Second Week Bonus</td><td>+30%</td><td>1,300 EBET = 1 ETH</td></tr>
-                                    <tr><td>Third Week Bonus</td><td>+25%</td><td>1,250 EBET = 1 ETH</td></tr>
-                                    <tr><td>Final Week Bonus</td><td>+15%</td><td>1,150 EBET = 1 ETH</td></tr>
-                                </table>
                             </div>
                             <div class="margin-b-20">
                                 The crowdsale's smart contract is open-source and available on <a target="_blank" href="https://github.com/Ethbet/ethbet/blob/master/contracts/EBETtokenSale.sol">Github</a>.
                                 <br />
                                 The crowdsale has passed an independent security audit and has also had bug bounties available on <a target="_blank" href="https://www.reddit.com/r/ethdev/comments/706yt2/bug_bounty_available_for_simple_crowdsale/">Reddit</a>.
+                            </div>
+                            <div class="margin-b-20">
+                                Although the crowdsale has closed you can still purchase EBET tokens from other users. To see statistics on crowdsale participation, check out <a target="_blank" href="https://medium.com/@ethbet/ethbet-crowdsale-statistics-d7bec8961160">this post</a>.
                             </div>
                             <!-- End Swiper Wrapper -->
                             <!-- Pagination -->
@@ -259,7 +155,7 @@
                     <br/>
                     <p class="text-center">
                         <small>
-                            Click the above image to view our infographic
+                            Click above image to view infographic
                         </small>
                     </p>
                 </div>
@@ -276,24 +172,17 @@
                     <div class="swiper-wrapper">
                         <div class="swiper-slide">
                             <div class="margin-b-20">
-                                <p>Ethbet token holders possess the currency that powers the Ethbet protocol.</p>
-                                <p>As Ethbet gains more adoption, there are several factors which can contribute to the value of Ethbet tokens, including
-                                    increased consumer demand, increased token utility, increased token value due to network effects, and increased
-                                    value due to its deflationary nature and buy-back demand from Ethbet smart contracts.
-                                <p>Ethbet token holders are also able to
-                                    vote on proposals to improve Ethbet. Token holders can vote on values such
-                                    as what Ethbet's cut of its optional player-defined house edge should be or what future projects Ethbet should pursue, allowing them to steer
-                                    the platform in the direction that is most profitable. For information on why the EBET cannot pay dividends please read <a target="_blank" href="https://medium.com/@ethbet/changes-to-the-ethbet-token-model-e4eef4923b91">this post</a>.</p>
-                                <p>The Ethbet token is fully ERC20-compliant, ensuring that it will already be supported by all major wallets and exchanges on the day of the crowdsale.</p>
-                                <p>At this point in time we have confirmed that EBET is intended to be listed on at least one exchange (EtherDelta). The crowdsale post will be updated as this changes.</p>
+                                <p>The Ethbet token is fully ERC20-compliant, ensuring that it is supported by all major wallets and exchanges.</p>
+                                <p>EBET is currently listed on the following exchanges: EtherDelta</p>
+                                <p>This page will be updated when more exchange listing occur.</p>
                                 <h3>Token Information</h3>
                                 <table class="table">
-                                    <tr><td>Token Contract Adress</td><td><a target="_blank" href="https://etherscan.io/token/0x7D5Edcd23dAa3fB94317D32aE253eE1Af08Ba14d">0x7D5Edcd23dAa3fB94317D32aE253eE1Af08Ba14d</a></td></tr>
+                                    <tr><td>Token Contract Address</td><td><a target="_blank" href="https://etherscan.io/token/0x7D5Edcd23dAa3fB94317D32aE253eE1Af08Ba14d">0x7D5Edcd23dAa3fB94317D32aE253eE1Af08Ba14d</a></td></tr>
                                     <tr><td>Token Decimals</td><td>2</td></tr>
                                     <tr><td>Token Symbol</td><td>EBET</td></tr>
                                     <tr><td>Total Possibly Supply</td><td>10,000,000</td></tr>
                                 </table>
-                                <p>For more information about how Ethbet and its token functions, please read the <a target="_blank" href="https://ethbet.io/whitepaper.pdf">Ethbet whitepaper</a>.</p>
+                                <p>For information about how Ethbet and its token functions, please read the <a target="_blank" href="https://ethbet.io/whitepaper.pdf">Ethbet whitepaper</a>.</p>
                             </div>
                         </div>
                         <div class="swiper-slide">
@@ -309,53 +198,6 @@
         </div>
         <!-- End Testimonials -->
 
-        <!-- Testimonials -->
-        <div class="content-lg container">
-            <div class="row">
-                <div class="col-sm-9">
-                    <h2>How to take part in the Ethbet Crowdsale</h2>
-
-                    <!-- Swiper Testimonials -->
-                    <!-- Swiper Wrapper -->
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide">
-                            <div class="margin-b-20">
-                            Please read the <a target="_blank"  href="https://medium.com/@ethbet/official-ethbet-crowdsale-guide-and-faq-baeb145fa737">Official Crowdsale Guide+FAQ</a> for detailed
-                                instructions and information on how to contribute to the crowdsale.
-                            </div>
-                            <div class="margin-b-20">
-
-                                1. Use a wallet that supports tokens, such as <a target="_blank"
-                                    href="https://www.myetherwallet.com/">MyEtherWallet</a>, Metamask, Parity, or
-                                Mist.
-                            </div>
-                            <div class="margin-b-20">
-                                2. Move Ethereum into your wallet. Ethereum is the only currency that is
-                                accepted in the Ethbet crowdsale. If you do not have Ethereum, you can buy it
-                                from websites such as <a target="_blank" href="https://coinbase.com">Coinbase</a>, or use a
-                                service such as <a target="_blank" href="https://shapeshift.io">Shapeshift</a> or cryptocurrency
-                                exchanges such as <a target="_blank" href="https://bitfinex.com">Bitfinex</a> or
-                                <a target="_blank" href="https://poloniex.com">Poloniex</a> to exchange other
-                                cryptocurrencies for Ethereum. <b>Be sure to securely store and back up your
-                                private key.</b>
-                            </div>
-                            <div class="margin-b-20">
-                                3. Send the desired amount of ETH to the crowdsale wallet address obtainable via the large button at the top of this page.
-                                You will receive 1,000 EBET plus an early investor bonus per ETH that you send.
-                            </div>
-                            <div class="margin-b-20">
-                                Do <b>not</b> send ETH from an exchange wallet such as Coinbase, Poloniex, and
-                                many others. These
-                                wallets do <b>not</b> support ERC20 tokens, including Ethbet. Your tokens will
-                                be lost if you use a wallet that does not support tokens.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!--// end row -->
-        </div>
-        <!-- End Testimonials -->
 
         <!--========== END PAGE LAYOUT ==========-->
 
