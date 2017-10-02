@@ -1,6 +1,6 @@
 # EthBet Development
 
-This repository contains assets related to the Ethbet Project:
+This repository contains assets related to the Ethbet Project. Please not that not all assets are contained within this repository and other repositories are used for some development. Conents::
 
 - contracts: Smart contracts for Ethbet such as the token contract, crowdsale contract, protocol drafts, etc
 Smart contracts are written for Ethereum in Solidity using the Truffle framework and code from the OpenZeppelin project.
