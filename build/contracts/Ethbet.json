@@ -1,0 +1,489 @@
+{
+  "contract_name": "Ethbet",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "creator",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "placeBet",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_winner",
+          "type": "address"
+        },
+        {
+          "name": "_loser",
+          "type": "address"
+        },
+        {
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "executeBet",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "withdraw",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "callerFee",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "feeAddress",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_callerFee",
+          "type": "uint256"
+        }
+      ],
+      "name": "setCallerFee",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_admin",
+          "type": "address"
+        }
+      ],
+      "name": "setAdmin",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address"
+        }
+      ],
+      "name": "balanceOf",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_feeAddress",
+          "type": "address"
+        }
+      ],
+      "name": "setFeeAddress",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "relay",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_makerFee",
+          "type": "uint256"
+        }
+      ],
+      "name": "setMakerFee",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "admin",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "token",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "makerFee",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "name": "_admin",
+          "type": "address"
+        },
+        {
+          "name": "_relay",
+          "type": "address"
+        },
+        {
+          "name": "tokenAddress",
+          "type": "address"
+        },
+        {
+          "name": "_makerFee",
+          "type": "uint256"
+        },
+        {
+          "name": "_callerFee",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "PlaceBet",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "Withdraw",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "winner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "loser",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "ExecutedBet",
+      "type": "event"
+    }
+  ],
+  "unlinked_binary": "0x6060604052341561000c57fe5b60405160a08061073b83398101604090815281516020830151918301516060840151608090940151919390915b60008054600160a060020a03338116600160a060020a03199283161790925560018054888416908316179055600280548784169083161790556004849055600583905560068054928616929091169190911790555b50505050505b610698806100a36000396000f300606060405236156100bf5763ffffffff60e060020a60003504166302d05d3f81146100c157806310fe7c48146100ed578063124c2dde146101025780632e1a7d4d1461012957806334d441d01461013e578063412753581461016057806353aa7dcd1461018c578063704b6c02146101a157806370a08231146101bf5780638705fcd4146101ed578063b59589d11461020b578063b8bd3dbb14610237578063f851a4401461024c578063fc0c546a14610278578063fc741c7c146102a4575bfe5b34156100c957fe5b6100d16102c6565b60408051600160a060020a039092168252519081900360200190f35b34156100f557fe5b6101006004356102d5565b005b341561010a57fe5b610100600160a060020a03600435811690602435166044356103a7565b005b341561013157fe5b610100600435610458565b005b341561014657fe5b61014e610541565b60408051918252519081900360200190f35b341561016857fe5b6100d1610547565b60408051600160a060020a039092168252519081900360200190f35b341561019457fe5b610100600435610556565b005b34156101a957fe5b610100600160a060020a036004351661057c565b005b34156101c757fe5b61014e600160a060020a03600435166105b8565b60408051918252519081900360200190f35b34156101f557fe5b610100600160a060020a03600435166105d7565b005b341561021357fe5b6100d1610613565b60408051600160a060020a039092168252519081900360200190f35b341561023f57fe5b610100600435610622565b005b341561025457fe5b6100d1610648565b60408051600160a060020a039092168252519081900360200190f35b341561028057fe5b6100d1610657565b60408051600160a060020a039092168252519081900360200190f35b34156102ac57fe5b61014e610666565b60408051918252519081900360200190f35b600054600160a060020a031681565b6006546040805160006020918201819052825160e060020a6323b872dd028152600160a060020a033381166004830152308116602483015260448201879052935193909416936323b872dd936064808301949391928390030190829087803b151561033c57fe5b6102c65a03f1151561034a57fe5b505060408051600160a060020a0333166000818152600760209081529084902080548701905585835292519093507f7b3a5421ace1547bdfce5bfacd47eb5cd33df9104adc789049d41513f09f1562929181900390910190a25b50565b60025433600160a060020a039081169116146103c35760006000fd5b600160a060020a038216600090815260076020526040902054819010156103ea5760006000fd5b600160a060020a03808416600081815260076020908152604080832080548701905593861680835291849020805486900390558351858152935191937f07b6800e69b7d84f1fb54b3a9e770a162a7823765862b8e938602be4d0084417929081900390910190a35b5b505050565b600160a060020a0333166000908152600760205260409020548190101561047f5760006000fd5b600160a060020a0333811660008181526007602090815260408083208054879003905560065481518301849052815160e060020a63a9059cbb028152600481019590955260248501879052905194169363a9059cbb93604480820194918390030190829087803b15156104ee57fe5b6102c65a03f115156104fc57fe5b5050604080518381529051600160a060020a03331692507f884edad9ce6fa2440d8a54cc123490eb96d2768479d49ff9c7366125a94243649181900360200190a25b50565b60055481565b600354600160a060020a031681565b60015433600160a060020a039081169116146105725760006000fd5b60058190555b5b50565b60015433600160a060020a039081169116146105985760006000fd5b60018054600160a060020a031916600160a060020a0383161790555b5b50565b600160a060020a0381166000908152600760205260409020545b919050565b60015433600160a060020a039081169116146105f35760006000fd5b60038054600160a060020a031916600160a060020a0383161790555b5b50565b600254600160a060020a031681565b60015433600160a060020a0390811691161461063e5760006000fd5b60048190555b5b50565b600154600160a060020a031681565b600654600160a060020a031681565b600454815600a165627a7a72305820d9ac106da752843f9f5c9721c6214a3a5f65bd9f1fd71218b553d722b22e2ddc0029",
+  "networks": {
+    "1506351153218": {
+      "events": {
+        "0x7b3a5421ace1547bdfce5bfacd47eb5cd33df9104adc789049d41513f09f1562": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "PlaceBet",
+          "type": "event"
+        },
+        "0x884edad9ce6fa2440d8a54cc123490eb96d2768479d49ff9c7366125a9424364": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "Withdraw",
+          "type": "event"
+        },
+        "0x07b6800e69b7d84f1fb54b3a9e770a162a7823765862b8e938602be4d0084417": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "winner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "loser",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "ExecutedBet",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x73d23219be42d4cadb8a7ec8cffae432464bcb41",
+      "updated_at": 1506518228654
+    },
+    "1506520664455": {
+      "events": {
+        "0x7b3a5421ace1547bdfce5bfacd47eb5cd33df9104adc789049d41513f09f1562": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "PlaceBet",
+          "type": "event"
+        },
+        "0x884edad9ce6fa2440d8a54cc123490eb96d2768479d49ff9c7366125a9424364": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "Withdraw",
+          "type": "event"
+        },
+        "0x07b6800e69b7d84f1fb54b3a9e770a162a7823765862b8e938602be4d0084417": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "winner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "loser",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "ExecutedBet",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x96ce012f5b38f1c669ff4e80e1ddf044b31b9713",
+      "updated_at": 1506520694301
+    },
+    "1506520964111": {
+      "events": {
+        "0x7b3a5421ace1547bdfce5bfacd47eb5cd33df9104adc789049d41513f09f1562": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "PlaceBet",
+          "type": "event"
+        },
+        "0x884edad9ce6fa2440d8a54cc123490eb96d2768479d49ff9c7366125a9424364": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "Withdraw",
+          "type": "event"
+        },
+        "0x07b6800e69b7d84f1fb54b3a9e770a162a7823765862b8e938602be4d0084417": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "winner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "loser",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "ExecutedBet",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x96ce012f5b38f1c669ff4e80e1ddf044b31b9713",
+      "updated_at": 1506520978508
+    }
+  },
+  "schema_version": "0.0.5",
+  "updated_at": 1506520978508
+}
