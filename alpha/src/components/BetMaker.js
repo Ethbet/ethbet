@@ -21,24 +21,6 @@ class BetMaker extends Component {
 
     componentDidMount() {
 
-        getWeb3
-        .then(async (results) => {
-            this.setState({
-                web3: results.web3
-            })
-
-            results.web3.eth.getAccounts( async (error, accounts) => {
-
-                this.setState({
-                    admin: accounts[0]
-                });
-
-                // Instantiate contract once web3 provided.
-                await this.instantiateContract();
-
-            });
-
-        });
     }
 
     makeBet = async () => {

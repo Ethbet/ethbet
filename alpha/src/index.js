@@ -5,6 +5,7 @@ import configureStore from './store/configureStore';
 import {Router, Route} from 'react-router-dom'
 
 import Home from './components/Home';
+import Navbar from './components/Navbar';
 import history from './history'
 
 const store = configureStore();
@@ -14,6 +15,7 @@ ReactDOM.render(
   <Provider store={store}>
     <Router history={history}>
       <div>
+        <Navbar/>
         <Route exact path="/" component={Home}/>
       </div>
     </Router>

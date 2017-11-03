@@ -1,0 +1,7 @@
+tmp/**
+build/**
+node_modules/**
+contracts/**
+migrations/**
+test/**
+truffle-scripts/**

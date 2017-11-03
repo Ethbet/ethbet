@@ -1,17 +1,13 @@
 import React, {Component} from 'react'
 
-
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux'
 
+import * as notificationActions from '../actions/notificationActions';
 
-import EthbetContract from '../../build/contracts/Ethbet.json';
-import getWeb3 from '../utils/getWeb3';
-
-// import Header from './Header';
-import BetMaker from './BetMaker';
+//import BetMaker from './BetMaker';
 // import BetsHistory from "./BetsHistory";
-import ActiveBets from "./ActiveBets";
+//import ActiveBets from "./ActiveBets";
 import Balance from './Balance';
 
 import '../css/custom.css';
@@ -20,54 +16,24 @@ import '../css/bootstrap.min.css';
 class Home extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      web3: null,
-      ethbetInstane: null
-    }
   }
 
   componentWillMount() {
-    // Get network provider and web3 instance.
-    // See utils/getWeb3 for more info.
-
-    getWeb3
-      .then(async (results) => {
-        this.setState({
-          web3: results.web3
-        })
-
-        // Instantiate contract once web3 provided.
-        await this.instantiateContract();
-      })
-      .catch(() => {
-        console.log('Error finding web3.')
-      })
-  }
-
-  async instantiateContract() {
-
-    const contract = require('truffle-contract');
-    const ethbetContract = contract(EthbetContract);
-    ethbetContract.setProvider(this.state.web3.currentProvider);
-
-    const instance = await ethbetContract.deployed();
-
-    this.setState({
-      ethbetInstane: instance
-    });
 
   }
 
   render() {
+    if (!this.props.web3Store.get("web3")) {
+      return null;
+    }
+
     return (
       <div>
-        {/*<Header />*/}
         <div className="container">
           <div className="row front-row">
-            <Balance />
-            <BetMaker />
-            <ActiveBets />
+            <Balance/>
+            {/*  <BetMaker/>
+            <ActiveBets/>*/}
           </div>
 
           {/*<div className="row">
@@ -82,12 +48,13 @@ class Home extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    web3Store: state.web3Store,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-
+    notificationActions: bindActionCreators(notificationActions, dispatch),
   };
 };
 
