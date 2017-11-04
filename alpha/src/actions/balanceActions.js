@@ -9,3 +9,17 @@ export const fetchLoadBalance = {
   success: (data) => action(FETCH_LOAD_BALANCE.SUCCESS, data),
   failure: (error) => action(FETCH_LOAD_BALANCE.FAILURE, error),
 };
+
+export const SET_NEW_DEPOSIT_VALUE = 'SET_NEW_DEPOSIT_VALUE';
+export const setNewDepositValue = data => action(SET_NEW_DEPOSIT_VALUE, data);
+
+
+export const SAVE_NEW_DEPOSIT = 'SAVE_NEW_DEPOSIT';
+export const saveNewDeposit = data => action(SAVE_NEW_DEPOSIT, data);
+
+export const POST_SAVE_NEW_DEPOSIT = createRequestTypes('POST_SAVE_NEW_DEPOSIT');
+export const postSaveNewDeposit = {
+  request: () => action(POST_SAVE_NEW_DEPOSIT.REQUEST),
+  success: (data) => action(POST_SAVE_NEW_DEPOSIT.SUCCESS, data),
+  failure: (error) => action(POST_SAVE_NEW_DEPOSIT.FAILURE, error),
+};

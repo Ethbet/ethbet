@@ -29,7 +29,6 @@ class BetMaker extends Component {
         const admin = this.state.admin;
         const numTokens = this.state.value;
 
-        await ethbetInstance.placeBet.sendTransaction(numTokens, {from: admin});
 
         //Wait for the block to get mined 
 

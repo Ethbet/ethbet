@@ -1,46 +1,97 @@
 const Ethbet = artifacts.require("./Ethbet.sol");
 const EthbetToken = artifacts.require("./EthbetToken.sol");
 
-contract('Ethbet', (accounts)  => {
+contract('Ethbet', (accounts) => {
 
-  const admin = accounts[0];
+  let ethbetInstance;
+  let tokenInstance;
 
-  //Before we start the test let the user approve a bit of EBET tokens to spend
-  before(async () => {
+  before(async function beforeTest() {
+    ethbetInstance = await Ethbet.deployed();
+    tokenInstance = await EthbetToken.deployed();
 
-    const ethbetInstance = await Ethbet.deployed();
-    const tokenInstance = await EthbetToken.deployed();
+    // give tokens to users 1 and 2 & 3 for testing, user 0 is the deployer
+    await tokenInstance.transfer(accounts[1], 1000, {from: accounts[0]});
+    await tokenInstance.transfer(accounts[2], 1000, {from: accounts[0]});
+    await tokenInstance.transfer(accounts[3], 1000, {from: accounts[0]});
+  });
 
-    const balance = await tokenInstance.balanceOf(admin);
+  describe('deposit', function () {
 
-    //call the approve method so the contract can spend tokens
-    const approve = await tokenInstance.approve.sendTransaction(ethbetInstance.address, 100, {from: admin, value: 0});
+    it('ok if transfer preapproved', async function it() {
+      // first deposit
+      await tokenInstance.approve(ethbetInstance.address, 400, {from: accounts[1]});
+      await ethbetInstance.deposit(400, {from: accounts[1]});
 
-    const contractBalance = await tokenInstance.allowance(admin, ethbetInstance.address);
+      let user1BalanceInTokenContact = await tokenInstance.balanceOf(accounts[1]);
+      assert.equal(user1BalanceInTokenContact.toNumber(), 600);
+
+      let ethbetBalanceInTokenContact = await tokenInstance.balanceOf(ethbetInstance.address);
+      assert.equal(ethbetBalanceInTokenContact.toNumber(), 400);
+
+      let user1BalanceInEthbetContact = await ethbetInstance.balanceOf(accounts[1]);
+      assert.equal(user1BalanceInEthbetContact.toNumber(), 400);
+
+      // second deposit
+      await tokenInstance.approve(ethbetInstance.address, 100, {from: accounts[2]});
+      await ethbetInstance.deposit(100, {from: accounts[2]});
+
+      let user2BalanceInTokenContact = await tokenInstance.balanceOf(accounts[2]);
+      assert.equal(user2BalanceInTokenContact.toNumber(), 900);
+
+      ethbetBalanceInTokenContact = await tokenInstance.balanceOf(ethbetInstance.address);
+      assert.equal(ethbetBalanceInTokenContact.toNumber(), 500);
+
+      let user2BalanceInEthbetContact = await ethbetInstance.balanceOf(accounts[2]);
+      assert.equal(user2BalanceInEthbetContact.toNumber(), 100);
+    });
+
+    it('fails if transfer not preapproved', async function it() {
+      try {
+        await ethbetInstance.deposit(200, {from: accounts[3]});
+
+        // we shouldn't get to this point
+        assert(false, "Transaction should have failed");
+      }
+      catch (err) {
+        if (err.toString().indexOf("invalid opcode") < 0) {
+          assert(false, err.toString());
+        }
+      }
+    });
 
   });
 
-  it("...a user should place a bet", async () => {
 
-    const ethbetInstance = await Ethbet.deployed();
+  describe('withdraw', function () {
 
-    await ethbetInstance.placeBet.sendTransaction(50, {from: admin});
+    it('ok if balance sufficient', async function it() {
+      await ethbetInstance.withdraw(100, {from: accounts[1]});
 
-    const balance = await ethbetInstance.balanceOf(admin);
+      let user1BalanceInTokenContact = await tokenInstance.balanceOf(accounts[1]);
+      assert.equal(user1BalanceInTokenContact.toNumber(), 700);
 
-    assert.equal(balance.valueOf(), 50, "The user placed 50 EBET into the contract");
-  });
+      let ethbetBalanceInTokenContact = await tokenInstance.balanceOf(ethbetInstance.address);
+      assert.equal(ethbetBalanceInTokenContact.toNumber(), 400);
 
+      let user1BalanceInEthbetContact = await ethbetInstance.balanceOf(accounts[1]);
+      assert.equal(user1BalanceInEthbetContact.toNumber(), 300);
+    });
 
-  it("...a user should widraw his money", async () => {
+    it('fails if balance insufficient', async function it() {
+      try {
+        await ethbetInstance.withdraw(500, {from: accounts[1]});
 
-    const ethbetInstance = await Ethbet.deployed();
+        // we shouldn't get to this point
+        assert(false, "Transaction should have failed");
+      }
+      catch (err) {
+        if (err.toString().indexOf("invalid opcode") < 0) {
+          assert(false, err.toString());
+        }
+      }
+    });
 
-    await ethbetInstance.withdraw.sendTransaction(30, {from: admin});
-
-    const balance = await ethbetInstance.balanceOf(admin);
-
-    assert.equal(balance.valueOf(), 20, "The user widtdrew 30 tokens and has 20 left");
   });
 
 });
