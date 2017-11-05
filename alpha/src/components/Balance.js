@@ -34,6 +34,19 @@ class Balance extends Component {
     this.props.balanceActions.saveNewDeposit();
   }
 
+  updateNewWithdrawalValue(e) {
+    this.props.balanceActions.setNewWithdrawalValue({newWithdrawalValue: e.target.value});
+  }
+
+  isValidNewWithdrawal() {
+    let newWithdrawalValue = parseFloat(this.props.balanceStore.get("newWithdrawalValue"));
+    return newWithdrawalValue > 0;
+  }
+
+  saveNewWithdrawal() {
+    this.props.balanceActions.saveNewWithdrawal();
+  }
+
   render() {
     let {balanceStore} = this.props;
 
@@ -62,13 +75,19 @@ class Balance extends Component {
 
           <div className="row">
             <div className="col-lg-7">
-              <input name="withdraw" value={this.state.withdraw} onInput={this.handleChange} type="text"
+              <input name="withdrawal" type="text"
+                     value={balanceStore.get("newWithdrawalValue")}
+                     onChange={(e) => this.updateNewWithdrawalValue(e)}
                      className="form-control" placeholder="Withdraw tokens"/>
             </div>
             <div className="col-lg-4">
-              <button type="button" className="btn btn-info" onClick={this.withdrawTokens}>Withdraw</button>
+              <button type="button" className="btn btn-info" onClick={this.saveNewWithdrawal.bind(this)}
+                      disabled={!this.isValidNewWithdrawal() || balanceStore.get("savingNewWithdrawal")}>
+                Withdraw
+              </button>
             </div>
           </div>
+          <Loader color="white" loaded={!balanceStore.get("savingNewWithdrawal")}/>
 
         </div>
       </div>

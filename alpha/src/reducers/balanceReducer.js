@@ -3,6 +3,7 @@ import {Map as ImmutableMap} from 'immutable';
 
 let initialData = {
   newDepositValue: 0,
+  newWithdrawalValue: 0,
   savingNewDeposit: false
 };
 
@@ -45,6 +46,27 @@ export default function balanceReducer(state = new ImmutableMap(initialData), ac
       .set('savingNewDeposit', false);
   };
 
+  const setNewWithdrawalValue = (state) => {
+    return state
+      .set('newWithdrawalValue', action.newWithdrawalValue);
+  };
+
+  const postSaveNewWithdrawalRequest = (state) => {
+    return state
+      .set('savingNewWithdrawal', true);
+  };
+
+  const postSaveNewWithdrawalSuccess = (state) => {
+    return state
+      .set('savingNewWithdrawal', false)
+      .set('newWithdrawalValue', 0);
+  };
+
+  const postSaveNewWithdrawalFailure = (state) => {
+    return state
+      .set('savingNewWithdrawal', false);
+  };
+
   const actions = {
     'FETCH_LOAD_BALANCE_REQUEST': () => fetchLoadBalanceRequest(state),
     'FETCH_LOAD_BALANCE_SUCCESS': () => fetchLoadBalanceSuccess(state),
@@ -52,7 +74,11 @@ export default function balanceReducer(state = new ImmutableMap(initialData), ac
     'SET_NEW_DEPOSIT_VALUE': () => setNewDepositValue(state),
     'POST_SAVE_NEW_DEPOSIT_REQUEST': () => postSaveNewDepositRequest(state),
     'POST_SAVE_NEW_DEPOSIT_SUCCESS': () => postSaveNewDepositSuccess(state),
-    'POST_SAVE_NEW_DEPOSIT_FAILURE': () => postSaveNewDepositFailure(state),
+    'POST_SAVE_NEW_DEPOSIT_FAILURE': () => postSaveNewDepositFailure(state),    
+    'SET_NEW_WITHDRAWAL_VALUE': () => setNewWithdrawalValue(state),
+    'POST_SAVE_NEW_WITHDRAWAL_REQUEST': () => postSaveNewWithdrawalRequest(state),
+    'POST_SAVE_NEW_WITHDRAWAL_SUCCESS': () => postSaveNewWithdrawalSuccess(state),
+    'POST_SAVE_NEW_WITHDRAWAL_FAILURE': () => postSaveNewWithdrawalFailure(state),
     'DEFAULT': () => state
   };
 

@@ -59,6 +59,41 @@ function* saveNewDeposit(data) {
 }
 
 
+function* saveNewWithdrawal(data) {
+  yield put(balanceActions.postSaveNewWithdrawal.request());
+  try {
+    const web3 = yield select(state => state.web3Store.get("web3"));
+
+    const newWithdrawalValue = yield select(state => state.balanceStore.get("newWithdrawalValue"));
+    let parseNewWithdrawalValue = parseFloat(newWithdrawalValue) * 100;   // 2 decimals for EBET
+
+    const results = yield call(balanceService.withdraw, web3, parseNewWithdrawalValue);
+
+    // delay to allow changes to be committed to local node
+    yield delay(1000);
+
+    yield put(balanceActions.postSaveNewWithdrawal.success({results}));
+
+    console.log("saveNewWithdrawal TX", results.tx);
+    yield put(notificationActions.success({
+      notification: {
+        title: 'new withdrawal saved successfully',
+        position: 'br'
+      }
+    }));
+  } catch (error) {
+    yield put(balanceActions.postSaveNewWithdrawal.failure({error}));
+    yield put(notificationActions.error({
+      notification: {
+        title: 'failed to save withdrawal',
+        message: error.message,
+        position: 'br'
+      }
+    }));
+  }
+}
+
+
 function* watchSetupWeb3Success() {
   yield takeEvery(web3Actions.SETUP_WEB3.SUCCESS, loadInitialData);
 }
@@ -75,11 +110,21 @@ function* watchPostSaveNewDepositSuccess() {
   yield takeEvery(balanceActions.POST_SAVE_NEW_DEPOSIT.SUCCESS, loadBalance);
 }
 
+function* watchSaveNewWithdrawal() {
+  yield takeEvery(balanceActions.SAVE_NEW_WITHDRAWAL, saveNewWithdrawal);
+}
+
+function* watchPostSaveNewWithdrawalSuccess() {
+  yield takeEvery(balanceActions.POST_SAVE_NEW_WITHDRAWAL.SUCCESS, loadBalance);
+}
+
 export default function* balanceSaga() {
   yield all([
     watchSetupWeb3Success(),
     watchLoadUsersData(),
     watchSaveNewDeposit(),
-    watchPostSaveNewDepositSuccess(),
+    watchPostSaveNewDepositSuccess(),  
+    watchSaveNewWithdrawal(),
+    watchPostSaveNewWithdrawalSuccess(),
   ]);
 }

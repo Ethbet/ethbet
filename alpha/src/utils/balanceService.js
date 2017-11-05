@@ -22,14 +22,25 @@ async function deposit(web3, amount) {
   tokenContract.setProvider(web3.currentProvider);
   const tokenInstance = await tokenContract.deployed();
 
-  await tokenInstance.approve(ethbetInstance.address, amount);
+  await tokenInstance.increaseApproval(ethbetInstance.address, amount);
+
   let results = await ethbetInstance.deposit(amount);
+  return results;
+}
+
+async function withdraw(web3, amount) {
+  const ethbetContract = contract(EthbetContract);
+  ethbetContract.setProvider(web3.currentProvider);
+  const ethbetInstance = await ethbetContract.deployed();
+
+  let results = await ethbetInstance.withdraw(amount);
   return results;
 }
 
 let registryService = {
   loadBalance: loadBalance,
   deposit: deposit,
+  withdraw: withdraw,
 };
 
 export default registryService;

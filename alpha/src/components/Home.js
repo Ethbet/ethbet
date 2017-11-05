@@ -14,13 +14,6 @@ import '../css/custom.css';
 import '../css/bootstrap.min.css';
 
 class Home extends Component {
-  constructor(props) {
-    super(props);
-  }
-
-  componentWillMount() {
-
-  }
 
   render() {
     if (!this.props.web3Store.get("web3")) {
