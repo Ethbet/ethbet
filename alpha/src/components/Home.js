@@ -5,9 +5,10 @@ import {connect} from 'react-redux'
 
 import * as notificationActions from '../actions/notificationActions';
 
-//import BetMaker from './BetMaker';
+import BetMaker from './BetMaker';
+import ActiveBets from "./ActiveBets";
+
 // import BetsHistory from "./BetsHistory";
-//import ActiveBets from "./ActiveBets";
 import Balance from './Balance';
 
 import '../css/custom.css';
@@ -25,8 +26,8 @@ class Home extends Component {
         <div className="container">
           <div className="row front-row">
             <Balance/>
-            {/*  <BetMaker/>
-            <ActiveBets/>*/}
+            <BetMaker/>
+            <ActiveBets/>
           </div>
 
           {/*<div className="row">

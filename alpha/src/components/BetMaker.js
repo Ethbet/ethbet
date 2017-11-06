@@ -1,95 +1,99 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 
-import Ethbet from '../../build/contracts/Ethbet.json';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux'
 
-import contract from 'truffle-contract';
-import getWeb3 from '../utils/getWeb3';
+let Loader = require('react-loader');
+
+import * as notificationActions from '../actions/notificationActions';
+import * as betActions from '../actions/betActions';
+
 
 class BetMaker extends Component {
 
-    constructor(props) {
-        super(props);
+  componentDidMount() {
 
-        this.state = {
-            value: '',
-            edge: '',
-            admin: '',
-            web3: null,
-            ethbetInstance: null
-        };
-    }
+  }
 
-    componentDidMount() {
+  updateInputValue(e, field) {
+    let newBet = Object.assign({}, this.props.betStore.get("newBet"));
+    newBet[field] = e.target.value;
+    this.props.betActions.setNewBet({newBet});
+  }
 
-    }
+  isValidNewBet() {
+    let newBetAmount = parseFloat(this.props.betStore.get("newBet").amount);
+    let newBetEdge = parseFloat(this.props.betStore.get("newBet").edge);
+    return newBetAmount > 0 &&
+      newBetEdge >= 0 && newBetEdge <= 100;
+  }
 
-    makeBet = async () => {
+  saveNewBet() {
+    this.props.betActions.saveNewBet();
+  }
 
-        const ethbetInstance = this.state.ethbetInstance;
-        const admin = this.state.admin;
-        const numTokens = this.state.value;
+  render() {
+    let {betStore} = this.props;
 
-
-        //Wait for the block to get mined 
-
-        const balance = await ethbetInstance.balanceOf(admin);
-
-        console.log(balance.valueOf());
-
-        this.setState({
-            value: '',
-            edge: ''
-        });
-    }
-
-    instantiateContract = async () => {
-
-        const ethbetContract = contract(Ethbet);
-        ethbetContract.setProvider(this.state.web3.currentProvider);
-
-        const ethbetInstance = await ethbetContract.deployed();
-            
-        this.setState({
-            ethbetInstance
-        });
-    }
-
-    handleChange = (event) => {
-        this.setState({
-            [event.target.name] : event.target.value
-        });
-    }
-
-    render() {
-        return (
-            <div className="col-lg-4"> 
-                 <div className="well">
-                    <form className="form-horizontal">
-                    <legend>Make bet</legend>
-                        <div className="row">
-                            <div className="col-lg-8 col-lg-offset-2 bet-row">
-                                <input name="value" value={ this.state.value } onInput={ this.handleChange } type="text" className="form-control" placeholder="Number of tokens" />
-                            </div>
-                        </div>
-
-                        <div className="row">
-                            <div className="col-lg-8 col-lg-offset-2 bet-row">
-                                <input name="edge" value={ this.state.edge } onInput={ this.handleChange } type="text" className="form-control" placeholder="Edge" />
-                            </div>
-                        </div>
-
-                        <div className="row">
-                            <div className="col-lg-4 col-lg-offset-4">
-                                <button type="button" className="btn btn-info" onClick={ this.makeBet }>Offer Bet</button>
-                            </div>
-                        </div>
-
-                        </form>
-                    </div>
+    return (
+      <div className="col-lg-4">
+        <div className="well">
+          <form className="form-horizontal">
+            <legend>Make bet</legend>
+            <div className="row">
+              <div className="col-lg-8 col-lg-offset-2 bet-row input-group">
+                <input name="amount" type="text" className="form-control"
+                       value={betStore.get("newBet").amount}
+                       onChange={(e) => this.updateInputValue(e, 'amount')}
+                       placeholder="Number of tokens"/>
+                <div className="input-group-addon">EBET</div>
+              </div>
             </div>
-        );
-    }
+
+            <div className="row">
+              <div className="col-lg-8 col-lg-offset-2 bet-row input-group">
+                <input name="edge" type="text" className="form-control"
+                       value={betStore.get("newBet").edge}
+                       onChange={(e) => this.updateInputValue(e, 'edge')}
+                       placeholder="Edge"/>
+                <div className="input-group-addon">&nbsp;&nbsp;%&nbsp;&nbsp;</div>
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="col-lg-4 col-lg-offset-4">
+                <button type="button" className="btn btn-info"
+                        onClick={this.saveNewBet.bind(this)}
+                        disabled={!this.isValidNewBet() || betStore.get("savingNewBet")}>
+                  Offer Bet
+                </button>
+              </div>
+            </div>
+            <Loader color="white" loaded={!betStore.get("savingNewBet")}/>
+
+          </form>
+        </div>
+      </div>
+    );
+  }
 
 }
 
-export default BetMaker;
+
+const mapStateToProps = (state) => {
+  return {
+    betStore: state.betStore,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    notificationActions: bindActionCreators(notificationActions, dispatch),
+    betActions: bindActionCreators(betActions, dispatch),
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(BetMaker);
