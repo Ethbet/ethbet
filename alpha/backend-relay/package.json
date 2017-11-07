@@ -1,0 +1,33 @@
+{
+  "name": "ethbet-relay",
+  "version": "0.1.0",
+  "main": "server.js",
+  "scripts": {
+    "test": "NODE_ENV=test ./node_modules/.bin/mocha --opts mocha.opts",
+    "start": "node server.js",
+    "install_prod": "npm install --production",
+    "db_create_dev": "NODE_ENV=development ./node_modules/.bin/sequelize db:create",
+    "db_migrate_dev": "NODE_ENV=development ./node_modules/.bin/sequelize db:migrate",
+    "db_create_prod": "NODE_ENV=production ./node_modules/.bin/sequelize db:create",
+    "db_migrate_prod": "NODE_ENV=production ./node_modules/.bin/sequelize db:migrate",
+    "db_create_test": "NODE_ENV=test ./node_modules/.bin/sequelize db:create",
+    "db_migrate_test": "NODE_ENV=test ./node_modules/.bin/sequelize db:migrate"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "lodash": "^4.17.4",
+    "method-override": "^2.3.6",
+    "moment": "^2.18.1",
+    "morgan": "^1.8.2",
+    "mysql2": "^1.4.2",
+    "sequelize": "4.8.4",
+    "sequelize-cli": "^3.0.0-3"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^4.0.1",
+    "sinon": "^4.0.2",
+    "supertest": "^3.0.0"
+  }
+}

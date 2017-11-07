@@ -1,0 +1,9 @@
+{
+  "development": {
+    "username": "ethbet",
+    "password": "123456",
+    "database": "ethbet-dev",
+    "host": "localhost",
+    "dialect": "mysql"
+  }
+}

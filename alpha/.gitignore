@@ -39,3 +39,7 @@ build/
 
 # truffle config
 truffle.js
+
+# BACKEND
+
+backend/config/config.json
