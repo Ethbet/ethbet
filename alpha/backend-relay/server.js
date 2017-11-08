@@ -13,8 +13,10 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-app.use(morgan('combined',{
-  skip:  (req, res) =>  req.method == "POST"
+app.use(morgan('combined', {
+  skip: (req, res) => {
+    return process.env.NODE_ENV === "test";
+  }
 }));
 
 
@@ -36,3 +38,8 @@ app.listen(PORT, function (err) {
     console.info("==> 🌎  Listening on port %s. Visit http://localhost:%s/ in your browser.", PORT, PORT);
   }
 });
+
+
+module.exports = {
+  app: app
+};

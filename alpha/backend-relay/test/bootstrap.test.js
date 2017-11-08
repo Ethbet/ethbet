@@ -6,6 +6,11 @@
 global.db = require('../models');
 
 before(async function () {
-  await db.sequelize.sync({force: true});
+  // start with clean db
+  await db.sequelize.truncate({});
 });
 
+afterEach(async function () {
+  // clean up db between tests
+  await db.sequelize.truncate({});
+});

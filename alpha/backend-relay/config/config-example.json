@@ -5,5 +5,13 @@
     "database": "ethbet-dev",
     "host": "localhost",
     "dialect": "mysql"
+  },
+  "test": {
+    "username": "ethbet",
+    "password": "123456",
+    "database": "ethbet-test",
+    "host": "localhost",
+    "dialect": "mysql",
+    "logging": false
   }
 }

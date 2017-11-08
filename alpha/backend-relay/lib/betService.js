@@ -1,20 +1,14 @@
-const Op = db.Sequelize.Op;
-
 async function createBet(betData) {
   let bet = await db.Bet.create(betData);
 
   return bet;
 }
 
-async function getBets() {
+async function getActiveBets() {
   let bets = await db.Bet.findAll({
     where: {
-      cancelledAt: {
-        [Op.ne]: null
-      },
-      executedAt: {
-        [Op.ne]: null
-      },
+      cancelledAt: null,
+      executedAt: null,
     },
     order: [
       ['createdAt', 'DESC']
@@ -26,5 +20,5 @@ async function getBets() {
 
 module.exports = {
   createBet: createBet,
-  getBets: getBets
+  getActiveBets: getActiveBets
 };

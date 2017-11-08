@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "main": "server.js",
   "scripts": {
-    "test": "NODE_ENV=test ./node_modules/.bin/mocha --opts mocha.opts",
+    "test": "NODE_ENV=test PORT=9100 ./node_modules/.bin/mocha --opts mocha.opts",
     "start": "node server.js",
     "install_prod": "npm install --production",
     "db_create_dev": "NODE_ENV=development ./node_modules/.bin/sequelize db:create",
@@ -21,8 +21,8 @@
     "moment": "^2.18.1",
     "morgan": "^1.8.2",
     "mysql2": "^1.4.2",
-    "sequelize": "4.8.4",
-    "sequelize-cli": "^3.0.0-3"
+    "sequelize": "4.22.1",
+    "sequelize-cli": "3.0.0"
   },
   "devDependencies": {
     "chai": "^4.1.2",

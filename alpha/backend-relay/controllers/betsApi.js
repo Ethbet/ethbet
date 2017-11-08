@@ -3,9 +3,9 @@ let _ = require('lodash');
 let betService = require('../lib/betService');
 
 module.exports = {
-  getBets: async function (req, res) {
+  getActiveBets: async function (req, res) {
     try {
-      let bets = await betService.getBets();
+      let bets = await betService.getActiveBets();
       res.status(200).json({bets});
     }
     catch (err) {

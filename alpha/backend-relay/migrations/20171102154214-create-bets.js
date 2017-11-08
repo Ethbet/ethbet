@@ -19,11 +19,11 @@ module.exports = {
         type: Sequelize.STRING
       },
       cancelledAt: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.DATE
       },
       executedAt: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.DATE
       },
       createdAt: {
