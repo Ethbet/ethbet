@@ -69,12 +69,6 @@ function* watchGetActiveBets() {
   yield takeEvery(betActions.GET_ACTIVE_BETS, getActiveBets);
 }
 
-function* watchPostSaveNewBetSuccess() {
-  //TODO: remove this once sockets are implemented
-
-
-  yield takeEvery(betActions.POST_SAVE_NEW_BET.SUCCESS, getActiveBets);
-}
 
 function* watchSetupWeb3Success() {
   yield takeEvery(web3Actions.SETUP_WEB3.SUCCESS, loadInitialData);
@@ -85,6 +79,5 @@ export default function* betSaga() {
     watchSetupWeb3Success(),
     watchSaveNewBet(),
     watchGetActiveBets(),
-    watchPostSaveNewBetSuccess(),
   ]);
 }

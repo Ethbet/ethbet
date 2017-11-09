@@ -24,3 +24,6 @@ export const fetchGetActiveBets = {
   success: (data) => action(FETCH_GET_ACTIVE_BETS.SUCCESS, data),
   failure: (error) => action(FETCH_GET_ACTIVE_BETS.FAILURE, error),
 };
+
+export const BET_CREATED = 'BET_CREATED';
+export const betCreated = data => action(BET_CREATED, data);

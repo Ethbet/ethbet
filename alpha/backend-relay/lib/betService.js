@@ -1,5 +1,9 @@
+let socketService = require('../lib/socketService');
+
 async function createBet(betData) {
   let bet = await db.Bet.create(betData);
+
+  socketService.emit("betCreated", bet);
 
   return bet;
 }

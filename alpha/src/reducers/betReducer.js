@@ -30,7 +30,7 @@ export default function betReducer(state = new ImmutableMap(initialData), action
 
   const postSaveNewBetFailure = (state) => {
     return state
-      .set('savingNewDeposit', false);
+      .set('savingNewBet', false);
   };
 
 
@@ -50,6 +50,10 @@ export default function betReducer(state = new ImmutableMap(initialData), action
       .set('gettingActiveBets', false);
   };
 
+  const betCreated = (state) => {
+    return state
+      .set('activeBets', [action.bet, ...state.get('activeBets')]);
+  };
 
   const actions = {
     'SET_NEW_BET': () => setNewBet(state),
@@ -59,6 +63,7 @@ export default function betReducer(state = new ImmutableMap(initialData), action
     'FETCH_GET_ACTIVE_BETS_REQUEST': () => fetchGetActiveBetsRequest(state),
     'FETCH_GET_ACTIVE_BETS_SUCCESS': () => fetchGetActiveBetsSuccess(state),
     'FETCH_GET_ACTIVE_BETS_FAILURE': () => fetchGetActiveBetsFailure(state),
+    'BET_CREATED': () => betCreated(state),
     'DEFAULT': () => state
   };
 

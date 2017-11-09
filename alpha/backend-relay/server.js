@@ -1,10 +1,13 @@
 //App depencencies -----------------------------------------/
-var express = require('express');
-var bodyParser = require('body-parser');
-var methodOverride = require('method-override');
-var app = express();
-var morgan = require('morgan');
-var cors = require('cors');
+const express = require('express');
+const bodyParser = require('body-parser');
+const methodOverride = require('method-override');
+const app = express();
+const morgan = require('morgan');
+const cors = require('cors');
+
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
 
 
 //App middleware -------------------------------------------/
@@ -29,11 +32,11 @@ require('./routes/apiRoutes')(app);
 global.db = require('./models');
 
 //Port config ---------------------------------------------------/
-var PORT = process.env.PORT || 9000;
+const PORT = process.env.PORT || 9000;
 
 //Starting the server ------------------------------------/
 
-app.listen(PORT, function (err) {
+server.listen(PORT, function (err) {
   if (err) {
     console.error(err);
   } else {
@@ -43,5 +46,7 @@ app.listen(PORT, function (err) {
 
 
 module.exports = {
-  app: app
+  app: app,
+  server: server,
+  io: io
 };

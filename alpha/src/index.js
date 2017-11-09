@@ -7,8 +7,11 @@ import {Router, Route} from 'react-router-dom'
 import Home from './components/Home';
 import Navbar from './components/Navbar';
 import history from './history'
+import socketService from './utils/socketService';
 
 const store = configureStore();
+
+socketService.init(store);
 
 
 ReactDOM.render(
