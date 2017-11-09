@@ -20,7 +20,9 @@ function getClientEnvironment(publicUrl) {
       // For example, <img src={process.env.PUBLIC_URL + '/img/logo.png'} />.
       // This should only be used as an escape hatch. Normally you would put
       // images into the `src` and `import` them in code to get their paths.
-      'PUBLIC_URL': JSON.stringify(publicUrl)
+      'PUBLIC_URL': JSON.stringify(publicUrl),
+      // Backend API endpoint (relay.ethbet.io placeholder id)
+      'BACKEND_URL': process.env.NODE_ENV === 'production' ?  "'http://relay.ethbet.io:9000'" : "'http://localhost:9000'"
     });
   return {'process.env': processEnv};
 }

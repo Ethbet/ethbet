@@ -7,14 +7,15 @@ import * as notificationActions from '../actions/notificationActions';
 
 import betService from '../utils/betService';
 
+function* loadInitialData(data) {
+  yield put(betActions.getActiveBets());
+}
 
 function* saveNewBet(data) {
   yield put(betActions.postSaveNewBet.request());
   try {
     const web3 = yield select(state => state.web3Store.get("web3"));
-
     const newBet = yield select(state => state.betStore.get("newBet"));
-    newBet.parsedAmount = parseFloat(newBet.amount) * 100;   // 2 decimals for EBET
 
     const results = yield call(betService.makeBet, web3, newBet);
 
@@ -42,14 +43,48 @@ function* saveNewBet(data) {
   }
 }
 
+function* getActiveBets(data) {
+  yield put(betActions.fetchGetActiveBets.request());
+  try {
+    const activeBets = yield call(betService.getActiveBets);
+    yield put(betActions.fetchGetActiveBets.success({activeBets}));
+  } catch (error) {
+    yield put(betActions.fetchGetActiveBets.failure({error}));
+    yield put(notificationActions.error({
+      notification: {
+        title: 'failed to get active bets',
+        message: error.message,
+        position: 'br'
+      }
+    }));
+  }
+}
+
 
 function* watchSaveNewBet() {
   yield takeEvery(betActions.SAVE_NEW_BET, saveNewBet);
 }
 
+function* watchGetActiveBets() {
+  yield takeEvery(betActions.GET_ACTIVE_BETS, getActiveBets);
+}
+
+function* watchPostSaveNewBetSuccess() {
+  //TODO: remove this once sockets are implemented
+
+
+  yield takeEvery(betActions.POST_SAVE_NEW_BET.SUCCESS, getActiveBets);
+}
+
+function* watchSetupWeb3Success() {
+  yield takeEvery(web3Actions.SETUP_WEB3.SUCCESS, loadInitialData);
+}
 
 export default function* betSaga() {
   yield all([
+    watchSetupWeb3Success(),
     watchSaveNewBet(),
+    watchGetActiveBets(),
+    watchPostSaveNewBetSuccess(),
   ]);
 }

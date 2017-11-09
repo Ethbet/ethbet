@@ -13,3 +13,14 @@ export const postSaveNewBet = {
   success: (data) => action(POST_SAVE_NEW_BET.SUCCESS, data),
   failure: (error) => action(POST_SAVE_NEW_BET.FAILURE, error),
 };
+
+
+export const GET_ACTIVE_BETS = 'GET_ACTIVE_BETS';
+export const getActiveBets = data => action(GET_ACTIVE_BETS, data);
+
+export const FETCH_GET_ACTIVE_BETS = createRequestTypes('FETCH_GET_ACTIVE_BETS');
+export const fetchGetActiveBets = {
+  request: () => action(FETCH_GET_ACTIVE_BETS.REQUEST),
+  success: (data) => action(FETCH_GET_ACTIVE_BETS.SUCCESS, data),
+  failure: (error) => action(FETCH_GET_ACTIVE_BETS.FAILURE, error),
+};

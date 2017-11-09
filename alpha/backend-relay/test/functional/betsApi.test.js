@@ -18,7 +18,7 @@ describe('betsApi', function betsApiTest() {
 
     it('ok', function it(done) {
       request(app)
-        .get('/active-bets')
+        .get('/bets/active')
         .expect(200)
         .end(function (error, result) {
           if (error) {

@@ -4,6 +4,7 @@ var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var app = express();
 var morgan = require('morgan');
+var cors = require('cors');
 
 
 //App middleware -------------------------------------------/
@@ -19,6 +20,7 @@ app.use(morgan('combined', {
   }
 }));
 
+app.use(cors());
 
 //Route config -------------------------------------------/
 require('./routes/apiRoutes')(app);
