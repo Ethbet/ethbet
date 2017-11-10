@@ -1,6 +1,7 @@
-let _ = require('lodash');
+const _ = require('lodash');
 
 let betService = require('../lib/betService');
+
 
 module.exports = {
   getActiveBets: async function (req, res) {
@@ -16,9 +17,9 @@ module.exports = {
   createBet: async function (req, res) {
     try {
       let betData = {
-        amount : req.body.amount,
-        edge : req.body.edge,
-        user : req.body.user,
+        amount: req.objectData.amount,
+        edge: req.objectData.edge,
+        user: req.objectData.user,
       };
 
       let bet = await betService.createBet(betData);

@@ -1,5 +1,7 @@
 import Web3 from 'web3'
 
+const ethUtil = require('ethereumjs-util');
+
 let getWeb3 = () => new Promise(function (resolve, reject) {
   // Wait for loading completion to avoid race conditions with web3 injection timing.
   window.addEventListener('load', function () {
@@ -30,14 +32,14 @@ let getWeb3 = () => new Promise(function (resolve, reject) {
       console.log('Using account:', web3.eth.defaultAccount);
 
 
-      // poll for metamask account change => refresh page
-      setInterval(function() {
-        web3.eth.getAccounts((err, accounts) => {
-          if (accounts[0] !== currentAccount) {
-            window.location.reload();
-          }
-        });
-      }, 500);
+      // poll for metamask account change => refresh page | DISABLED FOR NOW DUE TO PERFORMANCE ISSUES
+      /*  setInterval(function () {
+          web3.eth.getAccounts((err, accounts) => {
+            if (accounts[0] !== currentAccount) {
+              window.location.reload();
+            }
+          });
+        }, 500);*/
 
 
       let networkName;
@@ -76,8 +78,27 @@ let getWeb3 = () => new Promise(function (resolve, reject) {
   });
 });
 
+function sign(web3, object) {
+  return new Promise((resolve, reject) => {
+    let data = ethUtil.bufferToHex(JSON.stringify(object));
+
+    web3.currentProvider.sendAsync({
+      method: 'personal_sign',
+      params: [web3.eth.defaultAccount, data],
+    }, function (err, signatureData) {
+      //  web3.eth.sign(web3.eth.defaultAccount, data, function (err, signature) {
+      if (err || signatureData.error) {
+        return reject(err || signatureData.error);
+      }
+
+      resolve({data: data, sig: signatureData.result, address: web3.eth.defaultAccount});
+    });
+  });
+}
+
 let web3Service = {
-  getWeb3: getWeb3
+  getWeb3: getWeb3,
+  sign: sign
 };
 
 

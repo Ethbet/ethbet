@@ -1,5 +1,22 @@
 import axios from 'axios';
 
-export const client =  axios.create({});
+let axiosClient = axios.create({});
 
-export const apiRoot =  process.env.BACKEND_URL;
+
+function get(...args) {
+  return axiosClient.get(...args);
+}
+
+function post(...args) {
+  return axiosClient.post(...args);
+}
+
+
+
+
+export const client = {
+  get: get,
+  post: post
+};
+
+export const apiRoot = process.env.BACKEND_URL;

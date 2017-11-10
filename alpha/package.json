@@ -50,6 +50,7 @@
   "dependencies": {
     "axios": "^0.17.0",
     "dotenv": "^2.0.0",
+    "ethereumjs-util": "^5.1.2",
     "immutable": "^3.8.2",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",

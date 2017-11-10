@@ -2,6 +2,8 @@ const request = require('supertest');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 const app = require('../../server').app;
+const signService = require('../support/signService');
+const testAddress = require('../support/testAddress.json');
 
 const betService = require('../../lib/betService');
 
@@ -41,8 +43,9 @@ describe('betsApi', function betsApiTest() {
     let betData = {
       amount: 100,
       edge: 1,
-      user: "0x007"
+      user: testAddress.public
     };
+    let message;
 
     before(function beforeTest() {
       createBetStub = sinon.stub(betService, "createBet");
@@ -51,12 +54,14 @@ describe('betsApi', function betsApiTest() {
 
         return Promise.resolve(bet);
       });
+
+      message = signService.buildMessage(betData,testAddress);
     });
 
     it('ok', function it(done) {
       request(app)
         .post('/bets')
-        .send(betData)
+        .send(message)
         .expect(200)
         .end(function (error, result) {
           if (error) {
