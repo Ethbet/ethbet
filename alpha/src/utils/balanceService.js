@@ -1,12 +1,8 @@
-import EthbetContract from '../../build/contracts/Ethbet.json'
-import EthbetTokenContract from '../../build/contracts/EthbetToken.json'
+import contractService from '../utils/contractService';
 
-const contract = require('truffle-contract');
 
 async function loadBalance(web3) {
-  const ethbetContract = contract(EthbetContract);
-  ethbetContract.setProvider(web3.currentProvider);
-  const ethbetInstance = await ethbetContract.deployed();
+  const ethbetInstance = await contractService.getDeployedInstance(web3, "Ethbet");
 
   const balance = await ethbetInstance.balanceOf(web3.eth.defaultAccount);
 
@@ -14,13 +10,8 @@ async function loadBalance(web3) {
 }
 
 async function deposit(web3, amount) {
-  const ethbetContract = contract(EthbetContract);
-  ethbetContract.setProvider(web3.currentProvider);
-  const ethbetInstance = await ethbetContract.deployed();
-
-  const tokenContract = contract(EthbetTokenContract);
-  tokenContract.setProvider(web3.currentProvider);
-  const tokenInstance = await tokenContract.deployed();
+  const ethbetInstance = await contractService.getDeployedInstance(web3, "Ethbet");
+  const tokenInstance = await contractService.getDeployedInstance(web3, "EthbetToken");
 
   await tokenInstance.increaseApproval(ethbetInstance.address, amount);
 
@@ -29,9 +20,7 @@ async function deposit(web3, amount) {
 }
 
 async function withdraw(web3, amount) {
-  const ethbetContract = contract(EthbetContract);
-  ethbetContract.setProvider(web3.currentProvider);
-  const ethbetInstance = await ethbetContract.deployed();
+  const ethbetInstance = await contractService.getDeployedInstance(web3, "Ethbet");
 
   let results = await ethbetInstance.withdraw(amount);
   return results;

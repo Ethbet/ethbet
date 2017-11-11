@@ -43,7 +43,6 @@ describe('betsApi', function betsApiTest() {
     let betData = {
       amount: 100,
       edge: 1,
-      user: testAddress.public,
       seed: "123456123456abcd"
     };
     let message;
@@ -51,7 +50,12 @@ describe('betsApi', function betsApiTest() {
     before(function beforeTest() {
       createBetStub = sinon.stub(betService, "createBet");
       createBetStub.callsFake(function (myBetData) {
-        expect(myBetData).to.deep.eq(betData);
+        expect(myBetData).to.deep.eq({
+          amount: betData.amount,
+          edge: betData.edge,
+          seed: betData.seed,
+          user: testAddress.public
+        });
 
         return Promise.resolve(bet);
       });

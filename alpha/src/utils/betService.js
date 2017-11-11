@@ -8,7 +8,6 @@ async function makeBet(web3, newBet) {
   let newBetData = {
     amount: parseFloat(newBet.amount) * 100,   // 2 decimals for EBET
     edge: parseFloat(newBet.edge),
-    user: web3.eth.defaultAccount,
     seed: randomService.generateSeed()
   };
 

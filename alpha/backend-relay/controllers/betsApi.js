@@ -19,8 +19,8 @@ module.exports = {
       let betData = {
         amount: req.objectData.amount,
         edge: req.objectData.edge,
-        user: req.objectData.user,
         seed: req.objectData.seed,
+        user: req.body.address,
       };
 
       let bet = await betService.createBet(betData);

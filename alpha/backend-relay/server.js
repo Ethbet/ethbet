@@ -9,6 +9,7 @@ const cors = require('cors');
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
+const web3Service = require('./lib/web3Service');
 
 //App middleware -------------------------------------------/
 app.use(methodOverride('_method'));
@@ -43,6 +44,9 @@ server.listen(PORT, function (err) {
     console.info("==> 🌎  Listening on port %s. Visit http://localhost:%s/ in your browser.", PORT, PORT);
   }
 });
+
+// Starting web3 provider
+web3Service.init();
 
 
 module.exports = {
