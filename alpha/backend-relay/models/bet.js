@@ -19,6 +19,12 @@ module.exports = function (sequelize, DataTypes) {
         notEmpty: true,
       }
     },
+    seed: {
+      type: DataTypes.STRING,
+      validate: {
+        notEmpty: true,
+      }
+    },
     cancelledAt: DataTypes.DATE,
     executedAt: DataTypes.DATE,
   }, {

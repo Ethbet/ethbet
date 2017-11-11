@@ -19,13 +19,14 @@ describe('createBet', function () {
   });
 
   it('ok', async function it() {
-    let bet = await betService.createBet({amount: 500, edge: 1.5, user: "0x001"});
+    let bet = await betService.createBet({amount: 500, edge: 1.5, user: "0x001",seed:"123456abcd123456"});
 
     let myBet = await db.Bet.findById(bet.id);
 
     expect(myBet.amount).to.equal(500);
     expect(myBet.edge).to.equal(1.5);
     expect(myBet.user).to.equal("0x001");
+    expect(myBet.seed).to.equal("123456abcd123456");
 
     expect(emitStub.callCount).to.equal(1);
   });

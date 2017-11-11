@@ -18,6 +18,9 @@ module.exports = {
       user: {
         type: Sequelize.STRING
       },
+      seed: {
+        type: Sequelize.STRING
+      },
       cancelledAt: {
         allowNull: true,
         type: Sequelize.DATE

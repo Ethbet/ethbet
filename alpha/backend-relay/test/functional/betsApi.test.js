@@ -43,7 +43,8 @@ describe('betsApi', function betsApiTest() {
     let betData = {
       amount: 100,
       edge: 1,
-      user: testAddress.public
+      user: testAddress.public,
+      seed: "123456123456abcd"
     };
     let message;
 
