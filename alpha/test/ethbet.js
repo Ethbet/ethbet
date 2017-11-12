@@ -94,4 +94,33 @@ contract('Ethbet', (accounts) => {
 
   });
 
+  describe('lockBalance', function () {
+
+    it('fails if balance insufficient', async function it() {
+      try {
+        await ethbetInstance.lockBalance(accounts[1], 500, {from: accounts[0]});
+
+        // we shouldn't get to this point
+        assert(false, "Transaction should have failed");
+      }
+      catch (err) {
+        if (err.toString().indexOf("invalid opcode") < 0) {
+          assert(false, err.toString());
+        }
+      }
+    });
+
+    it('ok if balance sufficient', async function it() {
+      await ethbetInstance.lockBalance(accounts[1], 50, {from: accounts[0]});
+
+      let user1BalanceInEthbetContact = await ethbetInstance.balanceOf(accounts[1]);
+      assert.equal(user1BalanceInEthbetContact.toNumber(), 250);
+
+      let user1LockedBalanceInEthbetContact = await ethbetInstance.lockedBalanceOf(accounts[1]);
+      assert.equal(user1LockedBalanceInEthbetContact.toNumber(), 50);
+    });
+
+
+  });
+
 });

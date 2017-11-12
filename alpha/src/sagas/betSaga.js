@@ -1,5 +1,6 @@
 import {call, put, all, takeEvery, select} from 'redux-saga/effects';
 import {delay} from 'redux-saga'
+const _ = require('lodash');
 
 import * as betActions from '../actions/betActions';
 import * as web3Actions from '../actions/web3Actions';
@@ -36,7 +37,8 @@ function* saveNewBet(data) {
     yield put(notificationActions.error({
       notification: {
         title: 'failed to save bet',
-        message: error.message,
+        // handle axios error format if available
+        message: _.get(error, 'response.data.message') || error.message,
         position: 'br'
       }
     }));

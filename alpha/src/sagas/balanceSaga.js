@@ -2,6 +2,7 @@ import {call, put, all, takeEvery, select} from 'redux-saga/effects';
 import { delay } from 'redux-saga'
 
 import * as balanceActions from '../actions/balanceActions';
+import * as betActions from '../actions/betActions';
 import * as web3Actions from '../actions/web3Actions';
 import * as notificationActions from '../actions/notificationActions';
 
@@ -9,15 +10,15 @@ import balanceService from '../utils/balanceService';
 
 
 function* loadInitialData(data) {
-  yield put(balanceActions.loadBalance());
+  yield put(balanceActions.loadBalances());
 }
 
-function* loadBalance(data) {
+function* loadBalances(data) {
   yield put(balanceActions.fetchLoadBalance.request());
   try {
     const web3 = yield select(state => state.web3Store.get("web3"));
-    const balance = yield call(balanceService.loadBalance, web3);
-    yield put(balanceActions.fetchLoadBalance.success({balance}));
+    const balances = yield call(balanceService.loadBalances, web3);
+    yield put(balanceActions.fetchLoadBalance.success(balances));
   } catch (error) {
     yield put(balanceActions.fetchLoadBalance.failure({error}));
   }
@@ -99,7 +100,7 @@ function* watchSetupWeb3Success() {
 }
 
 function* watchLoadUsersData() {
-  yield takeEvery(balanceActions.LOAD_BALANCE, loadBalance);
+  yield takeEvery(balanceActions.LOAD_BALANCES, loadBalances);
 }
 
 function* watchSaveNewDeposit() {
@@ -107,7 +108,7 @@ function* watchSaveNewDeposit() {
 }
 
 function* watchPostSaveNewDepositSuccess() {
-  yield takeEvery(balanceActions.POST_SAVE_NEW_DEPOSIT.SUCCESS, loadBalance);
+  yield takeEvery(balanceActions.POST_SAVE_NEW_DEPOSIT.SUCCESS, loadBalances);
 }
 
 function* watchSaveNewWithdrawal() {
@@ -115,7 +116,11 @@ function* watchSaveNewWithdrawal() {
 }
 
 function* watchPostSaveNewWithdrawalSuccess() {
-  yield takeEvery(balanceActions.POST_SAVE_NEW_WITHDRAWAL.SUCCESS, loadBalance);
+  yield takeEvery(balanceActions.POST_SAVE_NEW_WITHDRAWAL.SUCCESS, loadBalances);
+}
+
+function* watchPostSaveNewBetSuccess() {
+  yield takeEvery(betActions.POST_SAVE_NEW_BET.SUCCESS, loadBalances);
 }
 
 export default function* balanceSaga() {
@@ -126,5 +131,6 @@ export default function* balanceSaga() {
     watchPostSaveNewDepositSuccess(),  
     watchSaveNewWithdrawal(),
     watchPostSaveNewWithdrawalSuccess(),
+    watchPostSaveNewBetSuccess(),
   ]);
 }

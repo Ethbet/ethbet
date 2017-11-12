@@ -1,7 +1,7 @@
 import {action, createRequestTypes} from '../utils/actionUtils';
 
-export const LOAD_BALANCE = 'LOAD_BALANCE';
-export const loadBalance = data => action(LOAD_BALANCE, data);
+export const LOAD_BALANCES = 'LOAD_BALANCES';
+export const loadBalances = data => action(LOAD_BALANCES, data);
 
 export const FETCH_LOAD_BALANCE = createRequestTypes('FETCH_LOAD_BALANCE');
 export const fetchLoadBalance = {

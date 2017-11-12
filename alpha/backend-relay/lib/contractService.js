@@ -1,14 +1,10 @@
 const truffleContract = require('truffle-contract');
 
+let Ethbet = require('../../build/contracts/Ethbet.json');
 
-// Load Contracts Data
-const requireContext = require.context("../../build/contracts/", true, /\.(json)$/);
-const contracts = {};
-requireContext.keys().forEach((filename) => {
-  let contractData = requireContext(filename);
-  contracts[contractData.contract_name] = contractData;
-});
-
+const contracts = {
+  Ethbet: Ethbet
+};
 
 const deployedInstances = {};
 
@@ -34,9 +30,7 @@ async function getInstanceAt(web3, contractName, address) {
   return instance;
 }
 
-let contractService = {
+module.exports = {
   getDeployedInstance: getDeployedInstance,
   getInstanceAt: getInstanceAt,
 };
-
-export default contractService;

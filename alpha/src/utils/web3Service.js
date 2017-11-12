@@ -27,13 +27,13 @@ let getWeb3 = () => new Promise(function (resolve, reject) {
         return reject(err);
       }
 
-      let currentAccount = accounts[0];
       web3.eth.defaultAccount = accounts[0];
       console.log('Using account:', web3.eth.defaultAccount);
 
 
       // poll for metamask account change => refresh page | DISABLED FOR NOW DUE TO PERFORMANCE ISSUES
-      /*  setInterval(function () {
+      /*let currentAccount = accounts[0];
+        setInterval(function () {
           web3.eth.getAccounts((err, accounts) => {
             if (accounts[0] !== currentAccount) {
               window.location.reload();

@@ -16,6 +16,8 @@ contract Ethbet {
 
   event Withdraw(address indexed user, uint amount, uint balance);
 
+  event LockedBalance(address indexed user, uint amount);
+
   event ExecutedBet(address indexed winner, address indexed loser, uint256 value);
 
 
@@ -38,6 +40,8 @@ contract Ethbet {
   EthbetToken public token;
 
   mapping (address => uint256) balances;
+
+  mapping (address => uint256) lockedBalances;
 
   /*
   * Modifiers
@@ -84,7 +88,6 @@ contract Ethbet {
     Deposit(msg.sender, _amount, balances[msg.sender]);
   }
 
-  //TODO: disable a withdraw while a bet is still in place
   /**
    * @dev withdraw EBET tokens from the contract
    * @param _amount Amount to withdraw
@@ -100,6 +103,41 @@ contract Ethbet {
 
     Withdraw(msg.sender, _amount, balances[msg.sender]);
   }
+
+
+  /**
+   * @dev Lock user balance to be used for bet
+   * @param _userAddress User Address
+   * @param _amount Amount to be locked
+   */
+  function lockBalance(address _userAddress, uint _amount) public isRelay {
+    require(balances[_userAddress] >= _amount);
+
+    // subtract the tokens from the user's balance
+    balances[_userAddress] = balances[_userAddress].sub(_amount);
+
+    // add the tokens to the user's locked balance
+    lockedBalances[_userAddress] = lockedBalances[_userAddress].add(_amount);
+
+    LockedBalance(_userAddress, _amount);
+  }
+
+  /**
+  * @dev Get user balance
+  * @param _userAddress User Address
+  */
+  function balanceOf(address _userAddress) constant public returns (uint) {
+    return balances[_userAddress];
+  }
+
+  /**
+  * @dev Get user locked balance
+  * @param _userAddress User Address
+  */
+  function lockedBalanceOf(address _userAddress) constant public returns (uint) {
+    return lockedBalances[_userAddress];
+  }
+
 
 
 
@@ -136,8 +174,5 @@ contract Ethbet {
     feeAddress = _feeAddress;
   }
 
-  function balanceOf(address sender) constant public returns (uint256) {
-    return balances[sender];
-  }
 
 }

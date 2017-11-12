@@ -17,7 +17,9 @@ export default function balanceReducer(state = new ImmutableMap(initialData), ac
   const fetchLoadBalanceSuccess = (state) => {
     return state
       .set('loadingBalance', false)
-      .set('balance', action.balance);
+      .set('balance', action.balance)
+      .set('lockedBalance', action.lockedBalance)
+      .set('walletBalance', action.walletBalance);
   };
 
   const fetchLoadBalanceFailure = (state) => {
@@ -74,7 +76,7 @@ export default function balanceReducer(state = new ImmutableMap(initialData), ac
     'SET_NEW_DEPOSIT_VALUE': () => setNewDepositValue(state),
     'POST_SAVE_NEW_DEPOSIT_REQUEST': () => postSaveNewDepositRequest(state),
     'POST_SAVE_NEW_DEPOSIT_SUCCESS': () => postSaveNewDepositSuccess(state),
-    'POST_SAVE_NEW_DEPOSIT_FAILURE': () => postSaveNewDepositFailure(state),    
+    'POST_SAVE_NEW_DEPOSIT_FAILURE': () => postSaveNewDepositFailure(state),
     'SET_NEW_WITHDRAWAL_VALUE': () => setNewWithdrawalValue(state),
     'POST_SAVE_NEW_WITHDRAWAL_REQUEST': () => postSaveNewWithdrawalRequest(state),
     'POST_SAVE_NEW_WITHDRAWAL_SUCCESS': () => postSaveNewWithdrawalSuccess(state),

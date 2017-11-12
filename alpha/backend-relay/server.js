@@ -20,7 +20,8 @@ app.use(bodyParser.json());
 
 app.use(morgan('combined', {
   skip: (req, res) => {
-    return process.env.NODE_ENV === "test";
+    // log only 4xx and 5xx responses to console
+    return res.statusCode < 400;
   }
 }));
 

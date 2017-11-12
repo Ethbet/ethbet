@@ -55,6 +55,11 @@ class Balance extends Component {
         <div className="well">
           <legend>Balance: {balanceStore.get("balance") / 100} EBET</legend>
 
+          <ul>
+            <li>Locked Balance: {balanceStore.get("lockedBalance") / 100} EBET</li>
+            <li>Wallet Balance: {balanceStore.get("walletBalance") / 100} EBET</li>
+          </ul>
+
           <div className="row">
             <div className="col-lg-7">
               <input name="deposit" type="text"
