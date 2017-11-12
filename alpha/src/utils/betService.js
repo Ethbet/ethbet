@@ -6,7 +6,7 @@ import randomService from './randomService';
 
 async function makeBet(web3, newBet) {
   let newBetData = {
-    amount: parseFloat(newBet.amount) * 100,   // 2 decimals for EBET
+    amount: Math.round(parseFloat(newBet.amount) * 100),   // 2 decimals for EBET
     edge: parseFloat(newBet.edge),
     seed: randomService.generateSeed()
   };

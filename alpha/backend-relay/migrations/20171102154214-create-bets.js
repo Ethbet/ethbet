@@ -10,7 +10,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       amount: {
-        type: Sequelize.FLOAT
+        type: Sequelize.INTEGER
       },
       edge: {
         type: Sequelize.FLOAT
