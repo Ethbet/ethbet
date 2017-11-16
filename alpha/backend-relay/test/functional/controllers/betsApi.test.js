@@ -60,7 +60,7 @@ describe('betsApi', function betsApiTest() {
         return Promise.resolve(bet);
       });
 
-      message = signService.buildMessage(betData,testAddress);
+      message = signService.buildMessage(betData, testAddress);
     });
 
     it('ok', function it(done) {
@@ -80,6 +80,44 @@ describe('betsApi', function betsApiTest() {
 
     after(function afterTest() {
       createBetStub.restore();
+    });
+  });
+
+  describe('cancelBet', function cancelBetTest() {
+    let cancelBetStub;
+    let data = {
+      id: 36,
+    };
+    let message;
+
+    before(function beforeTest() {
+      cancelBetStub = sinon.stub(betService, "cancelBet");
+      cancelBetStub.callsFake(function (betId, myAddress) {
+        expect(betId).to.eq(data.id);
+        expect(myAddress).to.eq(testAddress.public);
+
+        return Promise.resolve();
+      });
+
+      message = signService.buildMessage(data, testAddress);
+    });
+
+    it('ok', function it(done) {
+      request(app)
+        .post(`/bets/cancel`)
+        .send(message)
+        .expect(200)
+        .end(function (error, result) {
+          if (error) {
+            return done(error);
+          }
+
+          done();
+        });
+    });
+
+    after(function afterTest() {
+      cancelBetStub.restore();
     });
   });
 

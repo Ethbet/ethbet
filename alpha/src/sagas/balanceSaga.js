@@ -123,6 +123,10 @@ function* watchPostSaveNewBetSuccess() {
   yield takeEvery(betActions.POST_SAVE_NEW_BET.SUCCESS, loadBalances);
 }
 
+function* watchPostCancelBetSuccess() {
+  yield takeEvery(betActions.POST_CANCEL_BET.SUCCESS, loadBalances);
+}
+
 export default function* balanceSaga() {
   yield all([
     watchSetupWeb3Success(),
@@ -132,5 +136,6 @@ export default function* balanceSaga() {
     watchSaveNewWithdrawal(),
     watchPostSaveNewWithdrawalSuccess(),
     watchPostSaveNewBetSuccess(),
+    watchPostCancelBetSuccess(),
   ]);
 }

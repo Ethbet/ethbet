@@ -8,23 +8,26 @@ let Loader = require('react-loader');
 import * as notificationActions from '../actions/notificationActions';
 import * as betActions from '../actions/betActions';
 
+import ActiveBet from "./ActiveBet";
+
 
 class ActiveBets extends Component {
+
 
   render() {
     let {betStore} = this.props;
 
     return (
-      <div className="col-lg-4">
+      <div className="col-lg-8">
         <div className="well">
           <legend>Active Bets</legend>
-          <ul>
+
+          <div className="row">
             {betStore.get("activeBets").map((bet) => (
-              <li key={bet.id}>
-                <span>Amount: {bet.amount / 100} / Edge : {bet.edge} %  </span>
-              </li>
+              <ActiveBet bet={bet}  key={bet.id}/>
             ))}
-          </ul>
+          </div>
+
           <Loader color="white" loaded={!betStore.get("gettingActiveBets")}/>
 
         </div>

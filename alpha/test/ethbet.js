@@ -110,8 +110,66 @@ contract('Ethbet', (accounts) => {
       }
     });
 
+
+    it('fails if caller not relay', async function it() {
+      try {
+        await ethbetInstance.lockBalance(accounts[1], 100, {from: accounts[2]});
+
+        // we shouldn't get to this point
+        assert(false, "Transaction should have failed");
+      }
+      catch (err) {
+        if (err.toString().indexOf("invalid opcode") < 0) {
+          assert(false, err.toString());
+        }
+      }
+    });
+
     it('ok if balance sufficient', async function it() {
-      await ethbetInstance.lockBalance(accounts[1], 50, {from: accounts[0]});
+      await ethbetInstance.lockBalance(accounts[1], 100, {from: accounts[0]});
+
+      let user1BalanceInEthbetContact = await ethbetInstance.balanceOf(accounts[1]);
+      assert.equal(user1BalanceInEthbetContact.toNumber(), 200);
+
+      let user1LockedBalanceInEthbetContact = await ethbetInstance.lockedBalanceOf(accounts[1]);
+      assert.equal(user1LockedBalanceInEthbetContact.toNumber(), 100);
+    });
+
+
+  });
+
+  describe('unlockBalance', function () {
+
+    it('fails if locked balance insufficient', async function it() {
+      try {
+        await ethbetInstance.unlockBalance(accounts[1], 500, {from: accounts[0]});
+
+        // we shouldn't get to this point
+        assert(false, "Transaction should have failed");
+      }
+      catch (err) {
+        if (err.toString().indexOf("invalid opcode") < 0) {
+          assert(false, err.toString());
+        }
+      }
+    });
+
+    it('fails if caller not relay', async function it() {
+      try {
+        await ethbetInstance.unlockBalance(accounts[1], 50, {from: accounts[2]});
+
+        // we shouldn't get to this point
+        assert(false, "Transaction should have failed");
+      }
+      catch (err) {
+        if (err.toString().indexOf("invalid opcode") < 0) {
+          assert(false, err.toString());
+        }
+      }
+    });
+
+    it('ok if balance sufficient', async function it() {
+      await ethbetInstance.unlockBalance(accounts[1], 50, {from: accounts[0]});
 
       let user1BalanceInEthbetContact = await ethbetInstance.balanceOf(accounts[1]);
       assert.equal(user1BalanceInEthbetContact.toNumber(), 250);
@@ -122,5 +180,6 @@ contract('Ethbet', (accounts) => {
 
 
   });
+
 
 });

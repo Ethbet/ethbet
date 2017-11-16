@@ -18,6 +18,8 @@ contract Ethbet {
 
   event LockedBalance(address indexed user, uint amount);
 
+  event UnlockedBalance(address indexed user, uint amount);
+
   event ExecutedBet(address indexed winner, address indexed loser, uint256 value);
 
 
@@ -120,6 +122,23 @@ contract Ethbet {
     lockedBalances[_userAddress] = lockedBalances[_userAddress].add(_amount);
 
     LockedBalance(_userAddress, _amount);
+  }
+
+  /**
+   * @dev Unlock user balance
+   * @param _userAddress User Address
+   * @param _amount Amount to be locked
+   */
+  function unlockBalance(address _userAddress, uint _amount) public isRelay {
+    require(lockedBalances[_userAddress] >= _amount);
+
+    // subtract the tokens from the user's locked balance
+    lockedBalances[_userAddress] = lockedBalances[_userAddress].sub(_amount);
+
+    // add the tokens to the user's  balance
+    balances[_userAddress] = balances[_userAddress].add(_amount);
+
+    UnlockedBalance(_userAddress, _amount);
   }
 
   /**

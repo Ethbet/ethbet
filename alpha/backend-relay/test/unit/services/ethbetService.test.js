@@ -24,6 +24,10 @@ describe('ethbetService', function ethbetServiceTest() {
       },
       lockBalance: () => {
       },
+      lockedBalanceOf: () => {
+      },
+      unlockBalance: () => {
+      },
     };
 
     getDeployedInstanceStub = sinon.stub(contractService, 'getDeployedInstance');
@@ -60,6 +64,31 @@ describe('ethbetService', function ethbetServiceTest() {
     });
   });
 
+  describe('lockedBalanceOf', function () {
+    let lockedBalance = 50;
+    let userAddress = testAddress.public;
+    let lockedBalanceOfStub;
+
+    before(function beforeTest() {
+      lockedBalanceOfStub = sinon.stub(ethbetInstance, 'lockedBalanceOf');
+      lockedBalanceOfStub.callsFake(function (myUserAddress) {
+        expect(myUserAddress).to.eq(userAddress);
+
+        return Promise.resolve({toNumber: () => lockedBalance});
+      });
+    });
+
+    it('ok', async function it() {
+      let myLockedBalance = await ethbetService.lockedBalanceOf(userAddress);
+
+      expect(myLockedBalance).to.equal(lockedBalance);
+    });
+
+    after(function afterTest() {
+      lockedBalanceOfStub.restore();
+    });
+  });
+
   describe('lockBalance', function () {
     let amount = 100;
     let results = {stub: 'results'};
@@ -92,4 +121,37 @@ describe('ethbetService', function ethbetServiceTest() {
     getDeployedInstanceStub.restore();
   });
 
+
+  describe('unlockBalance', function () {
+    let amount = 100;
+    let results = {stub: 'results'};
+    let userAddress = testAddress.public;
+    let unlockBalanceStub;
+
+    before(function beforeTest() {
+      unlockBalanceStub = sinon.stub(ethbetInstance, 'unlockBalance');
+      unlockBalanceStub.callsFake(function (myUserAddress, myAmount) {
+        expect(myUserAddress).to.eq(userAddress);
+        expect(myAmount).to.eq(amount);
+
+        return Promise.resolve(results);
+      });
+    });
+
+    it('ok', async function it() {
+      let myResults = await ethbetService.unlockBalance(userAddress, amount);
+
+      expect(myResults).to.equal(results);
+    });
+
+    after(function afterTest() {
+      unlockBalanceStub.restore();
+    });
+  });
+
+  after(function afterTest() {
+    getWeb3Stub.restore();
+    getDeployedInstanceStub.restore();
+  });
+  
 });

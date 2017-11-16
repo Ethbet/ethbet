@@ -16,6 +16,16 @@ async function makeBet(web3, newBet) {
   return await client.post(apiRoot + '/bets', message);
 }
 
+async function cancelBet(web3, betId) {
+  let cancelBetData = {
+    id: betId
+  };
+
+  let message = await web3Service.sign(web3, cancelBetData);
+
+  return await client.post(`${apiRoot}/bets/cancel`, message);
+}
+
 async function getActiveBets() {
   let response = await client.get(apiRoot + '/bets/active');
 
@@ -24,6 +34,7 @@ async function getActiveBets() {
 
 let betService = {
   makeBet: makeBet,
+  cancelBet: cancelBet,
   getActiveBets: getActiveBets
 };
 

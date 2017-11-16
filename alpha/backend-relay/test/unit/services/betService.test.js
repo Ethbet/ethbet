@@ -78,7 +78,7 @@ describe('betService', function betServiceTest() {
         });
       });
 
-      it('ok', async function it() {
+      it('fails', async function it() {
         try {
           await betService.createBet(betData);
 
@@ -119,4 +119,229 @@ describe('betService', function betServiceTest() {
       expect(activeBets[0].id).to.equal(bet_1.id);
     });
   });
+
+
+  describe('cancelBet', function () {
+    let emitStub, lockedBalanceOfStub, unlockBalanceStub;
+    let betData = {
+      amount: 500,
+      edge: 1.5,
+      user: testAddress.public,
+      seed: "123456abcd123456"
+    };
+    let bet;
+
+    context('insufficient locked balance', function context() {
+      before(async function beforeTest() {
+        emitStub = sinon.stub(socketService, "emit");
+        unlockBalanceStub = sinon.stub(ethbetService, "unlockBalance");
+
+        lockedBalanceOfStub = sinon.stub(ethbetService, "lockedBalanceOf");
+        lockedBalanceOfStub.callsFake(function (userAddress) {
+          expect(userAddress).to.eq(testAddress.public);
+
+          return Promise.resolve(betData.amount / 2);
+        });
+
+        bet = await db.Bet.create(betData);
+      });
+
+      it('fails', async function it() {
+        try {
+          await betService.cancelBet(bet.id, testAddress.public);
+
+          throw new Error("Bet Creation should have failed");
+        }
+        catch (err) {
+          expect(err.message).to.eq('Locked Balance is less than bet amount, please contact support')
+        }
+
+        expect(emitStub.callCount).to.equal(0);
+        expect(unlockBalanceStub.callCount).to.equal(0);
+
+        let updatedBet = await db.Bet.findById(bet.id);
+        expect(updatedBet.cancelledAt).to.eq(null);
+      });
+
+      after(function afterTest() {
+        emitStub.restore();
+        unlockBalanceStub.restore();
+        lockedBalanceOfStub.restore();
+      });
+    });
+
+    context('bet does not exist', function context() {
+      before(async function beforeTest() {
+        emitStub = sinon.stub(socketService, "emit");
+        unlockBalanceStub = sinon.stub(ethbetService, "unlockBalance");
+
+        bet = await db.Bet.create(betData);
+      });
+
+      it('fails', async function it() {
+        try {
+          await betService.cancelBet(bet.id + 100, testAddress.public);
+
+          throw new Error("Bet Creation should have failed");
+        }
+        catch (err) {
+          expect(err.message).to.eq('Bet not found')
+        }
+
+        expect(emitStub.callCount).to.equal(0);
+        expect(unlockBalanceStub.callCount).to.equal(0);
+
+        let updatedBet = await db.Bet.findById(bet.id);
+        expect(updatedBet.cancelledAt).to.eq(null);
+      });
+
+      after(function afterTest() {
+        emitStub.restore();
+        unlockBalanceStub.restore();
+      });
+    });
+
+    context('bet already canceled', function context() {
+      before(async function beforeTest() {
+        emitStub = sinon.stub(socketService, "emit");
+        unlockBalanceStub = sinon.stub(ethbetService, "unlockBalance");
+
+        bet = await db.Bet.create(Object.assign({}, betData, {cancelledAt: new Date()}));
+      });
+
+      it('fails', async function it() {
+        try {
+          await betService.cancelBet(bet.id, testAddress.public);
+
+          throw new Error("Bet Creation should have failed");
+        }
+        catch (err) {
+          expect(err.message).to.eq('Bet already cancelled')
+        }
+
+        expect(emitStub.callCount).to.equal(0);
+        expect(unlockBalanceStub.callCount).to.equal(0);
+
+        let updatedBet = await db.Bet.findById(bet.id);
+        expect(!!updatedBet.cancelledAt).to.eq(true);
+      });
+
+      after(function afterTest() {
+        emitStub.restore();
+        unlockBalanceStub.restore();
+      });
+    });
+
+    context('bet already called', function context() {
+      before(async function beforeTest() {
+        emitStub = sinon.stub(socketService, "emit");
+        unlockBalanceStub = sinon.stub(ethbetService, "unlockBalance");
+
+        bet = await db.Bet.create(Object.assign({}, betData, {executedAt: new Date()}));
+      });
+
+      it('fails', async function it() {
+        try {
+          await betService.cancelBet(bet.id, testAddress.public);
+
+          throw new Error("Bet Creation should have failed");
+        }
+        catch (err) {
+          expect(err.message).to.eq('Bet already called')
+        }
+
+        expect(emitStub.callCount).to.equal(0);
+        expect(unlockBalanceStub.callCount).to.equal(0);
+
+        let updatedBet = await db.Bet.findById(bet.id);
+        expect(updatedBet.cancelledAt).to.eq(null);
+      });
+
+      after(function afterTest() {
+        emitStub.restore();
+        unlockBalanceStub.restore();
+      });
+    });
+
+    context("can't cancel someone else's bet", function context() {
+      before(async function beforeTest() {
+        emitStub = sinon.stub(socketService, "emit");
+        unlockBalanceStub = sinon.stub(ethbetService, "unlockBalance");
+
+        bet = await db.Bet.create(Object.assign({}, betData, {user: "0x12f7c4c8977a5b9addb52b83e23c9d0f3b89be16"}));
+      });
+
+      it('fails', async function it() {
+        try {
+          await betService.cancelBet(bet.id, testAddress.public);
+
+          throw new Error("Bet Creation should have failed");
+        }
+        catch (err) {
+          expect(err.message).to.eq("You can't cancel someone else's bet")
+        }
+
+        expect(emitStub.callCount).to.equal(0);
+        expect(unlockBalanceStub.callCount).to.equal(0);
+
+        let updatedBet = await db.Bet.findById(bet.id);
+        expect(updatedBet.cancelledAt).to.eq(null);
+      });
+
+      after(function afterTest() {
+        emitStub.restore();
+        unlockBalanceStub.restore();
+      });
+    });
+
+    context('sufficient locked balance', function context() {
+      let results = {stub: 'results'};
+
+      before(async function beforeTest() {
+        emitStub = sinon.stub(socketService, "emit");
+        emitStub.callsFake(function (event, data) {
+          expect(event).to.eq("betCanceled");
+          expect(data.amount).to.eq(betData.amount);
+        });
+
+        lockedBalanceOfStub = sinon.stub(ethbetService, "lockedBalanceOf");
+        lockedBalanceOfStub.callsFake(function (userAddress) {
+          expect(userAddress).to.eq(testAddress.public);
+
+          return Promise.resolve(betData.amount * 2);
+        });
+
+        unlockBalanceStub = sinon.stub(ethbetService, "unlockBalance");
+        unlockBalanceStub.callsFake(function (userAddress, amount) {
+          expect(userAddress).to.eq(testAddress.public);
+          expect(amount).to.eq(betData.amount);
+
+          return Promise.resolve(results);
+        });
+
+        bet = await db.Bet.create(betData);
+      });
+
+      it('ok', async function it() {
+        await betService.cancelBet(bet.id, testAddress.public);
+
+        let updatedBet = await db.Bet.findById(bet.id);
+        expect(!!updatedBet.cancelledAt).to.equal(true);
+
+        expect(emitStub.callCount).to.equal(1);
+        expect(unlockBalanceStub.callCount).to.equal(1);
+      });
+
+      after(function afterTest() {
+        emitStub.restore();
+        lockedBalanceOfStub.restore();
+        unlockBalanceStub.restore();
+      });
+    });
+
+
+  });
+
+
 });
+

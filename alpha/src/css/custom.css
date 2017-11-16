@@ -5,3 +5,9 @@
 .bet-row {
     margin-bottom: 20px;
 }
+
+.active-bet .well{
+    border: 1px solid;
+    text-align: center;
+}
+

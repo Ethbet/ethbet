@@ -31,7 +31,39 @@ async function getActiveBets() {
   return bets;
 }
 
+async function cancelBet(betId, user) {
+  let bet = await db.Bet.findById(betId);
+
+  if (!bet) {
+    throw new Error("Bet not found");
+  }
+  if (bet.cancelledAt) {
+    throw new Error("Bet already cancelled");
+  }
+  if (bet.executedAt) {
+    throw new Error("Bet already called");
+  }
+  if (bet.user !== user) {
+    throw new Error("You can't cancel someone else's bet");
+  }
+
+  let lockedUserBalance = await ethbetService.lockedBalanceOf(user);
+
+  if (lockedUserBalance < bet.amount) {
+    throw new Error("Locked Balance is less than bet amount, please contact support");
+  }
+
+  await bet.update({cancelledAt: new Date()});
+
+  let results = await ethbetService.unlockBalance(bet.user, bet.amount);
+
+  socketService.emit("betCanceled", bet);
+
+  return bet;
+}
+
 module.exports = {
   createBet: createBet,
-  getActiveBets: getActiveBets
+  getActiveBets: getActiveBets,
+  cancelBet: cancelBet,
 };

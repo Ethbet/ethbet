@@ -8,7 +8,7 @@ import * as notificationActions from '../actions/notificationActions';
 import BetMaker from './BetMaker';
 import ActiveBets from "./ActiveBets";
 
-// import BetsHistory from "./BetsHistory";
+import BetsHistory from "./BetsHistory";
 import Balance from './Balance';
 
 import '../css/custom.css';
@@ -27,12 +27,12 @@ class Home extends Component {
           <div className="row front-row">
             <Balance/>
             <BetMaker/>
-            <ActiveBets/>
+            <BetsHistory/>
           </div>
 
-          {/*<div className="row">
-            <BetsHistory />
-          </div>*/}
+          <div className="row">
+            <ActiveBets/>
+          </div>
 
         </div>
       </div>

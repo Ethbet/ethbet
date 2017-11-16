@@ -27,3 +27,17 @@ export const fetchGetActiveBets = {
 
 export const BET_CREATED = 'BET_CREATED';
 export const betCreated = data => action(BET_CREATED, data);
+
+
+export const CANCEL_BET = 'CANCEL_BET';
+export const cancelBet = data => action(CANCEL_BET, data);
+
+export const POST_CANCEL_BET = createRequestTypes('POST_CANCEL_BET');
+export const postCancelBet = {
+  request: (data) => action(POST_CANCEL_BET.REQUEST,data),
+  success: (data) => action(POST_CANCEL_BET.SUCCESS, data),
+  failure: (error) => action(POST_CANCEL_BET.FAILURE, error),
+};
+
+export const BET_CANCELED = 'BET_CANCELED';
+export const betCanceled = data => action(BET_CANCELED, data);
