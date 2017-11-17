@@ -9,8 +9,14 @@ import {runSagas} from '../sagas/index';
 const sagaMiddleware = createSagaMiddleware();
 const routingMiddleware = routerMiddleware(history);
 
+let store;
+
 const configureStore = () => {
-  const store = createStore(
+  if (store) {
+    return store;
+  }
+
+  store = createStore(
     rootReducer,
     applyMiddleware(sagaMiddleware),
     applyMiddleware(routingMiddleware),

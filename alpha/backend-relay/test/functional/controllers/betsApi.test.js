@@ -121,4 +121,44 @@ describe('betsApi', function betsApiTest() {
     });
   });
 
+  describe('callBet', function callBetTest() {
+    let callBetStub;
+    let data = {
+      id: 36,
+      seed: "1111222233334444"
+    };
+    let message;
+
+    before(function beforeTest() {
+      callBetStub = sinon.stub(betService, "callBet");
+      callBetStub.callsFake(function (betId, seed, myAddress) {
+        expect(betId).to.eq(data.id);
+        expect(seed).to.eq(data.seed);
+        expect(myAddress).to.eq(testAddress.public);
+
+        return Promise.resolve();
+      });
+
+      message = signService.buildMessage(data, testAddress);
+    });
+
+    it('ok', function it(done) {
+      request(app)
+        .post(`/bets/call`)
+        .send(message)
+        .expect(200)
+        .end(function (error, result) {
+          if (error) {
+            return done(error);
+          }
+
+          done();
+        });
+    });
+
+    after(function afterTest() {
+      callBetStub.restore();
+    });
+  });
+
 });

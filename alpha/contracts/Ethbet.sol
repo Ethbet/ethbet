@@ -20,24 +20,13 @@ contract Ethbet {
 
   event UnlockedBalance(address indexed user, uint amount);
 
-  event ExecutedBet(address indexed winner, address indexed loser, uint256 value);
+  event ExecutedBet(address indexed winner, address indexed loser, uint amount);
 
 
   /*
    * Storage
    */
-  address public creator;
-
-  address public admin;
-
   address public relay;
-
-  address public feeAddress;
-
-  // the fee paid by the maker in EBET
-  uint256 public makerFee;
-  // the fee paid by the caller in EBET
-  uint256 public callerFee;
 
   EthbetToken public token;
 
@@ -49,11 +38,6 @@ contract Ethbet {
   * Modifiers
   */
 
-  modifier isAdmin() {
-    require(msg.sender == admin);
-    _;
-  }
-
   modifier isRelay() {
     require(msg.sender == relay);
     _;
@@ -64,12 +48,8 @@ contract Ethbet {
   */
 
   /// @dev Contract constructor
-  function Ethbet(address _admin, address _relay, address tokenAddress, uint256 _makerFee, uint256 _callerFee) public {
-    creator = msg.sender;
-    admin = _admin;
+  function Ethbet(address _relay, address tokenAddress) public {
     relay = _relay;
-    makerFee = _makerFee;
-    callerFee = _callerFee;
     token = EthbetToken(tokenAddress);
   }
 
@@ -157,41 +137,33 @@ contract Ethbet {
     return lockedBalances[_userAddress];
   }
 
+  /**
+   * @dev Execute bet
+   * @param _maker Maker Address
+   * @param _caller Caller Address
+   * @param _makerWon Did the maker win
+   * @param _amount amount
+   */
+  function executeBet(address _maker, address _caller, bool _makerWon, uint _amount) isRelay public {
+    //The caller must have enough balance
+    require(balances[_caller] >= _amount);
 
+    //The maker must have enough locked balance
+    require(lockedBalances[_maker] >= _amount);
 
+    // unlock maker balance
+    unlockBalance(_maker, _amount);
 
+    var winner = _makerWon ? _maker : _caller;
+    var loser = _makerWon ? _caller : _maker;
 
-  //Only the realy server will call this and choose a winer
-  function executeBet(address _winner, address _loser, uint _amount) isRelay public {
-
-    //The loser must have enough money to pay out the winner
-    require(balances[_loser] >= _amount);
-
-    //Add tokens to the winners account
-    balances[_winner] += _amount;
-
-    //Remove tokens from the losers account
-    balances[_loser] -= _amount;
+    // add the tokens to the winner's balance
+    balances[winner] = balances[winner].add(_amount);
+    // remove the tokens from the loser's  balance
+    balances[loser] = balances[loser].sub(_amount);
 
     //Log the event
-    ExecutedBet(_winner, _loser, _amount);
+    ExecutedBet(winner, loser, _amount);
   }
-
-  function setAdmin(address _admin) isAdmin public {
-    admin = _admin;
-  }
-
-  function setMakerFee(uint256 _makerFee) isAdmin public {
-    makerFee = _makerFee;
-  }
-
-  function setCallerFee(uint256 _callerFee) isAdmin public {
-    callerFee = _callerFee;
-  }
-
-  function setFeeAddress(address _feeAddress) isAdmin public {
-    feeAddress = _feeAddress;
-  }
-
 
 }

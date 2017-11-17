@@ -96,9 +96,22 @@ function sign(web3, object) {
   });
 }
 
+function getCurrentBlockNumber(web3) {
+  return new Promise((resolve, reject) => {
+    web3.eth.getBlockNumber(function (error, result) {
+      if (error) {
+        return reject(error);
+      }
+
+      resolve(result);
+    });
+  });
+}
+
 let web3Service = {
-  getWeb3: getWeb3,
-  sign: sign
+  getWeb3,
+  sign,
+  getCurrentBlockNumber
 };
 
 

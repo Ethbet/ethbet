@@ -153,7 +153,7 @@ describe('betService', function betServiceTest() {
           throw new Error("Bet Creation should have failed");
         }
         catch (err) {
-          expect(err.message).to.eq('Locked Balance is less than bet amount, please contact support')
+          expect(err.message).to.eq('Locked Balance is less than bet amount')
         }
 
         expect(emitStub.callCount).to.equal(0);

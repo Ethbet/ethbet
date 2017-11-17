@@ -4,7 +4,7 @@ let betService = require('../lib/betService');
 
 
 module.exports = {
-  getActiveBets: async function (req, res) {
+  getActiveBets: async function getActiveBets(req, res) {
     try {
       let bets = await betService.getActiveBets();
       res.status(200).json({bets});
@@ -14,7 +14,7 @@ module.exports = {
     }
   },
 
-  createBet: async function (req, res) {
+  createBet: async function createBet(req, res) {
     try {
       let betData = {
         amount: req.objectData.amount,
@@ -32,13 +32,27 @@ module.exports = {
     }
   },
 
-  cancelBet: async function (req, res) {
+  cancelBet: async function cancelBet(req, res) {
     try {
       let id = req.objectData.id;
 
       await betService.cancelBet(id, req.body.address);
 
       res.status(200).json({});
+    }
+    catch (err) {
+      res.status(500).json({message: err.message});
+    }
+  },
+
+  callBet: async function callBet(req, res) {
+    try {
+      let id = req.objectData.id;
+      let seed = req.objectData.seed;
+
+      let results = await betService.callBet(id, seed, req.body.address);
+
+      res.status(200).json(results);
     }
     catch (err) {
       res.status(500).json({message: err.message});

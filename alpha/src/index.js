@@ -11,7 +11,7 @@ import socketService from './utils/socketService';
 
 const store = configureStore();
 
-socketService.init(store);
+socketService.init();
 
 
 ReactDOM.render(

@@ -1,8 +1,9 @@
-import {call, put, all, takeEvery} from 'redux-saga/effects';
+import {call, put, all, takeEvery,select} from 'redux-saga/effects';
 
 import * as web3Actions from '../actions/web3Actions';
 
 import web3Service from '../utils/web3Service';
+import logWatchService from '../utils/logWatchService';
 
 
 function* initWeb3(data) {
@@ -15,13 +16,23 @@ function* initWeb3(data) {
   }
 }
 
+function* startLogWatch(data) {
+  const web3 = yield select(state => state.web3Store.get("web3"));
+  yield call(logWatchService.start, web3);
+}
+
+
 function* watchInitWeb3() {
   yield takeEvery(web3Actions.INIT_WEB3, initWeb3);
 }
 
+function* watchSetupWeb3Success() {
+  yield takeEvery(web3Actions.SETUP_WEB3.SUCCESS, startLogWatch);
+}
 
 export default function* web3Saga() {
   yield all([
-    watchInitWeb3()
+    watchInitWeb3(),
+    watchSetupWeb3Success(),
   ]);
 }
