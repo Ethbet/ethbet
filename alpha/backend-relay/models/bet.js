@@ -38,6 +38,53 @@ module.exports = function (sequelize, DataTypes) {
         len: 16,
       }
     },
+    callerUser: {
+      type: DataTypes.STRING,
+      validate: {
+        notEmpty: true,
+        isEthereumAddress(value) {
+          if (!ethUtil.isValidAddress(value) ) {
+            throw new Error('Not a valid Ethereum Address');
+          }
+        }
+      }
+    },
+    callerSeed: {
+      type: DataTypes.STRING,
+      validate: {
+        notEmpty: true,
+        is: ["^[a-z0-9]+$",'i'],
+        len: 16,
+      }
+    },
+    serverSeed: {
+      type: DataTypes.STRING,
+      validate: {
+        notEmpty: true,
+        is: ["^[a-z0-9]+$",'i'],
+        len: 16,
+      }
+    },
+    fullSeed: {
+      type: DataTypes.STRING,
+      validate: {
+        notEmpty: true,
+        is: ["^[a-z0-9]+$",'i'],
+      }
+    },
+    roll: {
+      type: DataTypes.FLOAT,
+      validate: {
+        isFloat: true,
+        min: 0,
+        max: 100
+      }
+    },
+    makerWon: {
+      type: DataTypes.BOOLEAN,
+    },
+
+
     cancelledAt: DataTypes.DATE,
     executedAt: DataTypes.DATE,
   }, {

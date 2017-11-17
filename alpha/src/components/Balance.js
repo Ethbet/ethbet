@@ -51,7 +51,7 @@ class Balance extends Component {
     let {balanceStore} = this.props;
 
     return (
-      <div className="col-lg-4">
+      <div className="col-lg-6">
         <div className="well">
           <legend>Balance: {balanceStore.get("balance") / 100} EBET</legend>
 

@@ -29,18 +29,16 @@ let getWeb3 = () => new Promise(function (resolve, reject) {
 
       web3.eth.defaultAccount = accounts[0];
       console.log('Using account:', web3.eth.defaultAccount);
-
-
-      // poll for metamask account change => refresh page | DISABLED FOR NOW DUE TO PERFORMANCE ISSUES
-      /*let currentAccount = accounts[0];
-        setInterval(function () {
-          web3.eth.getAccounts((err, accounts) => {
-            if (accounts[0] !== currentAccount) {
-              window.location.reload();
-            }
-          });
-        }, 500);*/
-
+      
+      // poll for metamask account change => refresh page
+      let currentAccount = accounts[0];
+      setInterval(function () {
+        web3.eth.getAccounts((err, accounts) => {
+          if (accounts[0] !== currentAccount) {
+            window.location.reload();
+          }
+        });
+      }, 1000);
 
       let networkName;
       web3.version.getNetwork((err, networkId) => {

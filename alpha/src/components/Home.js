@@ -23,15 +23,21 @@ class Home extends Component {
 
     return (
       <div>
-        <div className="container">
-          <div className="row front-row">
-            <Balance/>
-            <BetMaker/>
-            <BetsHistory/>
-          </div>
-
+        <div className="container-fluid">
           <div className="row">
-            <ActiveBets/>
+
+            <div className="col-lg-8">
+              <div className="row">
+                <Balance/>
+                <BetMaker/>
+              </div>
+              <div className="row">
+                <ActiveBets/>
+              </div>
+            </div>
+            <div className="col-lg-4">
+              <BetsHistory/>
+            </div>
           </div>
 
         </div>

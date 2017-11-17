@@ -7,7 +7,8 @@ let initialData = {
     edge: 0,
   },
   savingNewBet: false,
-  activeBets: []
+  activeBets: [],
+  executedBets: [],
 };
 
 export default function betReducer(state = new ImmutableMap(initialData), action) {
@@ -50,6 +51,25 @@ export default function betReducer(state = new ImmutableMap(initialData), action
       .set('gettingActiveBets', false);
   };
 
+  
+  
+  const fetchGetExecutedBetsRequest = (state) => {
+    return state
+      .set('gettingExecutedBets', true);
+  };
+
+  const fetchGetExecutedBetsSuccess = (state) => {
+    return state
+      .set('gettingExecutedBets', false)
+      .set('executedBets', action.executedBets);
+  };
+
+  const fetchGetExecutedBetsFailure = (state) => {
+    return state
+      .set('gettingExecutedBets', false);
+  };
+
+
 
   const postCancelBetRequest = (state) => {
     return state
@@ -65,8 +85,24 @@ export default function betReducer(state = new ImmutableMap(initialData), action
     return state
       .set('cancelingBet', null);
   };
-  
-  
+
+  const postCallBetRequest = (state) => {
+    return state
+      .set('callingBet', action.betId);
+  };
+
+  const postCallBetSuccess = (state) => {
+    return state
+      .set('callingBet', null);
+  };
+
+  const postCallBetFailure = (state) => {
+    return state
+      .set('callingBet', null);
+  };
+
+
+
   const betCreated = (state) => {
     return state
       .set('activeBets', [action.bet, ...state.get('activeBets')]);
@@ -77,6 +113,12 @@ export default function betReducer(state = new ImmutableMap(initialData), action
       .set('activeBets', state.get('activeBets').filter((bet) => bet.id !== action.bet.id));
   };
 
+  const betCalled = (state) => {
+    return state
+      .set('activeBets', state.get('activeBets').filter((bet) => bet.id !== action.bet.id))
+      .set('executedBets', [action.bet, ...state.get('executedBets')]);
+  };
+  
   const actions = {
     'SET_NEW_BET': () => setNewBet(state),
     'POST_SAVE_NEW_BET_REQUEST': () => postSaveNewBetRequest(state),
@@ -85,11 +127,18 @@ export default function betReducer(state = new ImmutableMap(initialData), action
     'FETCH_GET_ACTIVE_BETS_REQUEST': () => fetchGetActiveBetsRequest(state),
     'FETCH_GET_ACTIVE_BETS_SUCCESS': () => fetchGetActiveBetsSuccess(state),
     'FETCH_GET_ACTIVE_BETS_FAILURE': () => fetchGetActiveBetsFailure(state),
+    'FETCH_GET_EXECUTED_BETS_REQUEST': () => fetchGetExecutedBetsRequest(state),
+    'FETCH_GET_EXECUTED_BETS_SUCCESS': () => fetchGetExecutedBetsSuccess(state),
+    'FETCH_GET_EXECUTED_BETS_FAILURE': () => fetchGetExecutedBetsFailure(state),
     'POST_CANCEL_BET_REQUEST': () => postCancelBetRequest(state),
     'POST_CANCEL_BET_SUCCESS': () => postCancelBetSuccess(state),
-    'POST_CANCEL_BET_FAILURE': () => postCancelBetFailure(state),
+    'POST_CANCEL_BET_FAILURE': () => postCancelBetFailure(state),  
+    'POST_CALL_BET_REQUEST': () => postCallBetRequest(state),
+    'POST_CALL_BET_SUCCESS': () => postCallBetSuccess(state),
+    'POST_CALL_BET_FAILURE': () => postCallBetFailure(state),
     'BET_CREATED': () => betCreated(state),
     'BET_CANCELED': () => betCanceled(state),
+    'BET_CALLED': () => betCalled(state),
     'DEFAULT': () => state
   };
 

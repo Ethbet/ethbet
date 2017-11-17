@@ -28,6 +28,8 @@ describe('ethbetService', function ethbetServiceTest() {
       },
       unlockBalance: () => {
       },
+      executeBet: () => {
+      },
     };
 
     getDeployedInstanceStub = sinon.stub(contractService, 'getDeployedInstance');
@@ -153,5 +155,38 @@ describe('ethbetService', function ethbetServiceTest() {
     getWeb3Stub.restore();
     getDeployedInstanceStub.restore();
   });
-  
+
+  describe('executeBet', function () {
+    let maker = "0x001", caller = "0x002", makerWon = true, amount = 200;
+    let results = {stub: 'results'};
+    let executeBetStub;
+
+    before(function beforeTest() {
+      executeBetStub = sinon.stub(ethbetInstance, 'executeBet');
+      executeBetStub.callsFake(function (_maker, _caller, _makerWon, _amount) {
+        expect(_maker).to.eq(maker);
+        expect(_caller).to.eq(caller);
+        expect(_makerWon).to.eq(makerWon);
+        expect(_amount).to.eq(amount);
+
+        return Promise.resolve(results);
+      });
+    });
+
+    it('ok', async function it() {
+      let myResults = await ethbetService.executeBet(maker, caller, makerWon, amount);
+
+      expect(myResults).to.equal(results);
+    });
+
+    after(function afterTest() {
+      executeBetStub.restore();
+    });
+  });
+
+  after(function afterTest() {
+    getWeb3Stub.restore();
+    getDeployedInstanceStub.restore();
+  });
+
 });

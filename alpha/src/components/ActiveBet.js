@@ -12,11 +12,11 @@ import * as betActions from '../actions/betActions';
 class ActiveBet extends Component {
 
   callBet(betId) {
-
+    this.props.betActions.callBet({id: betId})
   }
 
   cancelBet(betId) {
-    this.props.betActions.cancelBet({id:betId})
+    this.props.betActions.cancelBet({id: betId})
   }
 
   render() {
@@ -31,12 +31,12 @@ class ActiveBet extends Component {
             {bet.user === web3Store.get("web3").eth.defaultAccount ?
               <button type="button" className="btn btn-danger"
                       onClick={() => this.cancelBet(bet.id)}
-                      disabled={betStore.get("cancelingBet")}>
+                      disabled={betStore.get("cancelingBet") || betStore.get("callingBet")}>
                 Cancel
               </button> :
               <button type="button" className="btn btn-info"
                       onClick={() => this.callBet(bet.id)}
-                      disabled={betStore.get("callingBet")}>
+                      disabled={betStore.get("cancelingBet") || betStore.get("callingBet")}>
                 Call
               </button>
             }

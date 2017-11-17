@@ -26,16 +26,36 @@ async function cancelBet(web3, betId) {
   return await client.post(`${apiRoot}/bets/cancel`, message);
 }
 
+async function callBet(web3, betId) {
+  let callBetData = {
+    id: betId,
+    seed: randomService.generateSeed()
+  };
+
+  let message = await web3Service.sign(web3, callBetData);
+
+  return await client.post(`${apiRoot}/bets/call`, message);
+}
+
+
 async function getActiveBets() {
   let response = await client.get(apiRoot + '/bets/active');
 
   return response.data.bets;
 }
 
+async function getExecutedBets() {
+  let response = await client.get(apiRoot + '/bets/executed');
+
+  return response.data.bets;
+}
+
 let betService = {
-  makeBet: makeBet,
-  cancelBet: cancelBet,
-  getActiveBets: getActiveBets
+  makeBet,
+  cancelBet,
+  callBet,
+  getActiveBets,
+  getExecutedBets,
 };
 
 export default betService;

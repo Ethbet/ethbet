@@ -1,12 +1,13 @@
-.front-row {
-    margin-top: 60px;
-}
-
 .bet-row {
     margin-bottom: 20px;
 }
 
 .active-bet .well{
+    border: 1px solid;
+    text-align: center;
+}
+
+.executed-bet .well{
     border: 1px solid;
     text-align: center;
 }

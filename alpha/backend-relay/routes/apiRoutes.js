@@ -7,4 +7,5 @@ module.exports = function (app) {
   app.post('/bets/call', auth, betsApiController.callBet);
 
   app.get('/bets/active', betsApiController.getActiveBets);
+  app.get('/bets/executed', betsApiController.getExecutedBets);
 };

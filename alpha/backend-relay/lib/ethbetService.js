@@ -35,9 +35,18 @@ async function unlockBalance(userAddress, amount) {
   return results;
 }
 
+async function executeBet(maker, caller, makerWon, amount) {
+  const web3 = web3Service.getWeb3();
+  const ethbetInstance = await contractService.getDeployedInstance(web3, "Ethbet");
+
+  let results = await ethbetInstance.executeBet(maker, caller, makerWon, amount);
+  return results;
+}
+
 module.exports = {
   balanceOf: balanceOf,
   lockedBalanceOf: lockedBalanceOf,
   lockBalance: lockBalance,
   unlockBalance: unlockBalance,
+  executeBet: executeBet,
 };

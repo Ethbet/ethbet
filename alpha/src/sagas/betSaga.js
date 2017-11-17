@@ -10,7 +10,10 @@ import * as notificationActions from '../actions/notificationActions';
 import betService from '../utils/betService';
 
 function* loadInitialData(data) {
-  yield put(betActions.getActiveBets());
+  yield all([
+    put(betActions.getActiveBets()),
+    put(betActions.getExecutedBets())
+  ])
 }
 
 function* saveNewBet(data) {
@@ -63,6 +66,23 @@ function* getActiveBets(data) {
   }
 }
 
+function* getExecutedBets(data) {
+  yield put(betActions.fetchGetExecutedBets.request());
+  try {
+    const executedBets = yield call(betService.getExecutedBets);
+    yield put(betActions.fetchGetExecutedBets.success({executedBets}));
+  } catch (error) {
+    yield put(betActions.fetchGetExecutedBets.failure({error}));
+    yield put(notificationActions.error({
+      notification: {
+        title: 'failed to get executed bets',
+        message: error.message,
+        position: 'br'
+      }
+    }));
+  }
+}
+
 function* cancelBet(data) {
   yield put(betActions.postCancelBet.request({betId: data.id}));
   try {
@@ -78,7 +98,7 @@ function* cancelBet(data) {
     console.log("cancelBet TX", results.tx);
     yield put(notificationActions.success({
       notification: {
-        title: 'bet cancelled successfully',
+        title: 'bet canceled successfully',
         position: 'br'
       }
     }));
@@ -96,6 +116,47 @@ function* cancelBet(data) {
 }
 
 
+function* callBet(data) {
+  yield put(betActions.postCallBet.request({betId: data.id}));
+  try {
+    const web3 = yield select(state => state.web3Store.get("web3"));
+
+    const results = yield call(betService.callBet, web3, data.id);
+
+    // delay to allow changes to be committed to local node
+    yield delay(1000);
+
+    yield put(betActions.postCallBet.success({results}));
+
+    console.log("callBet TX", results.data.tx);
+    yield put(notificationActions.success({
+      notification: {
+        title: 'Seed Generated',
+        message: results.data.seedMessage,
+        position: 'br'
+      }
+    }));
+    yield put(notificationActions.success({
+      notification: {
+        title: 'Bet Results',
+        message: results.data.resultMessage,
+        position: 'br'
+      }
+    }));
+  } catch (error) {
+    yield put(betActions.postCallBet.failure({error}));
+    yield put(notificationActions.error({
+      notification: {
+        title: 'failed to call bet',
+        // handle axios error format if available
+        message: _.get(error, 'response.data.message') || error.message,
+        position: 'br'
+      }
+    }));
+  }
+}
+
+
 function* watchSaveNewBet() {
   yield takeEvery(betActions.SAVE_NEW_BET, saveNewBet);
 }
@@ -104,12 +165,16 @@ function* watchGetActiveBets() {
   yield takeEvery(betActions.GET_ACTIVE_BETS, getActiveBets);
 }
 
+function* watchGetExecutedBets() {
+  yield takeEvery(betActions.GET_EXECUTED_BETS, getExecutedBets);
+}
+
 function* watchCancelBet() {
   yield takeEvery(betActions.CANCEL_BET, cancelBet);
 }
 
-function* watchPostCancelBetSuccess() {
-  yield takeEvery(betActions.POST_CANCEL_BET.SUCCESS, getActiveBets);
+function* watchCallBet() {
+  yield takeEvery(betActions.CALL_BET, callBet);
 }
 
 function* watchSetupWeb3Success() {
@@ -121,7 +186,8 @@ export default function* betSaga() {
     watchSetupWeb3Success(),
     watchSaveNewBet(),
     watchGetActiveBets(),
+    watchGetExecutedBets(),
     watchCancelBet(),
-    watchPostCancelBetSuccess(),
+    watchCallBet(),
   ]);
 }

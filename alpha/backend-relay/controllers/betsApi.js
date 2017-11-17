@@ -13,6 +13,16 @@ module.exports = {
       res.status(500).json(err);
     }
   },
+  
+  getExecutedBets: async function getExecutedBets(req, res) {
+    try {
+      let bets = await betService.getExecutedBets();
+      res.status(200).json({bets});
+    }
+    catch (err) {
+      res.status(500).json(err);
+    }
+  },
 
   createBet: async function createBet(req, res) {
     try {

@@ -32,6 +32,11 @@ function startListeners() {
   socket.on('betCanceled', function (bet) {
     store.dispatch(betActions.betCanceled({bet}));
   });
+
+  // Bet called
+  socket.on('betCalled', function (bet) {
+    store.dispatch(betActions.betCalled({bet}));
+  });
 }
 
 let socketService = {

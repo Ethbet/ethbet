@@ -35,6 +35,34 @@ describe('betsApi', function betsApiTest() {
     after(function afterTest() {
       getActiveBetsStub.restore();
     });
+  }); 
+  
+  describe('getExecutedBets', function getExecutedBetsTest() {
+    let getExecutedBetsStub;
+    let executedBets = [{stub: "executedBet"}];
+
+    before(function beforeTest() {
+      getExecutedBetsStub = sinon.stub(betService, "getExecutedBets");
+      getExecutedBetsStub.resolves(executedBets);
+    });
+
+    it('ok', function it(done) {
+      request(app)
+        .get('/bets/executed')
+        .expect(200)
+        .end(function (error, result) {
+          if (error) {
+            return done(error);
+          }
+
+          expect(result.body.bets).to.deep.eq(executedBets);
+          done();
+        });
+    });
+
+    after(function afterTest() {
+      getExecutedBetsStub.restore();
+    });
   });
 
   describe('createBet', function createBetTest() {

@@ -21,6 +21,30 @@ module.exports = {
       seed: {
         type: Sequelize.STRING
       },
+      callerUser: {
+        allowNull: true,
+        type: Sequelize.STRING
+      },
+      callerSeed: {
+        allowNull: true,
+        type: Sequelize.STRING
+      },
+      serverSeed: {
+        allowNull: true,
+        type: Sequelize.STRING
+      },
+      fullSeed: {
+        allowNull: true,
+        type: Sequelize.STRING
+      },
+      roll: {
+        allowNull: true,
+        type: Sequelize.FLOAT
+      },
+      makerWon: {
+        allowNull: true,
+        type: Sequelize.BOOLEAN
+      },
       cancelledAt: {
         allowNull: true,
         type: Sequelize.DATE

@@ -36,7 +36,7 @@ class BetMaker extends Component {
     let {betStore} = this.props;
 
     return (
-      <div className="col-lg-4">
+      <div className="col-lg-6">
         <div className="well">
           <form className="form-horizontal">
             <legend>Make bet</legend>

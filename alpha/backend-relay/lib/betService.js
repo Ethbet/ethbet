@@ -1,7 +1,6 @@
 let socketService = require('../lib/socketService');
 let ethbetService = require('../lib/ethbetService');
 let diceService = require('../lib/diceService');
-let randomService = require('../lib/randomService');
 
 async function createBet(betData) {
   let userBalance = await ethbetService.balanceOf(betData.user);
@@ -27,6 +26,21 @@ async function getActiveBets() {
     },
     order: [
       ['createdAt', 'DESC']
+    ]
+  });
+
+  return bets;
+}
+
+async function getExecutedBets() {
+  let bets = await db.Bet.findAll({
+    where: {
+      executedAt: {
+        [db.Sequelize.Op.ne]: null
+      },
+    },
+    order: [
+      ['executedAt', 'DESC']
     ]
   });
 
@@ -71,7 +85,7 @@ async function callBet(betId, callerSeed, callerUser) {
     throw new Error("Bet not found");
   }
   if (bet.cancelledAt) {
-    throw new Error("Bet already cancelled");
+    throw new Error("Bet cancelled");
   }
   if (bet.executedAt) {
     throw new Error("Bet already called");
@@ -93,34 +107,39 @@ async function callBet(betId, callerSeed, callerUser) {
   let rollInput = {
     makerSeed: bet.seed,
     callerSeed: callerSeed,
-    serverSeed: randomService.generateSeed(),
-    edge: bet.edge,
     betId: bet.id,
   };
   let rollResults = diceService.calculateRoll(rollInput);
-  let makerWon = (rollResults.roll <= rollResults.rollUnder);
+
+  let rollUnder = 50 + bet.edge / 2;
+  let makerWon = (rollResults.roll <= rollUnder);
+
+  let txResults = await ethbetService.executeBet(bet.user, callerUser, makerWon, bet.amount);
 
   await bet.update({
-    executedAt: new Date(),
+    executedAt: rollResults.executedAt,
     callerUser: callerUser,
     callerSeed: callerSeed,
-    serverSeed: rollInput.serverSeed,
+    serverSeed: rollResults.serverSeed,
     fullSeed: rollResults.fullSeed,
     roll: rollResults.roll,
     makerWon: makerWon
   });
 
-  let txResults = await ethbetService.executeBet(bet.user, callerUser, makerWon, bet.amount);
-
   socketService.emit("betCalled", bet);
 
-  return bet;
+  return {
+    tx: txResults.tx,
+    seedMessage: `We combined the makerSeed (${rollInput.makerSeed}), the callerSeed (${rollInput.callerSeed}) and the server seed (${rollResults.serverSeed}), and the betID (${rollInput.betId}) in order to produce the fullSeed: ${rollResults.fullSeed}`,
+    resultMessage: `You rolled a ${Math.round(rollResults.roll * 100) / 100} (needed ${rollUnder}) and ${makerWon ? 'lost' : 'won'} ${bet.amount / 100} EBET!'`
+  };
 }
 
 
 module.exports = {
-  createBet: createBet,
-  getActiveBets: getActiveBets,
-  cancelBet: cancelBet,
-  callBet: callBet,
+  createBet,
+  getActiveBets,
+  getExecutedBets,
+  cancelBet,
+  callBet,
 };
