@@ -52,6 +52,7 @@
     "dotenv": "^2.0.0",
     "ethereumjs-util": "^5.1.2",
     "immutable": "^3.8.2",
+    "lockfile": "^1.0.3",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-loader": "^2.4.2",

@@ -1,6 +1,7 @@
-let socketService = require('../lib/socketService');
-let ethbetService = require('../lib/ethbetService');
-let diceService = require('../lib/diceService');
+let socketService = require('./socketService');
+let ethbetService = require('./ethbetService');
+let diceService = require('./diceService');
+let lockService = require('./lockService');
 
 async function createBet(betData) {
   let userBalance = await ethbetService.balanceOf(betData.user);
@@ -47,9 +48,12 @@ async function getExecutedBets() {
   return bets;
 }
 
+function getBetLockId(betId) {
+  return `bet-${betId}`;
+}
+
 async function cancelBet(betId, user) {
   let bet = await db.Bet.findById(betId);
-
   if (!bet) {
     throw new Error("Bet not found");
   }
@@ -68,9 +72,20 @@ async function cancelBet(betId, user) {
     throw new Error("Locked Balance is less than bet amount");
   }
 
-  await bet.update({cancelledAt: new Date()});
+  try {
+    await lockService.lock(getBetLockId(betId));
+  }
+  catch (err) {
+    if (err.code === 'EEXIST') {
+      throw new Error("Somebody else is currently calling or cancelling this bet ...");
+    }
+  }
 
   let results = await ethbetService.unlockBalance(bet.user, bet.amount);
+
+  await bet.update({cancelledAt: new Date()});
+
+  await lockService.unlock(getBetLockId(betId));
 
   socketService.emit("betCanceled", bet);
 
@@ -78,7 +93,6 @@ async function cancelBet(betId, user) {
 }
 
 async function callBet(betId, callerSeed, callerUser) {
-  //TODO: add Mutex
   let bet = await db.Bet.findById(betId);
 
   if (!bet) {
@@ -104,6 +118,15 @@ async function callBet(betId, callerSeed, callerUser) {
     throw new Error("Maker user Locked Balance is less than bet amount");
   }
 
+  try {
+    await lockService.lock(getBetLockId(bet.id));
+  }
+  catch (err) {
+    if (err.code === 'EEXIST') {
+      throw new Error("Somebody else is currently calling or cancelling this bet ...");
+    }
+  }
+
   let rollInput = {
     makerSeed: bet.seed,
     callerSeed: callerSeed,
@@ -125,6 +148,8 @@ async function callBet(betId, callerSeed, callerUser) {
     roll: rollResults.roll,
     makerWon: makerWon
   });
+
+  await lockService.unlock(getBetLockId(bet.id));
 
   socketService.emit("betCalled", bet);
 
