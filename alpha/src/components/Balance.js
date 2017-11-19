@@ -74,7 +74,12 @@ class Balance extends Component {
                 </button>
             </div>
           </div>
-          <Loader color="white" loaded={!balanceStore.get("savingNewDeposit")}/>
+
+          <div className="row">
+            <div className="col-lg-12">
+              <Loader color="white" loaded={!balanceStore.get("savingNewDeposit")}/>
+            </div>
+          </div>
 
           <hr/>
 

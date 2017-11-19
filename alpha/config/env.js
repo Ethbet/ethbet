@@ -22,7 +22,7 @@ function getClientEnvironment(publicUrl) {
       // images into the `src` and `import` them in code to get their paths.
       'PUBLIC_URL': JSON.stringify(publicUrl),
       // Backend API endpoint (relay.ethbet.io placeholder id)
-      'BACKEND_URL': process.env.NODE_ENV === 'production' ?  "'http://relay.ethbet.io:9000'" : "'http://localhost:9000'"
+      'BACKEND_URL': process.env.NODE_ENV === 'production' ?  `'${process.env.BACKEND_ROOT_URL}'` : "'http://localhost:9000'"
     });
   return {'process.env': processEnv};
 }

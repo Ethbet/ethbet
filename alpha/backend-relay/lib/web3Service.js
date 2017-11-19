@@ -1,4 +1,5 @@
 const Web3 = require('web3');
+const _ = require('lodash');
 
 let web3;
 
@@ -11,7 +12,23 @@ function init() {
       return reject(err);
     }
 
-    web3.eth.defaultAccount = accounts[0];
+    let relayAccount;
+    let relayAccountIndex = _.indexOf(accounts, _.toLower(process.env.RELAY_ADDRESS));
+    if (relayAccountIndex < 0) {
+      if (process.env.NODE_ENV === 'production') {
+        console.log(`[Web3] Account matching RELAY_ADDRESS (${process.env.RELAY_ADDRESS}) not found`);
+        process.exit(0);
+      }
+      else {
+        relayAccount = accounts[0];
+      }
+    }
+    else {
+      relayAccount = accounts[relayAccountIndex];
+    }
+
+
+    web3.eth.defaultAccount = relayAccount;
     console.log('[Web3] Account:', web3.eth.defaultAccount);
 
     let networkName;

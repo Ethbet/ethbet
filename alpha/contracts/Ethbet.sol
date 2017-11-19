@@ -49,6 +49,9 @@ contract Ethbet {
 
   /// @dev Contract constructor
   function Ethbet(address _relay, address tokenAddress) public {
+    // make sure relay address set
+    require(_relay != address(0));
+
     relay = _relay;
     token = EthbetToken(tokenAddress);
   }

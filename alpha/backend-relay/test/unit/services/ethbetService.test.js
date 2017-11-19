@@ -9,7 +9,7 @@ const testAddress = require('../../support/testAddress.json');
 
 
 describe('ethbetService', function ethbetServiceTest() {
-  let web3 = {stub: ' web3'};
+  let web3 = {toWei: ()=> {}};
   let ethbetInstance;
   let getWeb3Stub, getDeployedInstanceStub;
 
@@ -93,7 +93,7 @@ describe('ethbetService', function ethbetServiceTest() {
 
   describe('lockBalance', function () {
     let amount = 100;
-    let results = {stub: 'results'};
+    let results = {receipt: {status:"0x1"}};
     let userAddress = testAddress.public;
     let lockBalanceStub;
 
@@ -126,7 +126,7 @@ describe('ethbetService', function ethbetServiceTest() {
 
   describe('unlockBalance', function () {
     let amount = 100;
-    let results = {stub: 'results'};
+    let results = {receipt: {status:"0x1"}};
     let userAddress = testAddress.public;
     let unlockBalanceStub;
 
@@ -158,7 +158,7 @@ describe('ethbetService', function ethbetServiceTest() {
 
   describe('executeBet', function () {
     let maker = "0x001", caller = "0x002", makerWon = true, amount = 200;
-    let results = {stub: 'results'};
+    let results = {receipt: {status:"0x1"}};
     let executeBetStub;
 
     before(function beforeTest() {

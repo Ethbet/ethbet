@@ -20,16 +20,17 @@ async function deposit(web3, amount) {
   const ethbetInstance = await contractService.getDeployedInstance(web3, "Ethbet");
   const tokenInstance = await contractService.getDeployedInstance(web3, "EthbetToken");
 
-  await tokenInstance.increaseApproval(ethbetInstance.address, amount);
+  // no need to await as this would run previous to the deposit
+  tokenInstance.increaseApproval(ethbetInstance.address, amount, {gas: 100000});
 
-  let results = await ethbetInstance.deposit(amount);
+  let results = await ethbetInstance.deposit(amount, {gas: 100000});
   return results;
 }
 
 async function withdraw(web3, amount) {
   const ethbetInstance = await contractService.getDeployedInstance(web3, "Ethbet");
 
-  let results = await ethbetInstance.withdraw(amount);
+  let results = await ethbetInstance.withdraw(amount, {gas: 100000});
   return results;
 }
 

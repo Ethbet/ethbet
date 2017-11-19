@@ -37,6 +37,9 @@ jspm_packages/
 # contracts build directory
 build/
 
+# frontend build
+build_webpack/
+
 # truffle config
 truffle.js
 

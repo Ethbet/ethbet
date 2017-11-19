@@ -7,7 +7,7 @@ module.exports = function (deployer) {
   const web3 = new Web3(deployer.provider);
 
   //Parameters for the contract deployment
-  const relayAddress = web3.eth.accounts[0];
+  const relayAddress = process.env.RELAY_ADDRESS || web3.eth.accounts[0];
 
   deployer.deploy(EthbetToken).then(() => {
     return deployer.deploy(Ethbet, relayAddress, EthbetToken.address);

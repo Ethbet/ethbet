@@ -23,7 +23,10 @@ async function lockBalance(userAddress, amount) {
   const web3 = web3Service.getWeb3();
   const ethbetInstance = await contractService.getDeployedInstance(web3, "Ethbet");
 
-  let results = await ethbetInstance.lockBalance(userAddress, amount);
+  let results = await ethbetInstance.lockBalance(userAddress, amount, {gas: 100000, gasPrice: web3.toWei(5, 'gwei')});
+  if (results.receipt.status !== "0x1") {
+    throw  new Error("Contract execution failed")
+  }
   return results;
 }
 
@@ -31,7 +34,10 @@ async function unlockBalance(userAddress, amount) {
   const web3 = web3Service.getWeb3();
   const ethbetInstance = await contractService.getDeployedInstance(web3, "Ethbet");
 
-  let results = await ethbetInstance.unlockBalance(userAddress, amount);
+  let results = await ethbetInstance.unlockBalance(userAddress, amount, {gas: 100000, gasPrice: web3.toWei(5, 'gwei')});
+  if (results.receipt.status !== "0x1") {
+    throw  new Error("Contract execution failed")
+  }
   return results;
 }
 
@@ -39,7 +45,10 @@ async function executeBet(maker, caller, makerWon, amount) {
   const web3 = web3Service.getWeb3();
   const ethbetInstance = await contractService.getDeployedInstance(web3, "Ethbet");
 
-  let results = await ethbetInstance.executeBet(maker, caller, makerWon, amount);
+  let results = await ethbetInstance.executeBet(maker, caller, makerWon, amount, {gas: 150000, gasPrice: web3.toWei(5, 'gwei')});
+  if (results.receipt.status !== "0x1") {
+    throw  new Error("Contract execution failed")
+  }
   return results;
 }
 
