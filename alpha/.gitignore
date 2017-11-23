@@ -48,3 +48,5 @@ truffle.js
 backend-relay/config/config.json
 backend-relay/config/config-staging.json
 backend-relay/config/config-production.json
+
+backend-relay/ecosystem.json
