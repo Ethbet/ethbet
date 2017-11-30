@@ -5,8 +5,15 @@ const methodOverride = require('method-override');
 const app = express();
 const morgan = require('morgan');
 const cors = require('cors');
+const fs = require('fs');
+const https = require('https');
 
-const server = require('http').Server(app);
+let options = {
+  key: fs.readFileSync('../key.pem'),
+  cert: fs.readFileSync('../cert.crt')
+};
+const server = https.createServer(options, app);
+
 const io = require('socket.io')(server);
 
 const web3Service = require('./lib/web3Service');
@@ -42,7 +49,7 @@ server.listen(PORT, function (err) {
   if (err) {
     console.error(err);
   } else {
-    console.info("==> 🌎  Listening on port %s. Visit http://localhost:%s/ in your browser.", PORT, PORT);
+    console.info("==> 🌎  Listening on port %s.", PORT);
   }
 });
 
