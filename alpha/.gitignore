@@ -43,6 +43,10 @@ build_webpack/
 # truffle config
 truffle.js
 
+# nginx conf
+nginx-staging.conf
+nginx-production.conf
+
 # BACKEND
 
 backend-relay/config/config.json
