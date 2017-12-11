@@ -8,11 +8,11 @@ const cors = require('cors');
 const fs = require('fs');
 const https = require('https');
 
-let options = {
+let serverOptions = {
   key: fs.readFileSync('../key.pem'),
   cert: fs.readFileSync('../cert.crt')
 };
-const server = https.createServer(options, app);
+const server = https.createServer(serverOptions, app);
 
 const io = require('socket.io')(server);
 

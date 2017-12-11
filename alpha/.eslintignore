@@ -5,3 +5,4 @@ contracts/**
 migrations/**
 test/**
 truffle-scripts/**
+src/vendor/**

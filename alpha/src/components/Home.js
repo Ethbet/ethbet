@@ -11,8 +11,7 @@ import ActiveBets from "./ActiveBets";
 import BetsHistory from "./BetsHistory";
 import Balance from './Balance';
 
-import '../css/custom.css';
-import '../css/bootstrap.min.css';
+
 
 class Home extends Component {
 

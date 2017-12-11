@@ -1,5 +1,6 @@
 const contractService = require('./contractService');
 const web3Service = require('./web3Service');
+const ethUtil = require('ethereumjs-util');
 
 async function balanceOf(userAddress) {
   const web3 = web3Service.getWeb3();
@@ -24,7 +25,7 @@ async function lockBalance(userAddress, amount) {
   const ethbetInstance = await contractService.getDeployedInstance(web3, "Ethbet");
 
   let results = await ethbetInstance.lockBalance(userAddress, amount, {gas: 100000, gasPrice: web3.toWei(5, 'gwei')});
-  if (results.receipt.status !== "0x1") {
+  if (ethUtil.addHexPrefix(results.receipt.status.toString()) !== "0x1") {
     throw  new Error("Contract execution failed")
   }
   return results;
@@ -35,7 +36,7 @@ async function unlockBalance(userAddress, amount) {
   const ethbetInstance = await contractService.getDeployedInstance(web3, "Ethbet");
 
   let results = await ethbetInstance.unlockBalance(userAddress, amount, {gas: 100000, gasPrice: web3.toWei(5, 'gwei')});
-  if (results.receipt.status !== "0x1") {
+  if (ethUtil.addHexPrefix(results.receipt.status.toString()) !== "0x1") {
     throw  new Error("Contract execution failed")
   }
   return results;
@@ -46,7 +47,7 @@ async function executeBet(maker, caller, makerWon, amount) {
   const ethbetInstance = await contractService.getDeployedInstance(web3, "Ethbet");
 
   let results = await ethbetInstance.executeBet(maker, caller, makerWon, amount, {gas: 150000, gasPrice: web3.toWei(5, 'gwei')});
-  if (results.receipt.status !== "0x1") {
+  if (ethUtil.addHexPrefix(results.receipt.status.toString()) !== "0x1") {
     throw  new Error("Contract execution failed")
   }
   return results;

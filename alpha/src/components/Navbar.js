@@ -5,11 +5,20 @@ import * as notificationActions from '../actions/notificationActions';
 
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux'
+const _ = require('lodash');
 
 import Notifications from 'react-notification-system-redux';
 
+import UsernameModal from './UsernameModal';
 
 class Navbar extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      isUsernameModalOpen: false
+    };
+  }
 
   componentDidMount() {
     this.props.web3Actions.initWeb3();
@@ -22,10 +31,19 @@ class Navbar extends Component {
     });
   }
 
+  handleUsernameModalCloseRequest() {
+    this.setState({isUsernameModalOpen: false});
+  }
+
+  openUsernameModal() {
+    this.setState({isUsernameModalOpen: true});
+  }
+
   render() {
-    let {web3Store} = this.props;
+    let {web3Store, userStore} = this.props;
     let web3 = web3Store.get("web3");
     let networkName = web3Store.get("networkName");
+    let currentUser = userStore.get("currentUser");
 
     return (
       <nav className="navbar navbar-default">
@@ -59,6 +77,20 @@ class Navbar extends Component {
                   <b>Account:</b> {web3 ? web3.eth.defaultAccount : null}
                 </a>
               </li>
+
+              <li className="dropdown">
+                <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                   aria-expanded="false">
+                  <i className="fa fa-user" aria-hidden="true"/> &nbsp;
+                  {_.get(currentUser, 'username') || "Anonymous"}
+                  <span className="caret"></span>
+                </a>
+                <ul className="dropdown-menu">
+                  <li><a href="#" onClick={() => this.openUsernameModal()}>Edit Username</a></li>
+                </ul>
+                <UsernameModal modalIsOpen={this.state.isUsernameModalOpen}
+                               handleModalCloseRequest={this.handleUsernameModalCloseRequest.bind(this)}/>
+              </li>
             </ul>
           </div>
           {/*/.nav-collapse */}
@@ -73,6 +105,7 @@ class Navbar extends Component {
 const mapStateToProps = (state) => {
   return {
     web3Store: state.web3Store,
+    userStore: state.userStore,
     notifications: state.notifications
   };
 };

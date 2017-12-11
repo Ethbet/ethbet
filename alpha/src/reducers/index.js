@@ -5,6 +5,7 @@ import {reducer as notifications} from 'react-notification-system-redux';
 import web3Reducer from './web3Reducer';
 import balanceReducer from './balanceReducer';
 import betReducer from './betReducer';
+import userReducer from './userReducer';
 
 const rootReducer = combineReducers({
   routing: routerReducer,
@@ -12,6 +13,7 @@ const rootReducer = combineReducers({
   web3Store: web3Reducer,
   balanceStore: balanceReducer,
   betStore: betReducer,
+  userStore: userReducer,
 });
 
 export default rootReducer;

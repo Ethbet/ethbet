@@ -99,7 +99,7 @@ function* watchSetupWeb3Success() {
   yield takeEvery(web3Actions.SETUP_WEB3.SUCCESS, loadInitialData);
 }
 
-function* watchLoadUsersData() {
+function* watchLoadBalances() {
   yield takeEvery(balanceActions.LOAD_BALANCES, loadBalances);
 }
 
@@ -134,7 +134,7 @@ function* watchPostCallBetSuccess() {
 export default function* balanceSaga() {
   yield all([
     watchSetupWeb3Success(),
-    watchLoadUsersData(),
+    watchLoadBalances(),
     watchSaveNewDeposit(),
     watchPostSaveNewDepositSuccess(),  
     watchSaveNewWithdrawal(),
