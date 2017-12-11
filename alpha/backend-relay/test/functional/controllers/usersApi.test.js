@@ -33,7 +33,7 @@ describe('usersApi', function usersApiTest() {
 
     it('ok', function it(done) {
       request(app)
-        .post('/users')
+        .post('/api/users')
         .send(message)
         .expect(200)
         .end(function (error, result) {
@@ -67,7 +67,7 @@ describe('usersApi', function usersApiTest() {
 
     it('ok', function it(done) {
       request(app)
-        .get('/users/' + testAddress.public)
+        .get('/api/users/' + testAddress.public)
         .expect(200)
         .end(function (error, result) {
           if (error) {

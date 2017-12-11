@@ -20,7 +20,7 @@ describe('betsApi', function betsApiTest() {
 
     it('ok', function it(done) {
       request(app)
-        .get('/bets/active')
+        .get('/api/bets/active')
         .expect(200)
         .end(function (error, result) {
           if (error) {
@@ -48,7 +48,7 @@ describe('betsApi', function betsApiTest() {
 
     it('ok', function it(done) {
       request(app)
-        .get('/bets/executed')
+        .get('/api/bets/executed')
         .expect(200)
         .end(function (error, result) {
           if (error) {
@@ -93,7 +93,7 @@ describe('betsApi', function betsApiTest() {
 
     it('ok', function it(done) {
       request(app)
-        .post('/bets')
+        .post('/api/bets')
         .send(message)
         .expect(200)
         .end(function (error, result) {
@@ -132,7 +132,7 @@ describe('betsApi', function betsApiTest() {
 
     it('ok', function it(done) {
       request(app)
-        .post(`/bets/cancel`)
+        .post('/api/bets/cancel')
         .send(message)
         .expect(200)
         .end(function (error, result) {
@@ -172,7 +172,7 @@ describe('betsApi', function betsApiTest() {
 
     it('ok', function it(done) {
       request(app)
-        .post(`/bets/call`)
+        .post('/api/bets/call')
         .send(message)
         .expect(200)
         .end(function (error, result) {
