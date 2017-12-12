@@ -1,5 +1,4 @@
 import io from 'socket.io-client';
-import {apiRoot} from './apiService';
 import * as betActions from '../actions/betActions';
 
 import configureStore from '../store/configureStore';
@@ -7,7 +6,7 @@ import configureStore from '../store/configureStore';
 let socket, store;
 
 function init() {
-  socket = io.connect(apiRoot);
+  socket = io.connect(process.env.BACKEND_URL , { path: '/api/socket.io'});
   store = configureStore();
   startListeners();
 }

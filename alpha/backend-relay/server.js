@@ -14,7 +14,7 @@ let serverOptions = {
 };
 const server = https.createServer(serverOptions, app);
 
-const io = require('socket.io')(server);
+const io = require('socket.io')(server, {path: '/api/socket.io'});
 
 const web3Service = require('./lib/web3Service');
 

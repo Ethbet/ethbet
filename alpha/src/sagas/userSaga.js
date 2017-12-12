@@ -1,5 +1,4 @@
 import {call, put, all, takeEvery, select} from 'redux-saga/effects';
-import {delay} from 'redux-saga'
 
 const _ = require('lodash');
 
