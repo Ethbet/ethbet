@@ -66,5 +66,48 @@ describe('userService', function userServiceTest() {
     });
   });
 
+  describe('getUsernames', function () {
+      before(async function before() {
+        await db.User.create(UserFactory.build({
+          address: "0x04bd37D5393cD877f64ad36f1791ED09d847b981",
+          username: 'John'
+        }));
+        await db.User.create(UserFactory.build({
+          address: "0x04bd37D5393cD877f64ad36f1791ED09d847b982",
+          username: 'Mike'
+        }));
+        await db.User.create(UserFactory.build({
+          address: "0x04bd37D5393cD877f64ad36f1791ED09d847b983",
+          username: 'Karl'
+        }));
+      });
+
+      it('ok', async function it() {
+        let usernames = await userService.getUsernames(["0x04bd37D5393cD877f64ad36f1791ED09d847b981", "0x04bd37D5393cD877f64ad36f1791ED09d847b983"]);
+
+        expect(usernames).to.deep.equal({
+          "0x04bd37D5393cD877f64ad36f1791ED09d847b981": "John",
+          "0x04bd37D5393cD877f64ad36f1791ED09d847b983": "Karl",
+        });
+    });
+  });
+
+  describe('getUsername', function () {
+    before(async function before() {
+      await db.User.create(UserFactory.build({
+        address: "0x04bd37D5393cD877f64ad36f1791ED09d847b981",
+        username: 'John'
+      }));
+    });
+
+    it('ok', async function it() {
+      let username = await userService.getUsername("0x04bd37D5393cD877f64ad36f1791ED09d847b981");
+      expect(username).to.equal('John');
+
+      let otherUsername = await userService.getUsername("0x04bd37D5393cD877f64ad36f1791ED09d847b982");
+      expect(otherUsername).to.equal(void(0));
+    });
+  });
+
 });
 

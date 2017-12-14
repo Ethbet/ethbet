@@ -1,9 +1,11 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
+const _ = require('lodash');
 
 let socketService = require('../../../lib/socketService');
 let betService = require('../../../lib/betService');
 let ethbetService = require('../../../lib/ethbetService');
+let userService = require('../../../lib/userService');
 let diceService = require('../../../lib/diceService');
 const testAddress = require('../../support/testAddress.json');
 
@@ -123,22 +125,61 @@ describe('betService', function betServiceTest() {
 
 
   describe('getExecutedBets', function () {
-    let bet_1, bet_2, bet_3;
+    let getUsernamesStub;
+    let userAddress_1 = "0x04bd37D5393cD877f64ad36f1791ED09d847b981";
+    let userAddress_2 = "0x04bd37D5393cD877f64ad36f1791ED09d847b982";
+    let userAddress_3 = "0x04bd37D5393cD877f64ad36f1791ED09d847b983";
+    let username_1 = "Mike";
+    let username_2 = "John";
+    let username_3 = "Bob";
+    let bet_1, bet_2, bet_3, bet_4;
 
     before(async function beforeTest() {
       bet_1 = await db.Bet.create(BetFactory.build({}));
       bet_2 = await db.Bet.create(BetFactory.build({cancelledAt: new Date()}));
-      bet_3 = await db.Bet.create(BetFactory.build({executedAt: new Date()}));
+      bet_3 = await db.Bet.create(BetFactory.build({
+        user: userAddress_1,
+        callerUser: userAddress_2,
+        executedAt: new Date() - 60000
+      }));
+      bet_4 = await db.Bet.create(BetFactory.build({
+        user: userAddress_2,
+        callerUser: userAddress_3,
+        executedAt: new Date()
+      }));
+
+      getUsernamesStub = sinon.stub(userService, "getUsernames");
+      getUsernamesStub.callsFake(function (userAddresses) {
+        expect(_.clone(userAddresses).sort()).to.deep.eq([userAddress_1, userAddress_2, userAddress_3]);
+
+        return {
+          [userAddress_1]: username_1,
+          [userAddress_2]: username_2,
+          [userAddress_3]: username_3,
+        }
+      });
     });
 
     it('ok', async function it() {
       let executedBets = await betService.getExecutedBets();
 
-      expect(executedBets.length).to.equal(1);
-      expect(executedBets[0].id).to.equal(bet_3.id);
+      expect(executedBets.length).to.equal(2);
+
+      let executedBet_1_JSON = executedBets[0].toJSON();
+      expect(executedBet_1_JSON.id).to.equal(bet_4.id);
+      expect(executedBet_1_JSON.username).to.equal(username_2);
+      expect(executedBet_1_JSON.callerUsername).to.equal(username_3);
+
+      let executedBet_2_JSON = executedBets[1].toJSON();
+      expect(executedBet_2_JSON.id).to.equal(bet_3.id);
+      expect(executedBet_2_JSON.username).to.equal(username_1);
+      expect(executedBet_2_JSON.callerUsername).to.equal(username_2);
+    });
+
+    after(function afterTest() {
+      getUsernamesStub.restore();
     });
   });
-
 
 
   describe('cancelBet', function () {

@@ -14,8 +14,8 @@ class ExecutedBet extends Component {
   render() {
     let {bet} = this.props;
 
-    let winner = bet.makerWon ? bet.user : bet.callerUser;
-    let loser = !bet.makerWon ? bet.user : bet.callerUser;
+    let winner = (bet.makerWon ? bet.username : bet.callerUsername) || "Anonymous";
+    let loser = (!bet.makerWon ? bet.username : bet.callerUsername) || "Anonymous";
 
     return (
 

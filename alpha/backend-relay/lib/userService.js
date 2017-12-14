@@ -1,4 +1,4 @@
-let socketService = require('./socketService');
+let _ = require('lodash');
 
 async function createUser(userData) {
   let user = await db.User.findOne({
@@ -37,7 +37,34 @@ async function getUser(userAddress) {
   return user;
 }
 
+async function getUsername(address) {
+  let user = await db.User.findOne({
+    where: {
+      address: address,
+    },
+  });
+
+  return _.get(user, 'username');
+}
+
+async function getUsernames(addresses) {
+  let users = await db.User.findAll({
+    where: {
+      address: addresses,
+    },
+  });
+
+  let usernames = {};
+  for (i = 0; i < users.length; i++) {
+    let user = users[i];
+    usernames[user.address] = user.username;
+  }
+  return usernames;
+}
+
 module.exports = {
   createUser,
   getUser,
+  getUsername,
+  getUsernames
 };

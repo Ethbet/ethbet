@@ -1,5 +1,8 @@
+let _ = require('lodash');
+
 let socketService = require('./socketService');
 let ethbetService = require('./ethbetService');
+let userService = require('./userService');
 let diceService = require('./diceService');
 let lockService = require('./lockService');
 
@@ -42,8 +45,19 @@ async function getExecutedBets() {
     },
     order: [
       ['executedAt', 'DESC']
-    ]
+    ],
+    limit: 20
   });
+
+  let userAddresses = _.union(_.map(bets, 'user'), _.map(bets, 'callerUser'));
+  let usernames = await userService.getUsernames(userAddresses);
+
+  for (i = 0; i < bets.length; i++) {
+    let bet = bets[i];
+    // populate values
+    bet.dataValues.username = usernames[bet.user];
+    bet.dataValues.callerUsername = usernames[bet.callerUser];
+  }
 
   return bets;
 }
@@ -151,6 +165,8 @@ async function callBet(betId, callerSeed, callerUser) {
 
   await lockService.unlock(getBetLockId(bet.id));
 
+  bet.dataValues.username = await userService.getUsername(bet.user);
+  bet.dataValues.callerUsername = await userService.getUsername(bet.callerUser);
   socketService.emit("betCalled", bet);
 
   return {
