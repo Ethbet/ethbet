@@ -1,5 +1,6 @@
 let betsApiController = require('../controllers/betsApi');
 let usersApiController = require('../controllers/usersApi');
+let leaderboardApiController = require('../controllers/leaderboardApi');
 let auth = require('../lib/authMiddleware');
 
 module.exports = function (app) {
@@ -12,5 +13,7 @@ module.exports = function (app) {
 
   app.post('/api/users', auth, usersApiController.createUser);
   app.get('/api/users/:address', usersApiController.getUser);
+
+  app.get('/api/leaderboard', leaderboardApiController.getLeaderboard);
 
 };

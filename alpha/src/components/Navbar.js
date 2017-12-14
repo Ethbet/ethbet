@@ -5,18 +5,21 @@ import * as notificationActions from '../actions/notificationActions';
 
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux'
+
 const _ = require('lodash');
 
 import Notifications from 'react-notification-system-redux';
 
 import UsernameModal from './UsernameModal';
+import LeaderboardModal from './LeaderboardModal';
 
 class Navbar extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      isUsernameModalOpen: false
+      isUsernameModalOpen: false,
+      isLeaderboardModalOpen: false,
     };
   }
 
@@ -34,10 +37,18 @@ class Navbar extends Component {
   handleUsernameModalCloseRequest() {
     this.setState({isUsernameModalOpen: false});
   }
-
   openUsernameModal() {
     this.setState({isUsernameModalOpen: true});
   }
+
+  openLeaderboardModal() {
+    this.setState({isLeaderboardModalOpen: true});
+  }
+
+  handleLeaderboardModalCloseRequest() {
+    this.setState({isLeaderboardModalOpen: false});
+  }
+
 
   render() {
     let {web3Store, userStore} = this.props;
@@ -63,8 +74,15 @@ class Navbar extends Component {
           </div>
           <div id="navbar" className="navbar-collapse collapse">
             <ul className="nav navbar-nav">
-
+              <li className="dropdown">
+                <a href="#" className="dropdown-toggle" data-toggle="dropdown" onClick={() => this.openLeaderboardModal()}>
+                  <b>Leaderboard</b>
+                </a>
+              </li>
+              <LeaderboardModal modalIsOpen={this.state.isLeaderboardModalOpen}
+                             handleModalCloseRequest={this.handleLeaderboardModalCloseRequest.bind(this)}/>
             </ul>
+
             <ul className="nav navbar-nav navbar-right">
               <li className="dropdown">
                 <a href="#" className="dropdown-toggle" data-toggle="dropdown">

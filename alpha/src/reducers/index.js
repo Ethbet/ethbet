@@ -6,6 +6,7 @@ import web3Reducer from './web3Reducer';
 import balanceReducer from './balanceReducer';
 import betReducer from './betReducer';
 import userReducer from './userReducer';
+import leaderboardReducer from './leaderboardReducer';
 
 const rootReducer = combineReducers({
   routing: routerReducer,
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   balanceStore: balanceReducer,
   betStore: betReducer,
   userStore: userReducer,
+  leaderboardStore: leaderboardReducer,
 });
 
 export default rootReducer;

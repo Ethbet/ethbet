@@ -45,7 +45,6 @@ export default function userReducer(state = new ImmutableMap(initialData), actio
   };
 
   const fetchLoadCurrentUserFailure = (state) => {
-    debugger
     return state
       .set('loadingCurrentUser', false);
   };
