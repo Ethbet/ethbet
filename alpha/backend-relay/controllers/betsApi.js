@@ -5,15 +5,20 @@ let betService = require('../lib/betService');
 
 module.exports = {
   getActiveBets: async function getActiveBets(req, res) {
+    let opts = {
+      orderField: req.query.orderField,
+      orderDirection: req.query.orderDirection,
+      offset: parseInt(req.query.offset, 10),
+    };
     try {
-      let bets = await betService.getActiveBets();
-      res.status(200).json({bets});
+      let results = await betService.getActiveBets(opts);
+      res.status(200).json({results});
     }
     catch (err) {
       res.status(500).json(err);
     }
   },
-  
+
   getExecutedBets: async function getExecutedBets(req, res) {
     try {
       let bets = await betService.getExecutedBets();

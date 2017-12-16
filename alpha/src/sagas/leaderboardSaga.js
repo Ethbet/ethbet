@@ -1,9 +1,7 @@
 import {call, put, all, takeEvery, select} from 'redux-saga/effects';
-import { delay } from 'redux-saga'
 
 import * as leaderboardActions from '../actions/leaderboardActions';
-import * as web3Actions from '../actions/web3Actions';
-import * as notificationActions from '../actions/notificationActions';
+
 
 import leaderboardService from '../utils/leaderboardService';
 

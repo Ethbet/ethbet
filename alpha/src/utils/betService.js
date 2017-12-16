@@ -38,10 +38,10 @@ async function callBet(web3, betId) {
 }
 
 
-async function getActiveBets() {
-  let response = await client.get(apiRoot + '/bets/active');
+async function getActiveBets(opts) {
+  let response = await client.get(apiRoot + '/bets/active', {params: opts});
 
-  return response.data.bets;
+  return response.data.results;
 }
 
 async function getExecutedBets() {

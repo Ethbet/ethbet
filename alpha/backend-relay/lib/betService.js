@@ -22,18 +22,20 @@ async function createBet(betData) {
   return bet;
 }
 
-async function getActiveBets() {
-  let bets = await db.Bet.findAll({
+async function getActiveBets(opts = {orderField: 'createdAt', orderDirection: 'DESC', offset: 0}) {
+  let result = await db.Bet.findAndCountAll({
     where: {
       cancelledAt: null,
       executedAt: null,
     },
     order: [
-      ['createdAt', 'DESC']
-    ]
+      [opts.orderField, opts.orderDirection]
+    ],
+    offset: opts.offset,
+    limit: 50
   });
 
-  return bets;
+  return {bets: result.rows, count: result.count};
 }
 
 async function getExecutedBets() {

@@ -116,10 +116,11 @@ describe('betService', function betServiceTest() {
     });
 
     it('ok', async function it() {
-      let activeBets = await betService.getActiveBets();
+      let results = await betService.getActiveBets();
 
-      expect(activeBets.length).to.equal(1);
-      expect(activeBets[0].id).to.equal(bet_1.id);
+      expect(results.count).to.equal(1);
+      expect(results.bets.length).to.equal(1);
+      expect(results.bets[0].id).to.equal(bet_1.id);
     });
   });
 

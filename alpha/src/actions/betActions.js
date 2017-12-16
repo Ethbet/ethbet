@@ -15,6 +15,9 @@ export const postSaveNewBet = {
 };
 
 
+export const SET_ACTIVE_BETS_LOAD_OPTS = 'SET_ACTIVE_BETS_LOAD_OPTS';
+export const setActiveBetsLoadOpts = data => action(SET_ACTIVE_BETS_LOAD_OPTS, data);
+
 export const GET_ACTIVE_BETS = 'GET_ACTIVE_BETS';
 export const getActiveBets = data => action(GET_ACTIVE_BETS, data);
 

@@ -11,23 +11,31 @@ describe('betsApi', function betsApiTest() {
 
   describe('getActiveBets', function getActiveBetsTest() {
     let getActiveBetsStub;
-    let activeBets = [{stub: "activeBet"}];
+    let results = {stub: "results"};
 
     before(function beforeTest() {
       getActiveBetsStub = sinon.stub(betService, "getActiveBets");
-      getActiveBetsStub.resolves(activeBets);
+      getActiveBetsStub.callsFake(function (opts) {
+        expect(opts).to.deep.eq({
+          orderField: 'createdAt',
+          orderDirection: 'DESC',
+          offset:10
+        });
+
+        return Promise.resolve(results);
+      });
     });
 
     it('ok', function it(done) {
       request(app)
-        .get('/api/bets/active')
+        .get(`/api/bets/active?orderField=createdAt&orderDirection=DESC&offset=10`)
         .expect(200)
         .end(function (error, result) {
           if (error) {
             return done(error);
           }
 
-          expect(result.body.bets).to.deep.eq(activeBets);
+          expect(result.body.results).to.deep.eq(results);
           done();
         });
     });
@@ -35,8 +43,8 @@ describe('betsApi', function betsApiTest() {
     after(function afterTest() {
       getActiveBetsStub.restore();
     });
-  }); 
-  
+  });
+
   describe('getExecutedBets', function getExecutedBetsTest() {
     let getExecutedBetsStub;
     let executedBets = [{stub: "executedBet"}];

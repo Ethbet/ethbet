@@ -103,7 +103,7 @@ class Navbar extends Component {
                   {_.get(currentUser, 'username') || "Anonymous"}
                   <span className="caret"></span>
                 </a>
-                <ul className="dropdown-menu">
+                <ul className="dropdown-menu username-menu">
                   <li><a href="#" onClick={() => this.openUsernameModal()}>Edit Username</a></li>
                 </ul>
                 <UsernameModal modalIsOpen={this.state.isUsernameModalOpen}

@@ -52,8 +52,15 @@ function* saveNewBet(data) {
 function* getActiveBets(data) {
   yield put(betActions.fetchGetActiveBets.request());
   try {
-    const activeBets = yield call(betService.getActiveBets);
-    yield put(betActions.fetchGetActiveBets.success({activeBets}));
+    const opts = yield select(state => state.betStore.get("activeBetsLoadOpts"));
+    const results = yield call(betService.getActiveBets, opts);
+
+    let loadMore = opts.offset > 0;
+    yield put(betActions.fetchGetActiveBets.success({
+      activeBets: results.bets,
+      activeBetsTotalCount: results.count,
+      loadMore: loadMore
+    }));
   } catch (error) {
     yield put(betActions.fetchGetActiveBets.failure({error}));
     yield put(notificationActions.error({
