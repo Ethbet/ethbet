@@ -8,6 +8,10 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING,
       validate: {
         notEmpty: true,
+        len: {
+          args: [1,16],
+          msg: "Must be less than 16 characters"
+        },
       },
       unique: true
     },

@@ -1,6 +1,7 @@
 const _ = require('lodash');
 
 let betService = require('../lib/betService');
+let errorService = require('../lib/errorService');
 
 
 module.exports = {
@@ -15,7 +16,7 @@ module.exports = {
       res.status(200).json({results});
     }
     catch (err) {
-      res.status(500).json(err);
+      res.status(500).json({message: errorService.sanitize(err).message});
     }
   },
 
@@ -25,7 +26,7 @@ module.exports = {
       res.status(200).json({bets});
     }
     catch (err) {
-      res.status(500).json(err);
+      res.status(500).json({message: errorService.sanitize(err).message});
     }
   },
 
@@ -43,7 +44,7 @@ module.exports = {
       res.status(200).json({bet});
     }
     catch (err) {
-      res.status(500).json({message: err.message});
+      res.status(500).json({message: errorService.sanitize(err).message});
     }
   },
 
@@ -56,7 +57,7 @@ module.exports = {
       res.status(200).json({});
     }
     catch (err) {
-      res.status(500).json({message: err.message});
+      res.status(500).json({message: errorService.sanitize(err).message});
     }
   },
 
@@ -70,7 +71,7 @@ module.exports = {
       res.status(200).json(results);
     }
     catch (err) {
-      res.status(500).json({message: err.message});
+      res.status(500).json({message: errorService.sanitize(err).message});
     }
   },
 

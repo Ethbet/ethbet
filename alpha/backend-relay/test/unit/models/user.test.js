@@ -64,6 +64,17 @@ describe('user', function () {
         }
       });
 
+      it('username too long', async function it() {
+        try {
+          await db.User.create(UserFactory.build({username: "12345678901234567"}));
+
+          throw new Error("Validation should have failed");
+        }
+        catch (err) {
+          expect(err.message).to.eq('Validation error: Must be less than 16 characters')
+        }
+      });
+
     });
 
   });

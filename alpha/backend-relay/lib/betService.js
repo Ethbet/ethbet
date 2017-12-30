@@ -17,6 +17,7 @@ async function createBet(betData) {
 
   let results = await ethbetService.lockBalance(bet.user, bet.amount);
 
+  bet.dataValues.username = await userService.getUsername(bet.user);
   socketService.emit("betCreated", bet);
 
   return bet;
@@ -35,7 +36,23 @@ async function getActiveBets(opts = {orderField: 'createdAt', orderDirection: 'D
     limit: 50
   });
 
-  return {bets: result.rows, count: result.count};
+  let populatedBets = await populateUserNames(result.rows);
+
+  return {bets: populatedBets, count: result.count};
+}
+
+async function populateUserNames(bets) {
+  let userAddresses = _.union(_.map(bets, 'user'), _.map(bets, 'callerUser'));
+  let usernames = await userService.getUsernames(userAddresses);
+
+  for (i = 0; i < bets.length; i++) {
+    let bet = bets[i];
+    // populate values
+    bet.dataValues.username = usernames[bet.user];
+    bet.dataValues.callerUsername = usernames[bet.callerUser];
+  }
+
+  return bets;
 }
 
 async function getExecutedBets() {
@@ -51,18 +68,11 @@ async function getExecutedBets() {
     limit: 20
   });
 
-  let userAddresses = _.union(_.map(bets, 'user'), _.map(bets, 'callerUser'));
-  let usernames = await userService.getUsernames(userAddresses);
+  let populatedBets = await populateUserNames(bets);
 
-  for (i = 0; i < bets.length; i++) {
-    let bet = bets[i];
-    // populate values
-    bet.dataValues.username = usernames[bet.user];
-    bet.dataValues.callerUsername = usernames[bet.callerUser];
-  }
-
-  return bets;
+  return populatedBets;
 }
+
 
 function getBetLockId(betId) {
   return `bet-${betId}`;
@@ -185,4 +195,5 @@ module.exports = {
   getExecutedBets,
   cancelBet,
   callBet,
+  populateUserNames
 };

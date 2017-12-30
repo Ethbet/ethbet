@@ -25,7 +25,8 @@ class UsernameModal extends Component {
 
   isValidNewUser() {
     let newUserUsername = this.props.userStore.get("newUser").username;
-    return _.trim(newUserUsername);
+    let newUserUsernameLength = _.trim(newUserUsername).length;
+    return newUserUsernameLength > 0 && newUserUsernameLength <= 16;
   }
 
   render() {
