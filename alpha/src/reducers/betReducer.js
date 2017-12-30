@@ -122,17 +122,20 @@ export default function betReducer(state = new ImmutableMap(initialData), action
 
   const betCreated = (state) => {
     return state
-      .set('activeBets', [action.bet, ...state.get('activeBets')]);
+      .set('activeBets', [action.bet, ...state.get('activeBets')])
+      .set('activeBetsTotalCount', state.get('activeBetsTotalCount') + 1);
   };
 
   const betCanceled = (state) => {
     return state
-      .set('activeBets', state.get('activeBets').filter((bet) => bet.id !== action.bet.id));
+      .set('activeBets', state.get('activeBets').filter((bet) => bet.id !== action.bet.id))
+      .set('activeBetsTotalCount', state.get('activeBetsTotalCount') - 1);
   };
 
   const betCalled = (state) => {
     return state
       .set('activeBets', state.get('activeBets').filter((bet) => bet.id !== action.bet.id))
+      .set('activeBetsTotalCount', state.get('activeBetsTotalCount') - 1)
       .set('executedBets', [action.bet, ...state.get('executedBets')]);
   };
 
