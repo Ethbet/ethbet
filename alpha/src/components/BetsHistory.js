@@ -18,7 +18,7 @@ class BetsHistory extends Component {
     return (
       <div className="col-lg-12">
         <div className="well">
-          <legend>Executed bets</legend>
+          <legend>Executed Bets</legend>
 
           <div className="row">
             {betStore.get("executedBets").map((bet) => (

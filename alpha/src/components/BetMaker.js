@@ -39,7 +39,7 @@ class BetMaker extends Component {
       <div className="col-lg-6">
         <div className="well">
           <form className="form-horizontal">
-            <legend>Make bet</legend>
+            <legend>Offer Bet</legend>
             <div className="row">
               <div className="col-lg-8 col-lg-offset-2 bet-row input-group">
                 <input name="amount" type="text" className="form-control"

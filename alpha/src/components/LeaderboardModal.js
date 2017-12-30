@@ -45,7 +45,7 @@ class LeaderboardModal extends Component {
                 <tr>
                   <th>Rank</th>
                   <th>Username</th>
-                  <th>Total Won/Loss</th>
+                  <th>Profit (EBET)</th>
                 </tr>
                 </thead>
                 <tbody>
