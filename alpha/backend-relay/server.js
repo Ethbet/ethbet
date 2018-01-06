@@ -53,8 +53,10 @@ server.listen(PORT, function (err) {
   }
 });
 
-// Starting web3 provider
-web3Service.init();
+// Starting web3 provider unless in test mode
+if (process.env.NODE_ENV !== "test") {
+  web3Service.init();
+}
 
 
 module.exports = {

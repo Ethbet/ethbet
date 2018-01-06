@@ -9,7 +9,8 @@ function init() {
 
   web3.eth.getAccounts((err, accounts) => {
     if (err) {
-      return reject(err);
+      console.log(err);
+      process.exit(0);
     }
 
     let relayAccount;
@@ -34,7 +35,8 @@ function init() {
     let networkName;
     web3.version.getNetwork((err, networkId) => {
       if (err) {
-        return reject(err);
+        console.log(err);
+        process.exit(0);
       }
 
       switch (networkId) {
