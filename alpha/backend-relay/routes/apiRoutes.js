@@ -1,6 +1,7 @@
 let betsApiController = require('../controllers/betsApi');
 let usersApiController = require('../controllers/usersApi');
 let leaderboardApiController = require('../controllers/leaderboardApi');
+let fairnessProofApiController = require('../controllers/fairnessProofApi');
 let auth = require('../lib/authMiddleware');
 
 module.exports = function (app) {
@@ -15,5 +16,7 @@ module.exports = function (app) {
   app.get('/api/users/:address', usersApiController.getUser);
 
   app.get('/api/leaderboard', leaderboardApiController.getLeaderboard);
+
+  app.get('/api/fairness-proofs', fairnessProofApiController.getFairnessProofs);
 
 };

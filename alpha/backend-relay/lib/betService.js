@@ -158,7 +158,7 @@ async function callBet(betId, callerSeed, callerUser) {
     callerSeed: callerSeed,
     betId: bet.id,
   };
-  let rollResults = diceService.calculateRoll(rollInput);
+  let rollResults = await diceService.calculateRoll(rollInput);
 
   let rollUnder = 50 + bet.edge / 2;
   let makerWon = (rollResults.roll <= rollUnder);

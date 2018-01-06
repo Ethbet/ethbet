@@ -12,6 +12,7 @@ import Notifications from 'react-notification-system-redux';
 
 import UsernameModal from './UsernameModal';
 import LeaderboardModal from './LeaderboardModal';
+import FairnessProofsModal from './FairnessProofsModal';
 
 class Navbar extends Component {
 
@@ -20,6 +21,7 @@ class Navbar extends Component {
     this.state = {
       isUsernameModalOpen: false,
       isLeaderboardModalOpen: false,
+      isFairnessProofsModalOpen: false,
     };
   }
 
@@ -47,6 +49,14 @@ class Navbar extends Component {
 
   handleLeaderboardModalCloseRequest() {
     this.setState({isLeaderboardModalOpen: false});
+  }
+
+  openFairnessProofsModal() {
+    this.setState({isFairnessProofsModalOpen: true});
+  }
+
+  handleFairnessProofsModalCloseRequest() {
+    this.setState({isFairnessProofsModalOpen: false});
   }
 
 
@@ -81,6 +91,16 @@ class Navbar extends Component {
               </li>
               <LeaderboardModal modalIsOpen={this.state.isLeaderboardModalOpen}
                              handleModalCloseRequest={this.handleLeaderboardModalCloseRequest.bind(this)}/>
+            </ul>
+
+            <ul className="nav navbar-nav">
+              <li className="dropdown">
+                <a href="#" className="dropdown-toggle" data-toggle="dropdown" onClick={() => this.openFairnessProofsModal()}>
+                  <b>FairnessProofs</b>
+                </a>
+              </li>
+              <FairnessProofsModal modalIsOpen={this.state.isFairnessProofsModalOpen}
+                                handleModalCloseRequest={this.handleFairnessProofsModalCloseRequest.bind(this)}/>
             </ul>
 
             <ul className="nav navbar-nav navbar-right">

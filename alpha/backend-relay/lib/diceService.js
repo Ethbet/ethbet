@@ -1,11 +1,11 @@
 const crypto = require('crypto');
 const seedrandom = require('seedrandom');
 
-let randomService = require('../lib/randomService');
+let fairnessProofService = require('../lib/fairnessProofService');
 
 
-function calculateRoll(rollInput) {
-  let serverSeed = randomService.generateSeed();
+async function calculateRoll(rollInput) {
+  let serverSeed = await fairnessProofService.getCurrentServerSeed();
 
   let fullSeed = this.generateFullSeed(rollInput.makerSeed, rollInput.callerSeed, serverSeed, rollInput.betId);
 
@@ -36,5 +36,5 @@ function generateSeedHashDigest(seed) {
 module.exports = {
   calculateRoll,
   generateFullSeed,
-  generateSeedHashDigest
+  generateSeedHashDigest : generateSeedHashDigest
 };

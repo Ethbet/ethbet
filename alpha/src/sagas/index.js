@@ -6,6 +6,7 @@ import balanceSaga from './balanceSaga';
 import betSaga from './betSaga';
 import userSaga from './userSaga';
 import leaderboardSaga from './leaderboardSaga';
+import fairnessProofSaga from './fairnessProofSaga';
 
 export const runSagas = (sagaMiddleware) => {
   function* rootSaga() {
@@ -14,6 +15,7 @@ export const runSagas = (sagaMiddleware) => {
     yield fork(betSaga);
     yield fork(userSaga);
     yield fork(leaderboardSaga);
+    yield fork(fairnessProofSaga);
     yield fork(errorsSaga);
   }
 

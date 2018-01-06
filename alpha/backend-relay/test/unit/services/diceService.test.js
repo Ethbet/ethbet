@@ -4,7 +4,7 @@ const crypto = require('crypto');
 const tk = require('timekeeper');
 
 let diceService = require('../../../lib/diceService');
-let randomService = require('../../../lib/randomService');
+let fairnessProofService = require('../../../lib/fairnessProofService');
 
 describe('diceService', function diceServiceTest() {
 
@@ -29,7 +29,7 @@ describe('diceService', function diceServiceTest() {
 
 
   describe('calculateRoll', function calculateRollTest() {
-    let generateSeedStub, generateFullSeedStub;
+    let getCurrentServerSeedStub, generateFullSeedStub;
 
     let rollInput = {
       makerSeed: "maker12345678901",
@@ -43,9 +43,9 @@ describe('diceService', function diceServiceTest() {
     before(function beforeTest() {
       tk.freeze(new Date());
 
-      generateSeedStub = sinon.stub(randomService, "generateSeed");
-      generateSeedStub.callsFake(function () {
-        return serverSeed;
+      getCurrentServerSeedStub = sinon.stub(fairnessProofService, "getCurrentServerSeed");
+      getCurrentServerSeedStub.callsFake(function () {
+        return Promise.resolve(serverSeed);
       });
 
       generateFullSeedStub = sinon.stub(diceService, "generateFullSeed");
@@ -60,8 +60,8 @@ describe('diceService', function diceServiceTest() {
 
     });
 
-    it('ok', function it() {
-      let rollResults = diceService.calculateRoll(rollInput);
+    it('ok', async function it() {
+      let rollResults = await diceService.calculateRoll(rollInput);
       expect(rollResults).to.deep.eq({
         "executedAt": new Date(),
         "fullSeed": "maker12345678901caller1234567890server123456789046",
@@ -72,7 +72,7 @@ describe('diceService', function diceServiceTest() {
 
     after(function afterTest() {
       tk.reset();
-      generateSeedStub.restore();
+      getCurrentServerSeedStub.restore();
       generateFullSeedStub.restore();
     });
 

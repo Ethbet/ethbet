@@ -24,6 +24,7 @@
     "moment": "^2.18.1",
     "morgan": "^1.8.2",
     "mysql2": "^1.4.2",
+    "node-schedule": "^1.2.5",
     "seedrandom": "^2.4.3",
     "sequelize": "4.22.1",
     "sequelize-cli": "3.0.0",

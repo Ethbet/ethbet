@@ -664,7 +664,7 @@ describe('betService', function betServiceTest() {
               betId: bet.id,
             });
 
-            return rollResults;
+            return Promise.resolve(rollResults);
           });
 
           emitStub = sinon.stub(socketService, "emit");
@@ -731,7 +731,7 @@ describe('betService', function betServiceTest() {
               betId: bet.id,
             });
 
-            return rollResults;
+            return Promise.resolve(rollResults);
           });
 
           emitStub = sinon.stub(socketService, "emit");

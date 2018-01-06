@@ -54,6 +54,7 @@
     "font-awesome": "^4.7.0",
     "immutable": "^3.8.2",
     "lockfile": "^1.0.3",
+    "moment": "^2.19.3",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-loader": "^2.4.2",

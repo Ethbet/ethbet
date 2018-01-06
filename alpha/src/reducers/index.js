@@ -7,6 +7,7 @@ import balanceReducer from './balanceReducer';
 import betReducer from './betReducer';
 import userReducer from './userReducer';
 import leaderboardReducer from './leaderboardReducer';
+import fairnessProofReducer from './fairnessProofReducer';
 
 const rootReducer = combineReducers({
   routing: routerReducer,
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   betStore: betReducer,
   userStore: userReducer,
   leaderboardStore: leaderboardReducer,
+  fairnessProofStore: fairnessProofReducer,
 });
 
 export default rootReducer;
