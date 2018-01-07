@@ -15,9 +15,6 @@ module.exports = {
       serverSeedHash: {
         type: Sequelize.STRING,
       },
-      published: {
-        type: Sequelize.BOOLEAN,
-      },
 
       createdAt: {
         allowNull: false,

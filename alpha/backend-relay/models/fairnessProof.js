@@ -15,9 +15,6 @@ module.exports = function (sequelize, DataTypes) {
         notEmpty: true,
       },
     },
-    published: {
-      type: DataTypes.BOOLEAN,
-    },
 
   }, {
     classMethods: {

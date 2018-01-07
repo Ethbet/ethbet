@@ -68,7 +68,6 @@ describe('fairnessProofService', function fairnessProofServiceTest() {
         expect(!!fairnessProof.id).to.equal(true);
         expect(fairnessProof.serverSeed).to.equal(serverSeed);
         expect(fairnessProof.serverSeedHash).to.equal(serverSeedHash);
-        expect(fairnessProof.published).to.equal(false);
       });
 
       after(function afterTest() {

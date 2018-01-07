@@ -16,7 +16,6 @@ async function create() {
   let fairnessProof = await db.FairnessProof.create({
     serverSeed,
     serverSeedHash,
-    published: false
   });
 
   return fairnessProof;
