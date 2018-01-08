@@ -6,6 +6,7 @@ let fairnessProofService = require('../lib/fairnessProofService');
 
 async function calculateRoll(rollInput) {
   let serverSeed = await fairnessProofService.getCurrentServerSeed();
+  let serverSeedHash = this.generateSeedHashDigest(serverSeed);
 
   let fullSeed = this.generateFullSeed(rollInput.makerSeed, rollInput.callerSeed, serverSeed, rollInput.betId);
 
@@ -18,8 +19,7 @@ async function calculateRoll(rollInput) {
   return {
     roll,
     executedAt,
-    serverSeed,
-    fullSeed
+    serverSeedHash
   }
 }
 

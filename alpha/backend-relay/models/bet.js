@@ -57,20 +57,8 @@ module.exports = function (sequelize, DataTypes) {
         len: 16,
       }
     },
-    serverSeed: {
+    serverSeedHash: {
       type: DataTypes.STRING,
-      validate: {
-        notEmpty: true,
-        is: ["^[a-z0-9]+$",'i'],
-        len: 16,
-      }
-    },
-    fullSeed: {
-      type: DataTypes.STRING,
-      validate: {
-        notEmpty: true,
-        is: ["^[a-z0-9]+$",'i'],
-      }
     },
     roll: {
       type: DataTypes.FLOAT,

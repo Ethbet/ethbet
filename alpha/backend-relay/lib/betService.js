@@ -169,8 +169,7 @@ async function callBet(betId, callerSeed, callerUser) {
     executedAt: rollResults.executedAt,
     callerUser: callerUser,
     callerSeed: callerSeed,
-    serverSeed: rollResults.serverSeed,
-    fullSeed: rollResults.fullSeed,
+    serverSeedHash: rollResults.serverSeedHash,
     roll: rollResults.roll,
     makerWon: makerWon
   });
@@ -183,7 +182,7 @@ async function callBet(betId, callerSeed, callerUser) {
 
   return {
     tx: txResults.tx,
-    seedMessage: `We combined the makerSeed (${rollInput.makerSeed}), the callerSeed (${rollInput.callerSeed}) and the server seed (${rollResults.serverSeed}), and the betID (${rollInput.betId}) in order to produce the fullSeed: ${rollResults.fullSeed}`,
+    seedMessage: `We combined the makerSeed (${rollInput.makerSeed}), the callerSeed (${rollInput.callerSeed}) and the server seed (Hidden until next day), and the betID (${rollInput.betId}) in order to produce the fullSeed for the rolls`,
     resultMessage: `You rolled a ${Math.round(rollResults.roll * 100) / 100} (needed ${rollUnder}) and ${makerWon ? 'lost' : 'won'} ${bet.amount / 100} EBET!'`
   };
 }

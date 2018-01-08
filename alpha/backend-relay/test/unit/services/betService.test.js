@@ -650,7 +650,7 @@ describe('betService', function betServiceTest() {
           "executedAt": new Date("2017-05-31T11:54:44.000Z"),
           "fullSeed": "fullseed",
           "roll": 53.9,
-          "serverSeed": "serverseed123456"
+          "serverSeedHash": "hash1"
         };
 
         before(async function beforeTest() {
@@ -690,14 +690,13 @@ describe('betService', function betServiceTest() {
           expect(results).to.deep.equal({
             tx: txResults.tx,
             resultMessage: "You rolled a 53.9 (needed 54) and lost 6 EBET!'",
-            seedMessage: "We combined the makerSeed (123456abcd123456), the callerSeed (callerAbcde12345) and the server seed (serverseed123456), and the betID (1) in order to produce the fullSeed: fullseed"
+            seedMessage: "We combined the makerSeed (123456abcd123456), the callerSeed (callerAbcde12345) and the server seed (Hidden until next day), and the betID (1) in order to produce the fullSeed for the rolls"
           });
 
           let updatedBet = await db.Bet.findById(bet.id);
           expect(updatedBet.executedAt.toISOString()).to.equal(rollResults.executedAt.toISOString());
           expect(updatedBet.callerUser).to.equal(callerUser);
-          expect(updatedBet.serverSeed).to.equal(rollResults.serverSeed);
-          expect(updatedBet.fullSeed).to.equal(rollResults.fullSeed);
+          expect(updatedBet.serverSeedHash).to.equal(rollResults.serverSeedHash);
           expect(updatedBet.roll).to.equal(rollResults.roll);
           expect(updatedBet.makerWon).to.equal(true);
 
@@ -717,7 +716,7 @@ describe('betService', function betServiceTest() {
           "executedAt": new Date("2017-05-31T11:54:44.000Z"),
           "fullSeed": "fullseed",
           "roll": 54.1,
-          "serverSeed": "serverseed123456"
+          "serverSeedHash": "hash2"
         };
 
         before(async function beforeTest() {
@@ -757,14 +756,13 @@ describe('betService', function betServiceTest() {
           expect(results).to.deep.equal({
             tx: txResults.tx,
             resultMessage: "You rolled a 54.1 (needed 54) and won 6 EBET!'",
-            seedMessage: "We combined the makerSeed (123456abcd123456), the callerSeed (callerAbcde12345) and the server seed (serverseed123456), and the betID (1) in order to produce the fullSeed: fullseed"
+            seedMessage: "We combined the makerSeed (123456abcd123456), the callerSeed (callerAbcde12345) and the server seed (Hidden until next day), and the betID (1) in order to produce the fullSeed for the rolls"
           });
 
           let updatedBet = await db.Bet.findById(bet.id);
           expect(updatedBet.executedAt.toISOString()).to.equal(rollResults.executedAt.toISOString());
           expect(updatedBet.callerUser).to.equal(callerUser);
-          expect(updatedBet.serverSeed).to.equal(rollResults.serverSeed);
-          expect(updatedBet.fullSeed).to.equal(rollResults.fullSeed);
+          expect(updatedBet.serverSeedHash).to.equal(rollResults.serverSeedHash);
           expect(updatedBet.roll).to.equal(rollResults.roll);
           expect(updatedBet.makerWon).to.equal(false);
 

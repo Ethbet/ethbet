@@ -64,9 +64,8 @@ describe('diceService', function diceServiceTest() {
       let rollResults = await diceService.calculateRoll(rollInput);
       expect(rollResults).to.deep.eq({
         "executedAt": new Date(),
-        "fullSeed": "maker12345678901caller1234567890server123456789046",
         "roll": 73.65321634124857,
-        "serverSeed": "server1234567890"
+        "serverSeedHash":  "b3352ec79cc8e21ab6fe363e35f795e8b2ff9eba1c228c0eaacc7737a32de10539511aa06f28bdd67a0756044d24baf220b209f99cc417b024cc275a46d799f8"
       });
     });
 
