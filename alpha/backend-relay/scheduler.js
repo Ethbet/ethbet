@@ -20,6 +20,7 @@ _.forEach(recurringJobs, function (recurringJob) {
   console.log("Scheduling kue job: " + recurringJob.name);
   schedule.scheduleJob(recurringJob.rule, function () {
     if (recurringJob.name === 'createFairnessProof') {
+      console.log("Running createFairnessProof");
       fairnessProofService.create();
     }
   });
