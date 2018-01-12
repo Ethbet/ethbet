@@ -29,7 +29,7 @@ let getWeb3 = () => new Promise(function (resolve, reject) {
 
       web3.eth.defaultAccount = accounts[0];
       console.log('Using account:', web3.eth.defaultAccount);
-      
+
       // poll for metamask account change => refresh page
       let currentAccount = accounts[0];
       setInterval(function () {
@@ -82,7 +82,7 @@ function sign(web3, object) {
 
     web3.currentProvider.sendAsync({
       method: 'personal_sign',
-      params: [web3.eth.defaultAccount, data],
+      params: [data, web3.eth.defaultAccount],
     }, function (err, signatureData) {
       //  web3.eth.sign(web3.eth.defaultAccount, data, function (err, signature) {
       if (err || signatureData.error) {
