@@ -10,7 +10,6 @@ let Loader = require('react-loader');
 import * as notificationActions from '../actions/notificationActions';
 import * as betActions from '../actions/betActions';
 
-import betService from '../utils/betService';
 
 
 import ActiveBet from "./ActiveBet";

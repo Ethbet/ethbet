@@ -11,7 +11,6 @@ import * as fairnessProofActions from '../actions/fairnessProofActions';
 import Modal from 'react-modal';
 
 let _ = require('lodash');
-let moment = require('moment');
 
 class FairnessProofs extends Component {
 

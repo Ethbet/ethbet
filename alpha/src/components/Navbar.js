@@ -13,6 +13,7 @@ import Notifications from 'react-notification-system-redux';
 import UsernameModal from './UsernameModal';
 import LeaderboardModal from './LeaderboardModal';
 import FairnessProofsModal from './FairnessProofsModal';
+import HelpModal from './HelpModal';
 
 class Navbar extends Component {
 
@@ -22,6 +23,7 @@ class Navbar extends Component {
       isUsernameModalOpen: false,
       isLeaderboardModalOpen: false,
       isFairnessProofsModalOpen: false,
+      isHelpModalOpen: false,
     };
   }
 
@@ -57,6 +59,14 @@ class Navbar extends Component {
 
   handleFairnessProofsModalCloseRequest() {
     this.setState({isFairnessProofsModalOpen: false});
+  }
+
+  openHelpModal() {
+    this.setState({isHelpModalOpen: true});
+  }
+
+  handleHelpModalCloseRequest() {
+    this.setState({isHelpModalOpen: false});
   }
 
 
@@ -96,11 +106,21 @@ class Navbar extends Component {
             <ul className="nav navbar-nav">
               <li className="dropdown">
                 <a href="#" className="dropdown-toggle" data-toggle="dropdown" onClick={() => this.openFairnessProofsModal()}>
-                  <b>FairnessProofs</b>
+                  <b>Fairness</b>
                 </a>
               </li>
               <FairnessProofsModal modalIsOpen={this.state.isFairnessProofsModalOpen}
                                 handleModalCloseRequest={this.handleFairnessProofsModalCloseRequest.bind(this)}/>
+            </ul>
+
+            <ul className="nav navbar-nav">
+              <li className="dropdown">
+                <a href="#" className="dropdown-toggle" data-toggle="dropdown" onClick={() => this.openHelpModal()}>
+                  <b>Help</b>
+                </a>
+              </li>
+              <HelpModal modalIsOpen={this.state.isHelpModalOpen}
+                                   handleModalCloseRequest={this.handleHelpModalCloseRequest.bind(this)}/>
             </ul>
 
             <ul className="nav navbar-nav navbar-right">
