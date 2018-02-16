@@ -25,7 +25,7 @@ class BetMaker extends Component {
     let newBetAmount = parseFloat(this.props.betStore.get("newBet").amount);
     let newBetEdge = parseFloat(this.props.betStore.get("newBet").edge);
     return newBetAmount > 0 &&
-      newBetEdge >= -100 && newBetEdge <= 100;
+      newBetEdge >= -99 && newBetEdge <= 99;
   }
 
   saveNewBet() {

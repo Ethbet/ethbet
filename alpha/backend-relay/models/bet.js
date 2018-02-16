@@ -15,8 +15,8 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.FLOAT,
       validate: {
         isFloat: true,
-        min: -100,
-        max: 100
+        min: -99,
+        max: 99
       }
     },
     user: {

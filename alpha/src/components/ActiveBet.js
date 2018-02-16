@@ -29,8 +29,8 @@ class ActiveBet extends Component {
       <div className="col-lg-4 active-bet" key={bet.id}>
         <div className="well">
           <div>Amount: {bet.amount / 100} EBET</div>
-          <div>Edge : {bet.edge} %</div>
-          <div>From : {userDisplay}</div>
+          <div>Edge: {bet.edge} %</div>
+          <div>From: {userDisplay}</div>
           <div>
             {bet.user === web3Store.get("web3").eth.defaultAccount ?
               <button type="button" className="btn btn-danger"
