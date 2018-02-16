@@ -4,8 +4,6 @@ const moment = require('moment');
 
 let fairnessProofService = require('../../../lib/fairnessProofService');
 let randomService = require('../../../lib/randomService');
-let diceService = require('../../../lib/diceService');
-
 
 const FairnessProofFactory = require('../../factories/fairnessProofs').FairnessProofFactory;
 
@@ -40,9 +38,8 @@ describe('fairnessProofService', function fairnessProofServiceTest() {
   });
 
   describe('create', function () {
-    let daySeedExistsStub, generateSeedStub, generateSeedHashDigestStub;
+    let daySeedExistsStub, generateSeedStub;
     let serverSeed = "1234567890123456";
-    let serverSeedHash = "server-seed-hash";
 
     context('does not exist', function context() {
       before(function beforeTest() {
@@ -56,10 +53,7 @@ describe('fairnessProofService', function fairnessProofServiceTest() {
           return (serverSeed);
         });
 
-        generateSeedHashDigestStub = sinon.stub(diceService, "generateSeedHashDigest");
-        generateSeedHashDigestStub.callsFake(function () {
-          return (serverSeedHash);
-        });
+
       });
 
       it('ok', async function it() {
@@ -67,13 +61,12 @@ describe('fairnessProofService', function fairnessProofServiceTest() {
 
         expect(!!fairnessProof.id).to.equal(true);
         expect(fairnessProof.serverSeed).to.equal(serverSeed);
-        expect(fairnessProof.serverSeedHash).to.equal(serverSeedHash);
+        expect(fairnessProof.serverSeedHash).to.equal("1f52ed515871c913164398ec24c47088cdf957e81af28c899a8a0195d3620e083968a6d4d86cb8f9bd7f909b23f75a1c044ec8e675c6efbcb0e4bf0eb445525d");
       });
 
       after(function afterTest() {
         daySeedExistsStub.restore();
         generateSeedStub.restore();
-        generateSeedHashDigestStub.restore();
       });
     });
 

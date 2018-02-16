@@ -19,14 +19,6 @@ describe('diceService', function diceServiceTest() {
     });
   });
 
-  describe('generateSeedHashDigest', function generateSeedHashDigestTest() {
-    it('ok', function it() {
-      let seed = "maker12345678901caller1234567890server123456789045";
-      let digest = diceService.generateSeedHashDigest(seed);
-      expect(digest).to.equal(crypto.createHash('sha512').update(seed).digest('hex'));
-    });
-  });
-
 
   describe('calculateRoll', function calculateRollTest() {
     let getCurrentServerSeedStub, generateFullSeedStub;

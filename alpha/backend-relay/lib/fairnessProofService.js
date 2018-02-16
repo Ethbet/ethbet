@@ -1,8 +1,7 @@
 const moment = require("moment");
 
 let randomService = require('../lib/randomService');
-let diceService = require('../lib/diceService');
-
+let cryptoService = require('./cryptoService');
 
 async function create() {
   let isDaySeedExists = await this.daySeedExists();
@@ -11,7 +10,7 @@ async function create() {
   }
 
   let serverSeed = randomService.generateSeed();
-  let serverSeedHash = diceService.generateSeedHashDigest(serverSeed);
+  let serverSeedHash = cryptoService.generateSeedHashDigest(serverSeed);
 
   let fairnessProof = await db.FairnessProof.create({
     serverSeed,
