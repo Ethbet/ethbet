@@ -194,5 +194,21 @@ contract('Ethbet', (accounts) => {
 
   });
 
+  describe('setRelay', function () {
+    it('fails if initiator is not relay', async function it() {
+      await expectRequireFailure(() => ethbetInstance.setRelay(accounts[5], {from: accounts[1]}));
+    });
+
+    it('ok if initiator is relay', async function it() {
+      let currentRelay = await ethbetInstance.relay();
+      assert.equal(currentRelay, accounts[0]);
+
+      await ethbetInstance.setRelay(accounts[5],  {from: accounts[0]});
+
+      let newRelay = await ethbetInstance.relay();
+      assert.equal(newRelay, accounts[5]);
+    });
+  });
+
 
 });

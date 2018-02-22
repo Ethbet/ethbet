@@ -22,6 +22,8 @@ contract Ethbet {
 
   event ExecutedBet(address indexed winner, address indexed loser, uint amount);
 
+  event RelayAddressChanged(address relay);
+
 
   /*
    * Storage
@@ -30,9 +32,9 @@ contract Ethbet {
 
   EthbetToken public token;
 
-  mapping (address => uint256) balances;
+  mapping(address => uint256) balances;
 
-  mapping (address => uint256) lockedBalances;
+  mapping(address => uint256) lockedBalances;
 
   /*
   * Modifiers
@@ -47,13 +49,30 @@ contract Ethbet {
   * Public functions
   */
 
-  /// @dev Contract constructor
-  function Ethbet(address _relay, address tokenAddress) public {
+  /**
+  * @dev Contract constructor
+  * @param _relay Relay Address
+  * @param _tokenAddress Ethbet Token Address
+  */
+  function Ethbet(address _relay, address _tokenAddress) public {
     // make sure relay address set
     require(_relay != address(0));
 
     relay = _relay;
-    token = EthbetToken(tokenAddress);
+    token = EthbetToken(_tokenAddress);
+  }
+
+  /**
+  * @dev set relay address
+  * @param _relay Relay Address
+  */
+  function setRelay(address _relay) public isRelay {
+    // make sure address not null
+    require(_relay != address(0));
+
+    relay = _relay;
+
+    RelayAddressChanged(_relay);
   }
 
   /**
