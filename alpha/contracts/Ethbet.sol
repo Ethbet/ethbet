@@ -1,12 +1,12 @@
 pragma solidity 0.4.18;
 
-
 import './EthbetToken.sol';
 
+// Import newer SafeMath version under new name to avoid conflict with the version included in EthbetToken
+import {SafeMath as SafeMath2} from "./SafeMath.sol";
 
-//TODO: This works if we count on only one bet at a time for a user
 contract Ethbet {
-  using SafeMath for uint256;
+  using SafeMath2 for uint256;
 
   /*
   * Events
