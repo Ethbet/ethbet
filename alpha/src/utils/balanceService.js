@@ -1,4 +1,5 @@
 import contractService from '../utils/contractService';
+
 const ethUtil = require('ethereumjs-util');
 
 
@@ -22,8 +23,8 @@ async function deposit(web3, amount) {
   const tokenInstance = await contractService.getDeployedInstance(web3, "EthbetToken");
 
   // no need to await as this would run previous to the deposit
-  tokenInstance.increaseApproval(ethbetInstance.address, amount, {gas: 100000});
-  let results = await ethbetInstance.deposit(amount, {gas: 100000});
+  tokenInstance.increaseApproval(ethbetInstance.address, amount, { from: web3.eth.defaultAccount, gas: 100000 });
+  let results = await ethbetInstance.deposit(amount, { from: web3.eth.defaultAccount, gas: 100000 });
 
   if (ethUtil.addHexPrefix(results.receipt.status.toString()) !== "0x1") {
     throw  new Error("Contract execution failed")
@@ -35,7 +36,7 @@ async function deposit(web3, amount) {
 async function withdraw(web3, amount) {
   const ethbetInstance = await contractService.getDeployedInstance(web3, "Ethbet");
 
-  let results = await ethbetInstance.withdraw(amount, {gas: 100000});
+  let results = await ethbetInstance.withdraw(amount, { from: web3.eth.defaultAccount, gas: 100000 });
 
   if (ethUtil.addHexPrefix(results.receipt.status.toString()) !== "0x1") {
     throw  new Error("Contract execution failed")

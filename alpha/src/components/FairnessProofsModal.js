@@ -24,6 +24,7 @@ class FairnessProofs extends Component {
 
     return (
       <Modal
+        ariaHideApp={false}
         className="Modal__Bootstrap modal-dialog fairness-proofs-modal-dialog"
         closeTimeoutMS={150}
         isOpen={this.props.modalIsOpen}

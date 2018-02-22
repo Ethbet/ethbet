@@ -1,14 +1,12 @@
 const truffleContract = require('truffle-contract');
 
+const EthbetToken = require('../../build/contracts/EthbetToken.json');
+const Ethbet = require('../../build/contracts/Ethbet.json');
 
-// Load Contracts Data
-const requireContext = require.context("../../build/contracts/", true, /\.(json)$/);
-const contracts = {};
-requireContext.keys().forEach((filename) => {
-  let contractData = requireContext(filename);
-  contracts[contractData.contract_name] = contractData;
-});
-
+const contracts = {
+  EthbetToken,
+  Ethbet,
+};
 
 const deployedInstances = {};
 

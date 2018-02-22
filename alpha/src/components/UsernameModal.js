@@ -34,6 +34,7 @@ class UsernameModal extends Component {
 
     return (
       <Modal
+        ariaHideApp={false}
         className="Modal__Bootstrap modal-dialog"
         closeTimeoutMS={150}
         isOpen={this.props.modalIsOpen}

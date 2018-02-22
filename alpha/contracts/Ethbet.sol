@@ -1,4 +1,4 @@
-pragma solidity ^0.4.11;
+pragma solidity 0.4.18;
 
 
 import './EthbetToken.sol';
@@ -60,7 +60,7 @@ contract Ethbet {
    * @dev deposit EBET tokens into the contract
    * @param _amount Amount to deposit
    */
-  function deposit(uint _amount) {
+  function deposit(uint _amount) public {
     require(_amount > 0);
 
     // token.approve needs to be called beforehand
