@@ -13,17 +13,26 @@ import * as betActions from '../actions/betActions';
 class ActiveBet extends Component {
 
   callBet(betId) {
-    this.props.betActions.callBet({id: betId})
+    let bet = this.props.bet;
+    let amount = bet.amount/100;
+    let winChance = 50 - bet.edge/2 ;
+    let loseChance = 50 + bet.edge/2;
+    const r = confirm(`You are calling a bet of ${amount} EBET with an edge of ${bet.edge}%.
+There is a ${winChance}% chance you will win ${amount} EBET
+There is a ${loseChance}% chance you will lose ${amount} EBET`);
+    if (r === true) {
+      this.props.betActions.callBet({ id: betId });
+    }
   }
 
   cancelBet(betId) {
-    this.props.betActions.cancelBet({id: betId})
+    this.props.betActions.cancelBet({ id: betId })
   }
 
   render() {
-    let {web3Store, betStore, bet} = this.props;
+    let { web3Store, betStore, bet } = this.props;
 
-    let userDisplay = bet.username || _.truncate(bet.user, {'length': 15 });
+    let userDisplay = bet.username || _.truncate(bet.user, { 'length': 15 });
 
     return (
       <div className="col-lg-4 active-bet" key={bet.id}>
