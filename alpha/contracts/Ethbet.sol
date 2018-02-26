@@ -97,6 +97,7 @@ contract Ethbet {
    * @param _amount Amount to withdraw
    */
   function withdraw(uint _amount) public {
+    require(_amount > 0);
     require(balances[msg.sender] >= _amount);
 
     // subtract the tokens from the user's balance
@@ -115,6 +116,7 @@ contract Ethbet {
    * @param _amount Amount to be locked
    */
   function lockBalance(address _userAddress, uint _amount) public isRelay {
+    require(_amount > 0);
     require(balances[_userAddress] >= _amount);
 
     // subtract the tokens from the user's balance
@@ -132,6 +134,7 @@ contract Ethbet {
    * @param _amount Amount to be locked
    */
   function unlockBalance(address _userAddress, uint _amount) public isRelay {
+    require(_amount > 0);
     require(lockedBalances[_userAddress] >= _amount);
 
     // subtract the tokens from the user's locked balance
