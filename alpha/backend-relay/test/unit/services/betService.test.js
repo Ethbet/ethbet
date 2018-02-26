@@ -17,7 +17,7 @@ describe('betService', function betServiceTest() {
     let emitStub, balanceOfStub, lockBalanceStub;
     let betData = {
       amount: 500,
-      edge: 1.5,
+      edge: 1.55,
       user: testAddress.public,
       seed: "123456abcd123456"
     };
@@ -54,7 +54,7 @@ describe('betService', function betServiceTest() {
         let myBet = await db.Bet.findById(bet.id);
 
         expect(myBet.amount).to.equal(500);
-        expect(myBet.edge).to.equal(1.5);
+        expect(myBet.edge).to.equal(1.55);
         expect(myBet.user).to.equal(testAddress.public);
         expect(myBet.seed).to.equal("123456abcd123456");
 

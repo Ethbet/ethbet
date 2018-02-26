@@ -3,7 +3,8 @@ import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux'
 
-let Loader = require('react-loader');
+const Loader = require('react-loader');
+const _ = require('lodash');
 
 import * as notificationActions from '../actions/notificationActions';
 import * as betActions from '../actions/betActions';
@@ -17,8 +18,18 @@ class BetMaker extends Component {
 
   updateInputValue(e, field) {
     let newBet = Object.assign({}, this.props.betStore.get("newBet"));
+
     newBet[field] = e.target.value;
-    this.props.betActions.setNewBet({newBet});
+
+    this.props.betActions.setNewBet({ newBet });
+  }
+
+  roundInputValue(e, field) {
+    let newBet = Object.assign({}, this.props.betStore.get("newBet"));
+
+    newBet[field] = _.round(e.target.value, 2);
+
+    this.props.betActions.setNewBet({ newBet });
   }
 
   isValidNewBet() {
@@ -33,7 +44,7 @@ class BetMaker extends Component {
   }
 
   render() {
-    let {betStore} = this.props;
+    let { betStore } = this.props;
 
     return (
       <div className="col-lg-6">
@@ -45,6 +56,7 @@ class BetMaker extends Component {
                 <input name="amount" type="text" className="form-control"
                        value={betStore.get("newBet").amount}
                        onChange={(e) => this.updateInputValue(e, 'amount')}
+                       onBlur={(e) => this.roundInputValue(e, 'amount')}
                        placeholder="Number of tokens"/>
                 <div className="input-group-addon">EBET</div>
               </div>
@@ -55,6 +67,8 @@ class BetMaker extends Component {
                 <input name="edge" type="text" className="form-control"
                        value={betStore.get("newBet").edge}
                        onChange={(e) => this.updateInputValue(e, 'edge')}
+                       onBlur={(e) => this.roundInputValue(e, 'edge')}
+
                        placeholder="Edge"/>
                 <div className="input-group-addon">&nbsp;&nbsp;%&nbsp;&nbsp;</div>
               </div>

@@ -23,7 +23,7 @@ async function createBet(betData) {
   return bet;
 }
 
-async function getActiveBets(opts = {orderField: 'createdAt', orderDirection: 'DESC', offset: 0}) {
+async function getActiveBets(opts = { orderField: 'createdAt', orderDirection: 'DESC', offset: 0 }) {
   let result = await db.Bet.findAndCountAll({
     where: {
       cancelledAt: null,
@@ -38,7 +38,7 @@ async function getActiveBets(opts = {orderField: 'createdAt', orderDirection: 'D
 
   let populatedBets = await populateUserNames(result.rows);
 
-  return {bets: populatedBets, count: result.count};
+  return { bets: populatedBets, count: result.count };
 }
 
 async function populateUserNames(bets) {
@@ -109,7 +109,7 @@ async function cancelBet(betId, user) {
 
   let results = await ethbetService.unlockBalance(bet.user, bet.amount);
 
-  await bet.update({cancelledAt: new Date()});
+  await bet.update({ cancelledAt: new Date() });
 
   await lockService.unlock(getBetLockId(betId));
 
@@ -183,7 +183,7 @@ async function callBet(betId, callerSeed, callerUser) {
   return {
     tx: txResults.tx,
     seedMessage: `We combined the makerSeed (${rollInput.makerSeed}), the callerSeed (${rollInput.callerSeed}) and the server seed (Hidden until next day), and the betID (${rollInput.betId}) in order to produce the fullSeed for the rolls`,
-    resultMessage: `You rolled a ${Math.round(rollResults.roll * 100) / 100} (needed ${rollUnder}) and ${makerWon ? 'lost' : 'won'} ${bet.amount / 100} EBET!'`
+    resultMessage: `You rolled a ${Math.round(rollResults.roll * 100) / 100} (needed ${_.round(rollUnder, 4)}) and ${makerWon ? 'lost' : 'won'} ${bet.amount / 100} EBET!'`
   };
 }
 
