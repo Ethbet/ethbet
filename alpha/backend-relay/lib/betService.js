@@ -5,6 +5,7 @@ let ethbetService = require('./ethbetService');
 let userService = require('./userService');
 let diceService = require('./diceService');
 let lockService = require('./lockService');
+let logService = require('./logService');
 
 async function createBet(betData) {
   let userBalance = await ethbetService.balanceOf(betData.user);
@@ -15,7 +16,16 @@ async function createBet(betData) {
 
   let bet = await db.Bet.create(betData);
 
+  logService.logger.info("New Bet, db updated: ", bet.toJSON());
+
   let results = await ethbetService.lockBalance(bet.user, bet.amount);
+
+  logService.logger.info("New Bet, balance locked : ", {
+    tx: results.tx,
+    betId: bet.id,
+    user: bet.user,
+    amount: bet.amount
+  });
 
   bet.dataValues.username = await userService.getUsername(bet.user);
   socketService.emit("betCreated", bet);
@@ -109,7 +119,17 @@ async function cancelBet(betId, user) {
 
   let results = await ethbetService.unlockBalance(bet.user, bet.amount);
 
-  await bet.update({ cancelledAt: new Date() });
+  logService.logger.info("Bet Canceled, balance unlocked : ", {
+    tx: results.tx,
+    betId: bet.id,
+    user: bet.user,
+    amount: bet.amount
+  });
+
+  let cancelledAt = new Date();
+  await bet.update({ cancelledAt });
+
+  logService.logger.info("Bet Canceled, db updated : ", { betId: bet.id, cancelledAt });
 
   await lockService.unlock(getBetLockId(betId));
 
@@ -164,15 +184,25 @@ async function callBet(betId, callerSeed, callerUser) {
   let makerWon = (rollResults.roll <= rollUnder);
 
   let txResults = await ethbetService.executeBet(bet.user, callerUser, makerWon, bet.amount);
+  logService.logger.info("Bet Called, contract updated : ", {
+    tx: txResults.tx,
+    betId: bet.id,
+    makerUser: bet.user,
+    callerUser,
+    amount: bet.amount,
+    makerWon
+  });
 
-  await bet.update({
+  let dbUpdateAttrs = {
     executedAt: rollResults.executedAt,
     callerUser: callerUser,
     callerSeed: callerSeed,
     serverSeedHash: rollResults.serverSeedHash,
     roll: rollResults.roll,
     makerWon: makerWon
-  });
+  };
+  await bet.update(dbUpdateAttrs);
+  logService.logger.info("Bet Called, db updated : ", Object.assign({}, bet.toJSON(), dbUpdateAttrs));
 
   await lockService.unlock(getBetLockId(bet.id));
 

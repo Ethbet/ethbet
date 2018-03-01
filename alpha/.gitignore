@@ -60,3 +60,5 @@ key.pem
 cert.crt
 
 .DS_Store
+
+backend-relay/logs/*
