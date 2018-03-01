@@ -2,20 +2,19 @@
     margin-bottom: 20px;
 }
 
-.active-bet .well{
+.active-bet .well {
     border: 1px solid;
     text-align: center;
 }
 
-.executed-bet .well{
+.executed-bet .well {
     border: 1px solid;
     text-align: center;
 }
 
-.username-menu{
+.username-menu {
     background-color: #375a7f;
 }
-
 
 .ReactModal__Overlay {
     -webkit-perspective: 600;
@@ -62,6 +61,22 @@
     z-index: 0;
 }
 
-.fairness-proofs-modal-dialog{
-    width: auto ;
+.fairness-proofs-modal-dialog {
+    width: auto;
+}
+
+.nav > li > a {
+    padding-left: 11px;
+    padding-right: 11px;
+}
+
+.nav-bar-logo {
+    padding-top: 16px;
+    padding-bottom: 16px;
+}
+
+.logo-img {
+    height: auto;
+    max-height: 100%;
+    vertical-align: middle;
 }

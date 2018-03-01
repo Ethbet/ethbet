@@ -39,39 +39,40 @@ class Navbar extends Component {
   }
 
   handleUsernameModalCloseRequest() {
-    this.setState({isUsernameModalOpen: false});
+    this.setState({ isUsernameModalOpen: false });
   }
+
   openUsernameModal() {
-    this.setState({isUsernameModalOpen: true});
+    this.setState({ isUsernameModalOpen: true });
   }
 
   openLeaderboardModal() {
-    this.setState({isLeaderboardModalOpen: true});
+    this.setState({ isLeaderboardModalOpen: true });
   }
 
   handleLeaderboardModalCloseRequest() {
-    this.setState({isLeaderboardModalOpen: false});
+    this.setState({ isLeaderboardModalOpen: false });
   }
 
   openFairnessProofsModal() {
-    this.setState({isFairnessProofsModalOpen: true});
+    this.setState({ isFairnessProofsModalOpen: true });
   }
 
   handleFairnessProofsModalCloseRequest() {
-    this.setState({isFairnessProofsModalOpen: false});
+    this.setState({ isFairnessProofsModalOpen: false });
   }
 
   openHelpModal() {
-    this.setState({isHelpModalOpen: true});
+    this.setState({ isHelpModalOpen: true });
   }
 
   handleHelpModalCloseRequest() {
-    this.setState({isHelpModalOpen: false});
+    this.setState({ isHelpModalOpen: false });
   }
 
 
   render() {
-    let {web3Store, userStore} = this.props;
+    let { web3Store, userStore } = this.props;
     let web3 = web3Store.get("web3");
     let networkName = web3Store.get("networkName");
     let currentUser = userStore.get("currentUser");
@@ -90,37 +91,50 @@ class Navbar extends Component {
               <span className="icon-bar"/>
               <span className="icon-bar"/>
             </button>
-            <a className="navbar-brand" href="#">EthBet</a>
+            <a className="navbar-brand nav-bar-logo" href="#">
+              <img className="logo-img" src="https://ethbet.io/img/logo.png" alt="Ethbet Logo"/>
+            </a>
           </div>
+
+          <ul className="nav navbar-nav">
+            <li className="dropdown">
+              <a href="#" className="dropdown-toggle" data-toggle="dropdown" onClick={() => this.openHelpModal()}>
+                <b>How To Play</b>
+              </a>
+            </li>
+            <HelpModal modalIsOpen={this.state.isHelpModalOpen}
+                       handleModalCloseRequest={this.handleHelpModalCloseRequest.bind(this)}/>
+          </ul>
+
+          <ul className="nav navbar-nav">
+            <li className="dropdown">
+              <a href="https://token.ethbet.io/" className="dropdown-toggle"  target="_blank">
+                <b>Ethbet Tokens</b>
+              </a>
+            </li>
+          </ul>
+
           <div id="navbar" className="navbar-collapse collapse">
             <ul className="nav navbar-nav">
               <li className="dropdown">
-                <a href="#" className="dropdown-toggle" data-toggle="dropdown" onClick={() => this.openLeaderboardModal()}>
+                <a href="#" className="dropdown-toggle" data-toggle="dropdown"
+                   onClick={() => this.openLeaderboardModal()}>
                   <b>Leaderboard</b>
                 </a>
               </li>
               <LeaderboardModal modalIsOpen={this.state.isLeaderboardModalOpen}
-                             handleModalCloseRequest={this.handleLeaderboardModalCloseRequest.bind(this)}/>
+                                handleModalCloseRequest={this.handleLeaderboardModalCloseRequest.bind(this)}/>
             </ul>
 
             <ul className="nav navbar-nav">
               <li className="dropdown">
-                <a href="#" className="dropdown-toggle" data-toggle="dropdown" onClick={() => this.openFairnessProofsModal()}>
+                <a href="#" className="dropdown-toggle" data-toggle="dropdown"
+                   onClick={() => this.openFairnessProofsModal()}>
                   <b>Fairness</b>
                 </a>
               </li>
               <FairnessProofsModal modalIsOpen={this.state.isFairnessProofsModalOpen}
-                                handleModalCloseRequest={this.handleFairnessProofsModalCloseRequest.bind(this)}/>
-            </ul>
-
-            <ul className="nav navbar-nav">
-              <li className="dropdown">
-                <a href="#" className="dropdown-toggle" data-toggle="dropdown" onClick={() => this.openHelpModal()}>
-                  <b>Help</b>
-                </a>
-              </li>
-              <HelpModal modalIsOpen={this.state.isHelpModalOpen}
-                                   handleModalCloseRequest={this.handleHelpModalCloseRequest.bind(this)}/>
+                                   handleModalCloseRequest={this.handleFairnessProofsModalCloseRequest.bind(this)}/>
             </ul>
 
             <ul className="nav navbar-nav navbar-right">

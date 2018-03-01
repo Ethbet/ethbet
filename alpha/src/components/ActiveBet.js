@@ -9,7 +9,6 @@ let _ = require('lodash');
 import * as notificationActions from '../actions/notificationActions';
 import * as betActions from '../actions/betActions';
 
-
 class ActiveBet extends Component {
 
   callBet(betId) {
