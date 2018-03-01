@@ -70,7 +70,7 @@ class BetMaker extends Component {
                        onBlur={(e) => this.roundInputValue(e, 'edge')}
 
                        placeholder="Edge"/>
-                <div className="input-group-addon">&nbsp;&nbsp;%&nbsp;&nbsp;</div>
+                <div className="input-group-addon">%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
               </div>
             </div>
 
