@@ -29,7 +29,7 @@
     "sequelize": "4.22.1",
     "sequelize-cli": "3.0.0",
     "socket.io": "^2.0.4",
-    "truffle-contract": "3.0.2",
+    "truffle-contract": "3.0.3",
     "winston": "^2.4.0",
     "winston-daily-rotate-file": "^1.7.2"
   },
