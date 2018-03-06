@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+const _ = require('lodash');
 
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux'
@@ -12,33 +13,40 @@ import BetsHistory from "./BetsHistory";
 import Balance from './Balance';
 
 
-
 class Home extends Component {
 
   render() {
-    if (!this.props.web3Store.get("web3")) {
-      return null;
-    }
+    let { web3Store } = this.props;
+
+    let web3 = web3Store.get("web3");
+    let loadingWeb3 = web3Store.get("loadingWeb3");
+    let ownAddress = _.get(web3, 'eth.defaultAccount');
 
     return (
       <div>
         <div className="container-fluid">
-          <div className="row">
-
-            <div className="col-lg-8">
+          {loadingWeb3 ? "Loading web3 ..." :
+            web3 && ownAddress ?
               <div className="row">
-                <Balance/>
-                <BetMaker/>
+                <div className="col-lg-8">
+                  <div className="row">
+                    <Balance/>
+                    <BetMaker/>
+                  </div>
+                  <div className="row">
+                    <ActiveBets/>
+                  </div>
+                </div>
+                <div className="col-lg-4">
+                  <BetsHistory/>
+                </div>
               </div>
-              <div className="row">
-                <ActiveBets/>
+              :
+              <div className="well well-sm">
+                <h3>Please enable web3</h3>
+                <p>You need <a href="https://metamask.io/">Metamask</a> in order to use Ethbet</p>
               </div>
-            </div>
-            <div className="col-lg-4">
-              <BetsHistory/>
-            </div>
-          </div>
-
+          }
         </div>
       </div>
     );

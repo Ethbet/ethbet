@@ -70,7 +70,7 @@ let getWeb3 = () => new Promise(function (resolve, reject) {
           networkName = "Private"
         }
 
-        resolve({web3, networkName});
+        resolve({ web3, networkName });
       });
     });
   });
@@ -89,7 +89,7 @@ function sign(web3, object) {
         return reject(err || signatureData.error);
       }
 
-      resolve({data: data, sig: signatureData.result, address: web3.eth.defaultAccount});
+      resolve({ data: data, sig: signatureData.result, address: web3.eth.defaultAccount });
     });
   });
 }

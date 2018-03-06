@@ -3,14 +3,27 @@ import {Map as ImmutableMap} from 'immutable';
 
 export default function web3Reducer(state = new ImmutableMap({}), action) {
 
+  const setWeb3Loading = (state) => {
+    return state
+      .set('loadingWeb3', true);
+  };
+
   const setWeb3 = (state) => {
     return state
+      .set('loadingWeb3', false)
       .set('web3', action.web3)
       .set('networkName', action.networkName);
   };
 
+  const setWeb3Failed = (state) => {
+    return state
+      .set('loadingWeb3', false);
+  };
+
   const actions = {
+    'SETUP_WEB3_REQUEST': () => setWeb3Loading(state),
     'SETUP_WEB3_SUCCESS': () => setWeb3(state),
+    'SETUP_WEB3_FAILURE': () => setWeb3Failed(state),
     'DEFAULT': () => state
   };
 
