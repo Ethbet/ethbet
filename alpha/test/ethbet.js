@@ -1,7 +1,6 @@
 const Ethbet = artifacts.require("./Ethbet.sol");
 const EthbetToken = artifacts.require("./EthbetToken.sol");
 
-const isRequireError = require('./support/isRequireError');
 const expectRequireFailure = require('./support/expectRequireFailure');
 
 contract('Ethbet', (accounts) => {

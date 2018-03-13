@@ -1,9 +1,11 @@
 const truffleContract = require('truffle-contract');
 
 let Ethbet = require('../../build/contracts/Ethbet.json');
+let EthbetOraclize = require('../../build/contracts/EthbetOraclize.json');
 
 const contracts = {
-  Ethbet: Ethbet
+  Ethbet: Ethbet,
+  EthbetOraclize: EthbetOraclize,
 };
 
 const deployedInstances = {};

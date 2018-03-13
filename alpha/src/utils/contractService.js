@@ -2,10 +2,12 @@ const truffleContract = require('truffle-contract');
 
 const EthbetToken = require('../../build/contracts/EthbetToken.json');
 const Ethbet = require('../../build/contracts/Ethbet.json');
+const EthbetOraclize = require('../../build/contracts/EthbetOraclize.json');
 
 const contracts = {
   EthbetToken,
   Ethbet,
+  EthbetOraclize,
 };
 
 const deployedInstances = {};
