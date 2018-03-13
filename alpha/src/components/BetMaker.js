@@ -58,7 +58,7 @@ class BetMaker extends Component {
                        onChange={(e) => this.updateInputValue(e, 'amount')}
                        onBlur={(e) => this.roundInputValue(e, 'amount')}
                        placeholder="Number of tokens"/>
-                <div className="input-group-addon">EBET</div>
+                <div className="input-group-addon">EBET&nbsp;&nbsp;&nbsp;&nbsp;</div>
               </div>
             </div>
 
@@ -70,7 +70,7 @@ class BetMaker extends Component {
                        onBlur={(e) => this.roundInputValue(e, 'edge')}
 
                        placeholder="Edge"/>
-                <div className="input-group-addon">%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                <div className="input-group-addon">% Edge</div>
               </div>
             </div>
 
