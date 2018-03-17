@@ -5,7 +5,10 @@ import './EthbetToken.sol';
 // Import newer SafeMath version under new name to avoid conflict with the version included in EthbetToken
 import {SafeMath as SafeMath2} from "./SafeMath.sol";
 
-contract EthbetOraclize {
+import './Ownable.sol';
+import './oraclizeAPI_0.5.sol';
+
+contract EthbetOraclize is Ownable, usingOraclize {
   using SafeMath2 for uint256;
 
   /*
@@ -16,11 +19,16 @@ contract EthbetOraclize {
   event Withdraw(address indexed user, uint amount, uint balance);
   event EthDeposit(address indexed user, uint amount, uint balance);
   event EthWithdraw(address indexed user, uint amount, uint balance);
+  event LockedEthBalance(address indexed user, uint amount);
+  event UnlockedEthBalance(address indexed user, uint amount);
   event RelayAddressChanged(address relay);
 
   /*
   * Storage
   */
+
+  // bet creation fee in ebet (2 decimals)
+  uint constant ebetFee = 200;
 
   // relay address
   address public relay;
@@ -34,6 +42,9 @@ contract EthbetOraclize {
   // Users ETH balances
   mapping(address => uint256) ethBalances;
   mapping(address => uint256) lockedEthBalances;
+
+  // Oraclize gas limit to use
+  uint oraclizeGasLimit;
 
   /*
   * Modifiers
@@ -53,19 +64,21 @@ contract EthbetOraclize {
   * @param _relay Relay Address
   * @param _tokenAddress Ethbet Token Address
   */
-  function EthbetOraclize(address _relay, address _tokenAddress) public {
+  function EthbetOraclize(address _relay, address _tokenAddress, uint _oraclizeGasLimit) public {
     // make sure relay address set
     require(_relay != address(0));
 
     relay = _relay;
     token = EthbetToken(_tokenAddress);
+
+    setOraclizeGasLimit(_oraclizeGasLimit);
   }
 
   /**
   * @dev set relay address
   * @param _relay Relay Address
   */
-  function setRelay(address _relay) public isRelay {
+  function setRelay(address _relay) public onlyOwner {
     // make sure address not null
     require(_relay != address(0));
 
@@ -108,7 +121,6 @@ contract EthbetOraclize {
     Withdraw(msg.sender, _amount, balances[msg.sender]);
   }
 
-
   /**
    * @dev deposit ETH into the contract
    */
@@ -136,6 +148,85 @@ contract EthbetOraclize {
     msg.sender.transfer(_amount);
 
     EthWithdraw(msg.sender, _amount, ethBalances[msg.sender]);
+  }
+
+  /**
+  * @dev charge fee and lock eth balance
+  * @param _userAddress User Address
+  * @param _amount Amount to be locked in wei
+  */
+  function chargeFeeAndLockEthBalance(address _userAddress, uint _amount) public isRelay {
+    // charge fee
+    chargeFee(_userAddress);
+
+    // lock balance
+    lockEthBalance(_userAddress, _amount);
+  }
+
+  /**
+   * @dev charge fee
+   * @param _userAddress User Address
+   */
+  function chargeFee(address _userAddress) internal isRelay {
+    require(balances[_userAddress] >= ebetFee);
+
+    // charge fee
+    balances[_userAddress] = balances[_userAddress].sub(ebetFee);
+    balances[owner] = balances[owner].add(ebetFee);
+  }
+
+  /**
+   * @dev Lock user eth balance to be used for bet
+   * @param _userAddress User Address
+   * @param _amount Amount to be locked in wei
+   */
+  function lockEthBalance(address _userAddress, uint _amount) public isRelay {
+    require(_amount > 0);
+    require(ethBalances[_userAddress] >= _amount);
+
+    // subtract the amount from the user's balance
+    ethBalances[_userAddress] = ethBalances[_userAddress].sub(_amount);
+
+    // add the amount to the user's locked balance
+    lockedEthBalances[_userAddress] = lockedEthBalances[_userAddress].add(_amount);
+
+    LockedEthBalance(_userAddress, _amount);
+  }
+
+  /**
+   * @dev Unlock user eth balance
+   * @param _userAddress User Address
+   * @param _amount Amount to be locked in wei
+   */
+  function unlockEthBalance(address _userAddress, uint _amount) public isRelay {
+    require(_amount > 0);
+    require(lockedEthBalances[_userAddress] >= _amount);
+
+    // subtract the tokens from the user's locked balance
+    lockedEthBalances[_userAddress] = lockedEthBalances[_userAddress].sub(_amount);
+
+    // add the tokens to the user's  balance
+    ethBalances[_userAddress] = ethBalances[_userAddress].add(_amount);
+
+    UnlockedEthBalance(_userAddress, _amount);
+  }
+
+  /**
+   * @dev Set Oraclize Gas limit
+   * @param _gasLimit gas limit
+   */
+  function setOraclizeGasLimit(uint _gasLimit) public onlyOwner
+  {
+    oraclizeGasLimit = _gasLimit;
+  }
+
+  /**
+   * @dev Set Oraclize Gas Price
+   * @param _gasPrice gas price in wei
+   */
+  function setOraclizeGasPrice(uint _gasPrice) public onlyOwner
+  {
+    oraclize_setCustomGasPrice(_gasPrice);
   }
 
   /**

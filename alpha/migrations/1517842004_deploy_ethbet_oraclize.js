@@ -9,5 +9,5 @@ module.exports = function (deployer) {
   //Parameters for the contract deployment
   const relayAddress = process.env.RELAY_ADDRESS || web3.eth.accounts[0];
 
-  return deployer.deploy(EthbetOraclize, relayAddress, EthbetToken.address);
+  return deployer.deploy(EthbetOraclize, relayAddress, EthbetToken.address, 250000);
 };
