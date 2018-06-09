@@ -63,3 +63,5 @@ cert.crt
 .DS_Store
 
 backend-relay/logs/*
+
+truffle-scripts/oraclize-create*

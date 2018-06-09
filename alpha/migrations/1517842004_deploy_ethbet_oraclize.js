@@ -10,5 +10,5 @@ module.exports = function (deployer, network) {
   const relayAddress = process.env.RELAY_ADDRESS || web3.eth.accounts[0];
 
   // deploy with 250000 max gas, 10 Gwei price
-  return deployer.deploy(EthbetOraclize, relayAddress, EthbetToken.address, 250000, 10 * Math.pow(10, 9), network === "development");
+  return deployer.deploy(EthbetOraclize, relayAddress, EthbetToken.address, 300000, 10 * Math.pow(10, 9), network === "development");
 };

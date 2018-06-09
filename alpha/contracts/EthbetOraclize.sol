@@ -25,7 +25,6 @@ contract EthbetOraclize is Ownable, usingOraclize {
   event BetInitialized(uint betId, bytes32 queryId);
   event RelayAddressChanged(address relay);
   event ExecutedBet(uint indexed betId, address winner, address loser, uint amount);
-  event LogOraclizeQueryFailure(string description);
 
   /*
   * Storage
@@ -49,6 +48,8 @@ contract EthbetOraclize is Ownable, usingOraclize {
 
   // Oraclize gas limit to use
   uint public oraclizeGasLimit;
+  // Oraclize gas price to use
+  uint public oraclizeGasPrice;
 
   // Bets indexed by oraclize query id
   mapping(bytes32 => Bet) public bets;
@@ -296,10 +297,7 @@ contract EthbetOraclize is Ownable, usingOraclize {
     require(lockedEthBalances[_caller] >= _amount);
 
     // check gas sent is sufficient for query costs
-    if (oraclize.getPrice("random") > msg.value) {
-      LogOraclizeQueryFailure("Oraclize query was not sent, msg value insufficient to cover price");
-      revert();
-    }
+    require(oraclize.getPrice("random") <= msg.value);
 
     // init bet
     Bet memory bet = Bet(_betId, _maker, _caller, _amount, _rollUnder, "", 0, false, false);
@@ -344,11 +342,11 @@ contract EthbetOraclize is Ownable, usingOraclize {
       // check bet exists not already executed
       require(!bet.executed);
 
-      // for simplicity of use, let's also convert the random bytes to uint if we need
+      // this is the highest uint we want to get, 100 with 2 decimals
       uint maxRange = 10000;
       // this is the highest uint we want to get.
+      // convert the random bytes to uint and get the uint out in the [0, maxRange] range
       uint roll = uint(sha3(_result)) % maxRange;
-      // this is an efficient way to get the uint out in the [0, maxRange] range
 
       bet.rawResult = _result;
       bet.roll = roll;
@@ -356,10 +354,18 @@ contract EthbetOraclize is Ownable, usingOraclize {
       if (roll <= bet.rollUnder) {
         bet.makerWon = true;
       }
-/*
+
       // unlock eth balances
-      unlockEthBalance(bet.maker, bet.amount);
-      unlockEthBalance(bet.caller, bet.amount);
+
+      // subtract the tokens from the maker's locked balance
+      lockedEthBalances[bet.maker] = lockedEthBalances[bet.maker].sub(bet.amount);
+      // add the tokens to the maker's balance
+      ethBalances[bet.maker] = ethBalances[bet.maker].add(bet.amount);
+
+      // subtract the tokens from the caller's locked balance
+      lockedEthBalances[bet.caller] = lockedEthBalances[bet.caller].sub(bet.amount);
+      // add the tokens to the caller's balance
+      ethBalances[bet.caller] = ethBalances[bet.caller].add(bet.amount);
 
       var winner = bet.makerWon ? bet.maker : bet.caller;
       var loser = bet.makerWon ? bet.caller : bet.maker;
@@ -370,8 +376,15 @@ contract EthbetOraclize is Ownable, usingOraclize {
       ethBalances[loser] = ethBalances[loser].sub(bet.amount);
 
       // log event
-      ExecutedBet(bet.betId, winner, loser, bet.amount);*/
+      ExecutedBet(bet.betId, winner, loser, bet.amount);
     }
+  }
+
+  /**
+  * @dev Get Oraclize Price with current params
+  */
+  function getOraclizePrice() public constant returns (uint) {
+    return oraclize.getPrice("random");
   }
 
   /**
@@ -389,6 +402,7 @@ contract EthbetOraclize is Ownable, usingOraclize {
    */
   function setOraclizeGasPrice(uint _gasPrice) public onlyOwner
   {
+    oraclizeGasPrice = _gasPrice;
     oraclize_setCustomGasPrice(_gasPrice);
   }
 
@@ -414,6 +428,16 @@ contract EthbetOraclize is Ownable, usingOraclize {
    */
   function lockedEthBalanceOf(address _userAddress) constant public returns (uint) {
     return lockedEthBalances[_userAddress];
+  }
+
+  /**
+  * @dev Get bet by id
+  */
+  function getBetById(uint betId) constant public
+  returns (address maker, address caller, uint amount, uint rollUnder, bytes rawResultInBytes, uint roll, bool makerWon, bool executed)
+  {
+    Bet memory bet = bets[queryIds[betId]];
+    return (bet.maker, bet.caller, bet.amount, bet.rollUnder, bytes(bet.rawResult), bet.roll, bet.makerWon, bet.executed);
   }
 
 }

@@ -213,7 +213,7 @@ contract('EthbetOraclize', (accounts) => {
 
       let results = await ethbetOraclizeInstance.initBet(betId, maker, caller, amount, rollUnder, {
         from: accounts[0],
-        value: web3.toWei(0.2, "ether"),
+        value: 250000 * (10 * 10 ** 9),
         gas: 1000000
       });
 
@@ -232,6 +232,20 @@ contract('EthbetOraclize', (accounts) => {
 
     });
 
+  });
+
+  describe('setOraclizeGasPrice/setOraclizeGasLimit', function () {
+    it('ok ', async function it() {
+      await ethbetOraclizeInstance.setOraclizeGasPrice((20 * 10 ** 9), { from: accounts[0] });
+
+      let oraclizeGasPrice = await ethbetOraclizeInstance.oraclizeGasPrice();
+      assert.equal(oraclizeGasPrice.toNumber(), (20 * 10 ** 9));
+
+      await ethbetOraclizeInstance.setOraclizeGasLimit((200000), { from: accounts[0] });
+
+      let oraclizeGasLimit = await ethbetOraclizeInstance.oraclizeGasLimit();
+      assert.equal(oraclizeGasLimit.toNumber(), 200000);
+    });
   });
 
   describe('setRelay', function () {
