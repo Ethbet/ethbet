@@ -1,9 +1,12 @@
 const EthbetToken = artifacts.require("./EthbetToken.sol");
 const EthbetOraclize = artifacts.require("./EthbetOraclize.sol");
+const proxiedWeb3Handler = require('../test/support/proxiedWeb3Handler.js');
 
 async function run() {
   const web3 = EthbetToken.web3;
-  const accounts = web3.eth.accounts;
+  const proxiedWeb3 = new Proxy(web3, proxiedWeb3Handler);
+
+  const accounts = await proxiedWeb3.eth.getAccounts();
 
   const tokenInstance = await EthbetToken.deployed();
   const ethbetOraclizeInstance = await EthbetOraclize.deployed();

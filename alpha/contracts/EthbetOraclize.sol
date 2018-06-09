@@ -24,6 +24,8 @@ contract EthbetOraclize is Ownable, usingOraclize {
   event UnlockedEthBalance(address indexed user, uint amount);
   event BetInitialized(uint betId, bytes32 queryId);
   event RelayAddressChanged(address relay);
+  event ExecutedBet(uint indexed betId, address winner, address loser, uint amount);
+  event LogOraclizeQueryFailure(string description);
 
   /*
   * Storage
@@ -51,6 +53,9 @@ contract EthbetOraclize is Ownable, usingOraclize {
   // Bets indexed by oraclize query id
   mapping(bytes32 => Bet) public bets;
 
+  // Bet id to query id mapping
+  mapping(uint => bytes32) public queryIds;
+
   /**
    * @dev Bet struct
    * @param maker Maker Address
@@ -67,6 +72,7 @@ contract EthbetOraclize is Ownable, usingOraclize {
     address caller;
     uint amount;
     uint rollUnder;
+    string rawResult;
     uint roll;
     bool makerWon;
     bool executed;
@@ -118,6 +124,7 @@ contract EthbetOraclize is Ownable, usingOraclize {
     }
     else {
       oraclize_setNetwork(networkID_auto);
+      oraclize_setProof(proofType_Ledger);
     }
 
     // set gas limit
@@ -273,6 +280,8 @@ contract EthbetOraclize is Ownable, usingOraclize {
   */
   function initBet(uint _betId, address _maker, address _caller, uint _amount, uint _rollUnder) payable isRelay public {
     require(_betId > 0);
+    // check bet not already initialized
+    require(queryIds[_betId] == 0);
     require(_maker != address(0));
     require(_caller != address(0));
     require(_amount > 0);
@@ -286,8 +295,14 @@ contract EthbetOraclize is Ownable, usingOraclize {
     require(lockedEthBalances[_maker] >= _amount);
     require(lockedEthBalances[_caller] >= _amount);
 
+    // check gas sent is sufficient for query costs
+    if (oraclize.getPrice("random") > msg.value) {
+      LogOraclizeQueryFailure("Oraclize query was not sent, msg value insufficient to cover price");
+      revert();
+    }
+
     // init bet
-    Bet memory bet = Bet(_betId, _maker, _caller, _amount, _rollUnder, 0, false, false);
+    Bet memory bet = Bet(_betId, _maker, _caller, _amount, _rollUnder, "", 0, false, false);
 
     // number of random bytes we want the datasource to return
     // 2 is enough to generate the roll number 0 < x < 10000
@@ -301,6 +316,7 @@ contract EthbetOraclize is Ownable, usingOraclize {
 
     // save the bet
     bets[queryId] = bet;
+    queryIds[_betId] = queryId;
 
     BetInitialized(_betId, queryId);
   }
@@ -321,10 +337,12 @@ contract EthbetOraclize is Ownable, usingOraclize {
     } else {
       // the random number was safely generated
 
+      Bet storage bet = bets[_queryId];
+
       // check bet exists
-      require(bets[_queryId].betId > 0);
+      require(bet.betId > 0);
       // check bet exists not already executed
-      require(!bets[_queryId].executed);
+      require(!bet.executed);
 
       // for simplicity of use, let's also convert the random bytes to uint if we need
       uint maxRange = 10000;
@@ -332,11 +350,27 @@ contract EthbetOraclize is Ownable, usingOraclize {
       uint roll = uint(sha3(_result)) % maxRange;
       // this is an efficient way to get the uint out in the [0, maxRange] range
 
-      bets[_queryId].roll = roll;
-      bets[_queryId].executed = true;
-      if (roll <= bets[_queryId].rollUnder) {
-        bets[_queryId].makerWon = true;
+      bet.rawResult = _result;
+      bet.roll = roll;
+      bet.executed = true;
+      if (roll <= bet.rollUnder) {
+        bet.makerWon = true;
       }
+/*
+      // unlock eth balances
+      unlockEthBalance(bet.maker, bet.amount);
+      unlockEthBalance(bet.caller, bet.amount);
+
+      var winner = bet.makerWon ? bet.maker : bet.caller;
+      var loser = bet.makerWon ? bet.caller : bet.maker;
+
+      // add the tokens to the winner's balance
+      ethBalances[winner] = ethBalances[winner].add(bet.amount);
+      // remove the tokens from the loser's balance
+      ethBalances[loser] = ethBalances[loser].sub(bet.amount);
+
+      // log event
+      ExecutedBet(bet.betId, winner, loser, bet.amount);*/
     }
   }
 
