@@ -65,7 +65,7 @@ contract EthbetOraclize is Ownable, usingOraclize {
    * @param rollUnder max roll for the maker to win, 2 decimals
    * @param roll actual roll calculated by oraclize, 2 decimals
    * @param makerWon did the maker win ?
-   * @param executed was the bet executed ?
+   * @param executedAt bet execution timestamp in milliseconds
    */
   struct Bet {
     uint betId;
@@ -76,7 +76,7 @@ contract EthbetOraclize is Ownable, usingOraclize {
     string rawResult;
     uint roll;
     bool makerWon;
-    bool executed;
+    uint executedAt;
   }
 
   /*
@@ -281,8 +281,7 @@ contract EthbetOraclize is Ownable, usingOraclize {
   */
   function initBet(uint _betId, address _maker, address _caller, uint _amount, uint _rollUnder) payable isRelay public {
     require(_betId > 0);
-    // check bet not already initialized
-    require(queryIds[_betId] == 0);
+    require(!isBetInitialized(_betId));
     require(_maker != address(0));
     require(_caller != address(0));
     require(_amount > 0);
@@ -300,7 +299,7 @@ contract EthbetOraclize is Ownable, usingOraclize {
     require(oraclize.getPrice("random") <= msg.value);
 
     // init bet
-    Bet memory bet = Bet(_betId, _maker, _caller, _amount, _rollUnder, "", 0, false, false);
+    Bet memory bet = Bet(_betId, _maker, _caller, _amount, _rollUnder, "", 0, false, 0);
 
     // number of random bytes we want the datasource to return
     // 2 is enough to generate the roll number 0 < x < 10000
@@ -340,7 +339,7 @@ contract EthbetOraclize is Ownable, usingOraclize {
       // check bet exists
       require(bet.betId > 0);
       // check bet exists not already executed
-      require(!bet.executed);
+      require(bet.executedAt == 0);
 
       // this is the highest uint we want to get, 100 with 2 decimals
       uint maxRange = 10000;
@@ -350,7 +349,7 @@ contract EthbetOraclize is Ownable, usingOraclize {
 
       bet.rawResult = _result;
       bet.roll = roll;
-      bet.executed = true;
+      bet.executedAt = block.timestamp * 1000;
       if (roll <= bet.rollUnder) {
         bet.makerWon = true;
       }
@@ -432,12 +431,22 @@ contract EthbetOraclize is Ownable, usingOraclize {
 
   /**
   * @dev Get bet by id
+  * @param _betId Bet Id
   */
-  function getBetById(uint betId) constant public
-  returns (address maker, address caller, uint amount, uint rollUnder, bytes rawResultInBytes, uint roll, bool makerWon, bool executed)
+  function getBetById(uint _betId) constant public
+  returns (address maker, address caller, uint amount, uint rollUnder, bytes rawResultInBytes, uint roll, bool makerWon, uint executedAt)
   {
-    Bet memory bet = bets[queryIds[betId]];
-    return (bet.maker, bet.caller, bet.amount, bet.rollUnder, bytes(bet.rawResult), bet.roll, bet.makerWon, bet.executed);
+    Bet memory bet = bets[queryIds[_betId]];
+    return (bet.maker, bet.caller, bet.amount, bet.rollUnder, bytes(bet.rawResult), bet.roll, bet.makerWon, bet.executedAt);
   }
+
+  /**
+  * @dev Is Bet Initialized
+  * @param _betId Bet Id
+  */
+  function isBetInitialized(uint _betId) constant public returns (bool) {
+    return queryIds[_betId] != 0;
+  }
+
 
 }

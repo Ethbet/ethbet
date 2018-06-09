@@ -4,7 +4,7 @@ const _ = require('lodash');
 
 let socketService = require('../../../lib/socketService');
 let betService = require('../../../lib/betService');
-let ethbetService = require('../../../lib/ethbetService');
+let ethbetService = require('../../../lib/blockchain/ethbetService');
 let userService = require('../../../lib/userService');
 let diceService = require('../../../lib/diceService');
 const testAddress = require('../../support/testAddress.json');

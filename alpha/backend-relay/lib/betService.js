@@ -1,7 +1,7 @@
 let _ = require('lodash');
 
 let socketService = require('./socketService');
-let ethbetService = require('./ethbetService');
+let ethbetService = require('./blockchain/ethbetService');
 let userService = require('./userService');
 let diceService = require('./diceService');
 let lockService = require('./lockService');
@@ -46,24 +46,12 @@ async function getActiveBets(opts = { orderField: 'createdAt', orderDirection: '
     limit: 50
   });
 
-  let populatedBets = await populateUserNames(result.rows);
+  let populatedBets = await userService.populateUserNames(result.rows);
 
   return { bets: populatedBets, count: result.count };
 }
 
-async function populateUserNames(bets) {
-  let userAddresses = _.union(_.map(bets, 'user'), _.map(bets, 'callerUser'));
-  let usernames = await userService.getUsernames(userAddresses);
 
-  for (i = 0; i < bets.length; i++) {
-    let bet = bets[i];
-    // populate values
-    bet.dataValues.username = usernames[bet.user];
-    bet.dataValues.callerUsername = usernames[bet.callerUser];
-  }
-
-  return bets;
-}
 
 async function getExecutedBets() {
   let bets = await db.Bet.findAll({
@@ -78,7 +66,7 @@ async function getExecutedBets() {
     limit: 20
   });
 
-  let populatedBets = await populateUserNames(bets);
+  let populatedBets = await userService.populateUserNames(bets);
 
   return populatedBets;
 }
@@ -223,6 +211,5 @@ module.exports = {
   getActiveBets,
   getExecutedBets,
   cancelBet,
-  callBet,
-  populateUserNames
+  callBet
 };

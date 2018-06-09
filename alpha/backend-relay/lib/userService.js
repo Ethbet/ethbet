@@ -62,9 +62,24 @@ async function getUsernames(addresses) {
   return usernames;
 }
 
+async function populateUserNames(bets) {
+  let userAddresses = _.union(_.map(bets, 'user'), _.map(bets, 'callerUser'));
+  let usernames = await this.getUsernames(userAddresses);
+
+  for (i = 0; i < bets.length; i++) {
+    let bet = bets[i];
+    // populate values
+    bet.dataValues.username = usernames[bet.user];
+    bet.dataValues.callerUsername = usernames[bet.callerUser];
+  }
+
+  return bets;
+}
+
 module.exports = {
   createUser,
   getUser,
   getUsername,
-  getUsernames
+  getUsernames,
+  populateUserNames
 };
