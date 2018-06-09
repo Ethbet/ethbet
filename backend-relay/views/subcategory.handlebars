@@ -1,0 +1,9 @@
+<h2>{{category}} | {{subcategory}} Pages</h2>
+
+<p>Our top fresh pages</p>
+
+{{#each pages}}
+    <li>
+        <a href="/{{id}}/{{title}}">{{title}}</a>
+    </li>
+{{/each}}
