@@ -42,6 +42,7 @@ build_webpack/
 
 # truffle config
 truffle.js
+truffle-staging.js
 
 # nginx conf
 nginx-staging.conf

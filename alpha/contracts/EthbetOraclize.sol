@@ -3,13 +3,14 @@ pragma solidity ^0.4.19;
 import './EthbetToken.sol';
 
 // Import newer SafeMath version under new name to avoid conflict with the version included in EthbetToken
-import {SafeMath as SafeMath2} from "./SafeMath.sol";
+//import "./SafeMath.sol";
 
 import './Ownable.sol';
-import './oraclizeAPI_0.5.sol';
+import './oraclizeAPI_0.4.sol';
+
 
 contract EthbetOraclize is Ownable, usingOraclize {
-  using SafeMath2 for uint256;
+  using SafeMath for uint256;
 
   /*
   * Events
@@ -21,13 +22,14 @@ contract EthbetOraclize is Ownable, usingOraclize {
   event EthWithdraw(address indexed user, uint amount, uint balance);
   event LockedEthBalance(address indexed user, uint amount);
   event UnlockedEthBalance(address indexed user, uint amount);
+  event BetInitialized(uint betId, bytes32 queryId);
   event RelayAddressChanged(address relay);
 
   /*
   * Storage
   */
 
-  // bet creation fee in ebet (2 decimals)
+  // bet fee in ebet (2 decimals)
   uint constant ebetFee = 200;
 
   // relay address
@@ -37,14 +39,38 @@ contract EthbetOraclize is Ownable, usingOraclize {
   EthbetToken public token;
 
   // Users EBET balances
-  mapping(address => uint256) balances;
+  mapping(address => uint256) public balances;
 
   // Users ETH balances
-  mapping(address => uint256) ethBalances;
-  mapping(address => uint256) lockedEthBalances;
+  mapping(address => uint256) public ethBalances;
+  mapping(address => uint256) public lockedEthBalances;
 
   // Oraclize gas limit to use
-  uint oraclizeGasLimit;
+  uint public oraclizeGasLimit;
+
+  // Bets indexed by oraclize query id
+  mapping(bytes32 => Bet) public bets;
+
+  /**
+   * @dev Bet struct
+   * @param maker Maker Address
+   * @param caller Caller Address
+   * @param amount bet amount in wei
+   * @param rollUnder max roll for the maker to win, 2 decimals
+   * @param roll actual roll calculated by oraclize, 2 decimals
+   * @param makerWon did the maker win ?
+   * @param executed was the bet executed ?
+   */
+  struct Bet {
+    uint betId;
+    address maker;
+    address caller;
+    uint amount;
+    uint rollUnder;
+    uint roll;
+    bool makerWon;
+    bool executed;
+  }
 
   /*
   * Modifiers
@@ -60,18 +86,44 @@ contract EthbetOraclize is Ownable, usingOraclize {
   */
 
   /**
-  * @dev Contract constructor
-  * @param _relay Relay Address
-  * @param _tokenAddress Ethbet Token Address
-  */
-  function EthbetOraclize(address _relay, address _tokenAddress, uint _oraclizeGasLimit) public {
+   * @dev Contract constructor
+   * @param _relay Relay Address
+   * @param _tokenAddress Ethbet Token Address
+   * @param _oraclizeGasLimit Oraclize gas limit
+   * @param _oraclizeGasPrice Oraclize gas price
+   * @param _isDevelopment set to true if development mode
+   */
+  function EthbetOraclize(address _relay, address _tokenAddress, uint _oraclizeGasLimit, uint _oraclizeGasPrice, bool _isDevelopment) public {
     // make sure relay address set
     require(_relay != address(0));
 
+    // set relay and token
     relay = _relay;
     token = EthbetToken(_tokenAddress);
 
+    // setup oraclize
+    setupOraclize(_oraclizeGasLimit, _oraclizeGasPrice, _isDevelopment);
+  }
+
+  /**
+   * @dev setup oraclize
+   * @param _oraclizeGasLimit Oraclize gas limit
+   * @param _oraclizeGasPrice Oraclize gas price
+   * @param _isDevelopment set to true if development mode
+   */
+  function setupOraclize(uint _oraclizeGasLimit, uint _oraclizeGasPrice, bool _isDevelopment) internal {
+    if (_isDevelopment) {
+      // set OAR for testrpc
+      OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
+    }
+    else {
+      oraclize_setNetwork(networkID_auto);
+    }
+
+    // set gas limit
     setOraclizeGasLimit(_oraclizeGasLimit);
+    // set gas price
+    setOraclizeGasPrice(_oraclizeGasPrice);
   }
 
   /**
@@ -209,6 +261,83 @@ contract EthbetOraclize is Ownable, usingOraclize {
     ethBalances[_userAddress] = ethBalances[_userAddress].add(_amount);
 
     UnlockedEthBalance(_userAddress, _amount);
+  }
+
+  /**
+  * @dev Init bet
+  * @param _betId Bet Id
+  * @param _maker Maker Address
+  * @param _caller Caller Address
+  * @param _amount amount
+  * @param _rollUnder roll under
+  */
+  function initBet(uint _betId, address _maker, address _caller, uint _amount, uint _rollUnder) payable isRelay public {
+    require(_betId > 0);
+    require(_maker != address(0));
+    require(_caller != address(0));
+    require(_amount > 0);
+    // check _rollUnder is valid (2 decimals)
+    require(_rollUnder > 0 && _rollUnder < 10000);
+
+    // lock the bet amount for the caller
+    chargeFeeAndLockEthBalance(_caller, _amount);
+
+    // check locked eth balances are sufficient
+    require(lockedEthBalances[_maker] >= _amount);
+    require(lockedEthBalances[_caller] >= _amount);
+
+    // init bet
+    Bet memory bet = Bet(_betId, _maker, _caller, _amount, _rollUnder, 0, false, false);
+
+    // number of random bytes we want the datasource to return
+    // 2 is enough to generate the roll number 0 < x < 10000
+    uint N = 2;
+    // delay to wait
+    uint delay = 0;
+
+    // this function internally generates the correct oraclize_query and returns its queryId
+    bytes32 queryId = oraclize_newRandomDSQuery(delay, N, oraclizeGasLimit);
+    //bytes32 queryId = oraclize_query("nested", "[URL] ['json(https://api.random.org/json-rpc/1/invoke).result.random[\"serialNumber\",\"data\"]', '\\n{\"jsonrpc\":\"2.0\",\"method\":\"generateSignedIntegers\",\"params\":{\"apiKey\":${[decrypt] BK8UxIEHLaY8JEQDl1sjK73+fDZaze2oRyp3OzgI3Q1Xbz7xFGJ7pKtmKXdyiML5e26HYeoxO4fOFoVQ7iHBVd3Olm0gowJ60oIiC+OfrOB+dsoobaztcFmEKMgh7bLXREL9ORAb7rUD4DVlH4NpxQ4mfkgKvtE=},\"n\":1,\"min\":1,\"max\":100,\"replacement\":true,\"base\":10${[identity] \"}\"},\"id\":1${[identity] \"}\"}']", oraclizeGasLimit);
+
+    // save the bet
+    bets[queryId] = bet;
+
+    BetInitialized(_betId, queryId);
+  }
+
+
+  /**
+   * @dev Oraclize callback
+   * @param _queryId Query Id
+   * @param _result Result
+   * @param _proof Proof
+   */
+  function __callback(bytes32 _queryId, string _result, bytes _proof)
+  {
+    if (msg.sender != oraclize_cbAddress()) throw;
+
+    if (oraclize_randomDS_proofVerify__returnCode(_queryId, _result, _proof) != 0) {
+      // the proof verification has failed
+    } else {
+      // the random number was safely generated
+
+      // check bet exists
+      require(bets[_queryId].betId > 0);
+      // check bet exists not already executed
+      require(!bets[_queryId].executed);
+
+      // for simplicity of use, let's also convert the random bytes to uint if we need
+      uint maxRange = 10000;
+      // this is the highest uint we want to get.
+      uint roll = uint(sha3(_result)) % maxRange;
+      // this is an efficient way to get the uint out in the [0, maxRange] range
+
+      bets[_queryId].roll = roll;
+      bets[_queryId].executed = true;
+      if (roll <= bets[_queryId].rollUnder) {
+        bets[_queryId].makerWon = true;
+      }
+    }
   }
 
   /**

@@ -39,17 +39,17 @@ contract('EthbetOraclize', (accounts) => {
       assert.equal(user1BalanceInEthbetContact.toNumber(), 400);
 
       // second deposit
-      await tokenInstance.approve(ethbetOraclizeInstance.address, 100, { from: accounts[2] });
-      await ethbetOraclizeInstance.deposit(100, { from: accounts[2] });
+      await tokenInstance.approve(ethbetOraclizeInstance.address, 600, { from: accounts[2] });
+      await ethbetOraclizeInstance.deposit(600, { from: accounts[2] });
 
       let user2BalanceInTokenContact = await tokenInstance.balanceOf(accounts[2]);
-      assert.equal(user2BalanceInTokenContact.toNumber(), 900);
+      assert.equal(user2BalanceInTokenContact.toNumber(), 400);
 
       ethbetBalanceInTokenContact = await tokenInstance.balanceOf(ethbetOraclizeInstance.address);
-      assert.equal(ethbetBalanceInTokenContact.toNumber(), 500);
+      assert.equal(ethbetBalanceInTokenContact.toNumber(), 1000);
 
       let user2BalanceInEthbetContact = await ethbetOraclizeInstance.balanceOf(accounts[2]);
-      assert.equal(user2BalanceInEthbetContact.toNumber(), 100);
+      assert.equal(user2BalanceInEthbetContact.toNumber(), 600);
     });
 
     it('fails if transfer not preapproved', async function it() {
@@ -66,7 +66,7 @@ contract('EthbetOraclize', (accounts) => {
       assert.equal(user1BalanceInTokenContact.toNumber(), 700);
 
       let ethbetBalanceInTokenContact = await tokenInstance.balanceOf(ethbetOraclizeInstance.address);
-      assert.equal(ethbetBalanceInTokenContact.toNumber(), 400);
+      assert.equal(ethbetBalanceInTokenContact.toNumber(), 900);
 
       let user1BalanceInEthbetContact = await ethbetOraclizeInstance.balanceOf(accounts[1]);
       assert.equal(user1BalanceInEthbetContact.toNumber(), 300);
@@ -141,18 +141,18 @@ contract('EthbetOraclize', (accounts) => {
 
   describe('unlockEthBalance', function () {
     it('fails if locked balance insufficient', async function it() {
-      await expectRequireFailure(() => ethbetOraclizeInstance.unlockEthBalance(accounts[1],  web3.toWei(0.5, "ether"), { from: accounts[0] }));
+      await expectRequireFailure(() => ethbetOraclizeInstance.unlockEthBalance(accounts[1], web3.toWei(0.5, "ether"), { from: accounts[0] }));
     });
 
     it('fails if not executed by relay', async function it() {
-      await expectRequireFailure(() => ethbetOraclizeInstance.unlockEthBalance(accounts[1],  web3.toWei(0.01, "ether"), { from: accounts[2] }));
+      await expectRequireFailure(() => ethbetOraclizeInstance.unlockEthBalance(accounts[1], web3.toWei(0.01, "ether"), { from: accounts[2] }));
     });
 
     it('ok if balance sufficient', async function it() {
-      await ethbetOraclizeInstance.unlockEthBalance(accounts[1],  web3.toWei(0.01, "ether"), { from: accounts[0] });
+      await ethbetOraclizeInstance.unlockEthBalance(accounts[1], web3.toWei(0.01, "ether"), { from: accounts[0] });
 
       let user1EthBalanceInContact = await ethbetOraclizeInstance.ethBalanceOf(accounts[1]);
-      assert.equal(user1EthBalanceInContact.toNumber(),  web3.toWei(0.11, "ether"));
+      assert.equal(user1EthBalanceInContact.toNumber(), web3.toWei(0.11, "ether"));
 
       let user1LockedEthBalanceInContact = await ethbetOraclizeInstance.lockedEthBalanceOf(accounts[1]);
       assert.equal(user1LockedEthBalanceInContact.toNumber(), web3.toWei(0.19, "ether"));
@@ -183,6 +183,53 @@ contract('EthbetOraclize', (accounts) => {
 
       user1BalanceInEthbetOraclizeContact = await ethbetOraclizeInstance.balanceOf(accounts[1]);
       assert.equal(user1BalanceInEthbetOraclizeContact.toNumber(), 100);
+    });
+
+  });
+
+  describe('initBet', function () {
+
+    let betId = 45;
+    let maker = accounts[1];
+    let caller = accounts[2];
+    let amount;
+    let rollUnder = 5300; // 6% edge
+
+    before(function beforeTest() {
+      amount = web3.toWei(0.2, "ether");
+    });
+
+    xit('fails if maker locked eth balance insufficient', async function it() {
+      await expectRequireFailure(() => ethbetOraclizeInstance.initBet(betId, maker, caller, web3.toWei(0.6, "ether"), rollUnder, { from: accounts[0] }));
+    });
+
+    xit('fails if not executed by relay', async function it() {
+      await expectRequireFailure(() => ethbetOraclizeInstance.initBet(betId, maker, caller, amount, rollUnder, { from: accounts[1] }));
+    });
+
+    xit('ok if balance sufficient', async function it() {
+      let user2BalanceInEthbetOraclizeContact = await ethbetOraclizeInstance.balanceOf(accounts[2]);
+      assert.equal(user2BalanceInEthbetOraclizeContact.toNumber(), 600);
+
+      let results = await ethbetOraclizeInstance.initBet(betId, maker, caller, amount, rollUnder, {
+        from: accounts[0],
+        value: web3.toWei(0.2, "ether"),
+        gas: 1000000
+      });
+
+      let user2LockedEthBalanceInContact = await ethbetOraclizeInstance.lockedEthBalanceOf(accounts[2]);
+      assert.equal(user2LockedEthBalanceInContact.toNumber(), amount);
+
+      // check fee was charged to caller
+      user2BalanceInEthbetOraclizeContact = await ethbetOraclizeInstance.balanceOf(accounts[2]);
+      assert.equal(user2BalanceInEthbetOraclizeContact.toNumber(), 400);
+
+      let log = results.logs[1];
+      let loggedQueryId = log.args.queryId;
+
+      let betData = await ethbetOraclizeInstance.bets(loggedQueryId);
+      assert.equal(betData[0].toNumber(), betId);
+
     });
 
   });
