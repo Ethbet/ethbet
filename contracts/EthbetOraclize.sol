@@ -276,8 +276,8 @@ contract EthbetOraclize is Ownable, usingOraclize {
   * @param _betId Bet Id
   * @param _maker Maker Address
   * @param _caller Caller Address
-  * @param _amount amount
-  * @param _rollUnder roll under
+  * @param _amount amount in Wei
+  * @param _rollUnder roll under (2 decimals)
   */
   function initBet(uint _betId, address _maker, address _caller, uint _amount, uint _rollUnder) payable isRelay public {
     require(_betId > 0);

@@ -61,4 +61,17 @@ module.exports = {
     }
   },
 
+  callBet: async function callBet(req, res) {
+    try {
+      let id = req.objectData.id;
+
+      let results = await etherBetService.callBet(id, req.body.address);
+
+      res.status(200).json(results);
+    }
+    catch (err) {
+      res.status(500).json({message: errorService.sanitize(err).message});
+    }
+  },
+
 };

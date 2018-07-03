@@ -134,10 +134,144 @@ async function cancelBet(etherBetId, user) {
   return etherBet;
 }
 
+async function callBet(betId, callerUser) {
+  let etherBet = await db.EtherBet.findById(betId);
+
+  if (!etherBet) {
+    throw new Error("Ether Bet not found");
+  }
+  if (etherBet.cancelledAt) {
+    throw new Error("Ether Bet cancelled");
+  }
+  if (etherBet.initializedAt) {
+    throw new Error("Ether Bet already called, execution in progress");
+  }
+  if (etherBet.executedAt) {
+    throw new Error("Ether Bet already executed");
+  }
+  if (etherBet.user === callerUser) {
+    throw new Error("You can't call your own bet");
+  }
+
+  let isBetInitialized = await ethbetOraclizeService.isBetInitialized(etherBet.id);
+  if (isBetInitialized) {
+    throw new Error("Ether Bet already marked as called");
+  }
+
+  let callerEtherBalance = await ethbetOraclizeService.ethBalanceOf(callerUser);
+  if (callerEtherBalance < etherBet.amount) {
+    throw new Error("Insufficient ETH Balance for bet");
+  }
+
+  let callerEbetBalance = await ethbetOraclizeService.balanceOf(callerUser);
+  if (callerEbetBalance < EBET_FEE) {
+    throw new Error("Insufficient EBET Balance for bet");
+  }
+
+  let makerLockedEthBalance = await ethbetOraclizeService.lockedEthBalanceOf(etherBet.user);
+  if (makerLockedEthBalance < etherBet.amount) {
+    throw new Error("Maker user Locked ETH Balance is less than bet amount");
+  }
+
+  try {
+    await lockService.lock(getEtherBetLockId(etherBet.id));
+  }
+  catch (err) {
+    if (err.code === 'EEXIST') {
+      throw new Error("Somebody else is currently calling or cancelling this bet ...");
+    }
+  }
+
+  let rollUnder = 50 + etherBet.edge / 2;
+
+  let txResults = await ethbetOraclizeService.initBet(etherBet.id, etherBet.user, callerUser, etherBet.amount, rollUnder);
+
+  let log = txResults.logs[1];
+  let loggedQueryId = log.args.queryId;
+
+  logService.logger.info("Ether Bet Called, contract updated : ", {
+    tx: txResults.tx,
+    betId: etherBet.id,
+    makerUser: etherBet.user,
+    callerUser,
+    amount: etherBet.amount,
+    rollUnder,
+    oraclizeQueryId: loggedQueryId
+  });
+
+  let dbUpdateAttrs = {
+    initializedAt: new Date(),
+    callerUser: callerUser,
+    queryId: loggedQueryId
+  };
+  await etherBet.update(dbUpdateAttrs);
+  logService.logger.info("Ether Bet Called, db updated : ", Object.assign({}, etherBet.toJSON(), dbUpdateAttrs));
+
+  await lockService.unlock(getEtherBetLockId(etherBet.id));
+
+  etherBet.dataValues.username = await userService.getUsername(etherBet.user);
+  etherBet.dataValues.callerUsername = await userService.getUsername(etherBet.callerUser);
+  socketService.emit("etherBetCalled", etherBet);
+
+  // watch bet execution in background
+  ethbetOraclizeService.watchBetExecutionEvent(etherBet.id).then(() => {
+    // update db upon execution
+    this.checkBetExecution(etherBet.id);
+  });
+
+  return {
+    tx: txResults.tx,
+  };
+}
+
+async function checkBetExecution(betId) {
+  let etherBet = await db.EtherBet.findById(betId);
+
+  if (!etherBet) {
+    throw new Error("Ether Bet not found");
+  }
+  if (etherBet.cancelledAt) {
+    throw new Error("Ether Bet cancelled");
+  }
+  if (!etherBet.initializedAt) {
+    throw new Error("Ether Bet not initialized");
+  }
+  if (etherBet.executedAt) {
+    // Bet execution data already saved in db
+    return;
+  }
+
+  let isBetInitialized = await ethbetOraclizeService.isBetInitialized(etherBet.id);
+  if (!isBetInitialized) {
+    throw new Error("Ether Bet not initialized on blockchain");
+  }
+
+  let contractEtherBet = await ethbetOraclizeService.getBetById(etherBet.id);
+
+  if (!contractEtherBet.executedAt) {
+    // Bet not executed yet
+    return;
+  }
+
+  let dbUpdateAttrs = {
+    executedAt: contractEtherBet.executedAt,
+    randomBytes: contractEtherBet.rawResult,
+    roll: contractEtherBet.roll,
+    makerWon: contractEtherBet.makerWon,
+  };
+  await etherBet.update(dbUpdateAttrs);
+  logService.logger.info("Ether Bet Executed, db updated : ", Object.assign({}, etherBet.toJSON(), dbUpdateAttrs));
+
+  etherBet.dataValues.username = await userService.getUsername(etherBet.user);
+  etherBet.dataValues.callerUsername = await userService.getUsername(etherBet.callerUser);
+  socketService.emit("etherBetExecuted", etherBet);
+}
 
 module.exports = {
   createBet,
   getActiveBets,
   getExecutedBets,
   cancelBet,
+  callBet,
+  checkBetExecution,
 };

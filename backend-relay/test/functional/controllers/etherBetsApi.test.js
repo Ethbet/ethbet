@@ -156,4 +156,43 @@ describe('etherBetsApi', function etherBetsApiTest() {
     });
   });
 
+  describe('callBet', function callBetTest() {
+    let callBetStub;
+    let data = {
+      id: 36,
+      seed: "1111222233334444"
+    };
+    let message;
+
+    before(function beforeTest() {
+      callBetStub = sinon.stub(etherBetService, "callBet");
+      callBetStub.callsFake(function (betId, myAddress) {
+        expect(betId).to.eq(data.id);
+        expect(myAddress).to.eq(testAddress.public);
+
+        return Promise.resolve();
+      });
+
+      message = signService.buildMessage(data, testAddress);
+    });
+
+    it('ok', function it(done) {
+      request(app)
+        .post('/api/ether-bets/call')
+        .send(message)
+        .expect(200)
+        .end(function (error, result) {
+          if (error) {
+            return done(error);
+          }
+
+          done();
+        });
+    });
+
+    after(function afterTest() {
+      callBetStub.restore();
+    });
+  });
+
 });

@@ -6,7 +6,6 @@ let socketService = require('../../../lib/socketService');
 let etherBetService = require('../../../lib/etherBetService');
 let ethbetOraclizeService = require('../../../lib/blockchain/ethbetOraclizeService');
 let userService = require('../../../lib/userService');
-let diceService = require('../../../lib/diceService');
 const testAddress = require('../../support/testAddress.json');
 
 const EtherBetFactory = require('../../factories/etherBets').EtherBetFactory;
@@ -14,7 +13,7 @@ const EtherBetFactory = require('../../factories/etherBets').EtherBetFactory;
 describe('etherBetService', function etherBetServiceTest() {
 
   describe('createBet', function () {
-    let emitStub, balanceOfStub,ethBalanceOfStub, chargeFeeAndLockEthBalanceStub;
+    let emitStub, balanceOfStub, ethBalanceOfStub, chargeFeeAndLockEthBalanceStub;
     let etherBetData = {
       amount: 1.03,
       edge: 1.55,
@@ -22,7 +21,7 @@ describe('etherBetService', function etherBetServiceTest() {
     };
 
     context('sufficient balance', function context() {
-      let results = {stub: 'results'};
+      let results = { stub: 'results' };
 
       before(function beforeTest() {
         emitStub = sinon.stub(socketService, "emit");
@@ -157,8 +156,8 @@ describe('etherBetService', function etherBetServiceTest() {
 
     before(async function beforeTest() {
       etherBet_1 = await db.EtherBet.create(EtherBetFactory.build({}));
-      etherBet_2 = await db.EtherBet.create(EtherBetFactory.build({cancelledAt: new Date()}));
-      etherBet_3 = await db.EtherBet.create(EtherBetFactory.build({initializedAt: new Date()}));
+      etherBet_2 = await db.EtherBet.create(EtherBetFactory.build({ cancelledAt: new Date() }));
+      etherBet_3 = await db.EtherBet.create(EtherBetFactory.build({ initializedAt: new Date() }));
     });
 
     it('ok', async function it() {
@@ -182,7 +181,7 @@ describe('etherBetService', function etherBetServiceTest() {
 
     before(async function beforeTest() {
       etherBet_1 = await db.EtherBet.create(EtherBetFactory.build({}));
-      etherBet_2 = await db.EtherBet.create(EtherBetFactory.build({cancelledAt: new Date()}));
+      etherBet_2 = await db.EtherBet.create(EtherBetFactory.build({ cancelledAt: new Date() }));
       etherBet_3 = await db.EtherBet.create(EtherBetFactory.build({
         user: userAddress_1,
         callerUser: userAddress_2,
@@ -311,7 +310,7 @@ describe('etherBetService', function etherBetServiceTest() {
         emitStub = sinon.stub(socketService, "emit");
         unlockEthBalanceStub = sinon.stub(ethbetOraclizeService, "unlockEthBalance");
 
-        etherBet = await db.EtherBet.create(Object.assign({}, etherBetData, {cancelledAt: new Date()}));
+        etherBet = await db.EtherBet.create(Object.assign({}, etherBetData, { cancelledAt: new Date() }));
       });
 
       it('fails', async function it() {
@@ -342,7 +341,7 @@ describe('etherBetService', function etherBetServiceTest() {
         emitStub = sinon.stub(socketService, "emit");
         unlockEthBalanceStub = sinon.stub(ethbetOraclizeService, "unlockEthBalance");
 
-        etherBet = await db.EtherBet.create(Object.assign({}, etherBetData, {initializedAt: new Date()}));
+        etherBet = await db.EtherBet.create(Object.assign({}, etherBetData, { initializedAt: new Date() }));
       });
 
       it('fails', async function it() {
@@ -367,13 +366,13 @@ describe('etherBetService', function etherBetServiceTest() {
         unlockEthBalanceStub.restore();
       });
     });
-    
+
     context('bet already executed', function context() {
       before(async function beforeTest() {
         emitStub = sinon.stub(socketService, "emit");
         unlockEthBalanceStub = sinon.stub(ethbetOraclizeService, "unlockEthBalance");
 
-        etherBet = await db.EtherBet.create(Object.assign({}, etherBetData, {executedAt: new Date()}));
+        etherBet = await db.EtherBet.create(Object.assign({}, etherBetData, { executedAt: new Date() }));
       });
 
       it('fails', async function it() {
@@ -404,7 +403,7 @@ describe('etherBetService', function etherBetServiceTest() {
         emitStub = sinon.stub(socketService, "emit");
         unlockEthBalanceStub = sinon.stub(ethbetOraclizeService, "unlockEthBalance");
 
-        etherBet = await db.EtherBet.create(Object.assign({}, etherBetData, {user: "0x12f7c4c8977a5b9addb52b83e23c9d0f3b89be16"}));
+        etherBet = await db.EtherBet.create(Object.assign({}, etherBetData, { user: "0x12f7c4c8977a5b9addb52b83e23c9d0f3b89be16" }));
       });
 
       it('fails', async function it() {
@@ -431,7 +430,7 @@ describe('etherBetService', function etherBetServiceTest() {
     });
 
     context('sufficient locked balance', function context() {
-      let results = {stub: 'results'};
+      let results = { stub: 'results' };
 
       before(async function beforeTest() {
         emitStub = sinon.stub(socketService, "emit");
@@ -476,6 +475,525 @@ describe('etherBetService', function etherBetServiceTest() {
     });
   });
 
+  describe('callBet', function () {
+    let emitStub, isBetInitializedStub, balanceOfStub, ethBalanceOfStub,
+      lockedEthBalanceOfStub, initBetStub, watchBetExecutionEventStub, checkBetExecutionStub;
+    let callerUser = "0x05ad37D5393cD877f64ad36f1791ED09d847b123";
+    let etherBetData = {
+      amount: 0.8,
+      edge: 1.5,
+      user: testAddress.public,
+    };
+    let etherBet;
+
+    context('bet does not exist', function context() {
+      before(async function beforeTest() {
+        emitStub = sinon.stub(socketService, "emit");
+        initBetStub = sinon.stub(ethbetOraclizeService, "initBet");
+
+        etherBet = await db.EtherBet.create(etherBetData);
+      });
+
+      it('fails', async function it() {
+        try {
+          await etherBetService.callBet(etherBet.id + 100, callerUser);
+
+          throw new Error("Bet Creation should have failed");
+        }
+        catch (err) {
+          expect(err.message).to.eq('Ether Bet not found')
+        }
+
+        expect(emitStub.callCount).to.equal(0);
+        expect(initBetStub.callCount).to.equal(0);
+
+        let updatedBet = await db.EtherBet.findById(etherBet.id);
+        expect(updatedBet.executedAt).to.eq(null);
+      });
+
+      after(function afterTest() {
+        emitStub.restore();
+        initBetStub.restore();
+      });
+    });
+
+    context('bet canceled', function context() {
+      before(async function beforeTest() {
+        emitStub = sinon.stub(socketService, "emit");
+        initBetStub = sinon.stub(ethbetOraclizeService, "initBet");
+
+        etherBet = await db.EtherBet.create(Object.assign({}, etherBetData, { cancelledAt: new Date() }));
+      });
+
+      it('fails', async function it() {
+        try {
+          await etherBetService.callBet(etherBet.id, callerUser);
+
+          throw new Error("Bet Creation should have failed");
+        }
+        catch (err) {
+          expect(err.message).to.eq('Ether Bet cancelled')
+        }
+
+        expect(emitStub.callCount).to.equal(0);
+        expect(initBetStub.callCount).to.equal(0);
+
+        let updatedBet = await db.EtherBet.findById(etherBet.id);
+        expect(updatedBet.initializedAt).to.eq(null);
+        expect(updatedBet.executedAt).to.eq(null);
+      });
+
+      after(function afterTest() {
+        emitStub.restore();
+        initBetStub.restore();
+      });
+    });
+
+    context('bet already initialized', function context() {
+      before(async function beforeTest() {
+        emitStub = sinon.stub(socketService, "emit");
+        initBetStub = sinon.stub(ethbetOraclizeService, "initBet");
+
+        etherBet = await db.EtherBet.create(Object.assign({}, etherBetData, { initializedAt: new Date(2017, 3, 4) }));
+      });
+
+      it('fails', async function it() {
+        try {
+          await etherBetService.callBet(etherBet.id, callerUser);
+
+          throw new Error("Bet Creation should have failed");
+        }
+        catch (err) {
+          expect(err.message).to.eq('Ether Bet already called, execution in progress')
+        }
+
+        expect(emitStub.callCount).to.equal(0);
+        expect(initBetStub.callCount).to.equal(0);
+
+        let updatedBet = await db.EtherBet.findById(etherBet.id);
+        expect(!!updatedBet.initializedAt).to.eq(true);
+        expect(updatedBet.executedAt).to.eq(null);
+      });
+
+      after(function afterTest() {
+        emitStub.restore();
+        initBetStub.restore();
+      });
+    });
+
+    context('bet already executed', function context() {
+      before(async function beforeTest() {
+        emitStub = sinon.stub(socketService, "emit");
+        initBetStub = sinon.stub(ethbetOraclizeService, "initBet");
+
+        etherBet = await db.EtherBet.create(Object.assign({}, etherBetData, { executedAt: new Date(2017, 3, 4) }));
+      });
+
+      it('fails', async function it() {
+        try {
+          await etherBetService.callBet(etherBet.id, callerUser);
+
+          throw new Error("Bet Creation should have failed");
+        }
+        catch (err) {
+          expect(err.message).to.eq('Ether Bet already executed')
+        }
+
+        expect(emitStub.callCount).to.equal(0);
+        expect(initBetStub.callCount).to.equal(0);
+
+        let updatedBet = await db.EtherBet.findById(etherBet.id);
+        expect(!!updatedBet.executedAt).to.eq(true);
+      });
+
+      after(function afterTest() {
+        emitStub.restore();
+        initBetStub.restore();
+      });
+    });
+
+    context('own bet', function context() {
+      before(async function beforeTest() {
+        emitStub = sinon.stub(socketService, "emit");
+        initBetStub = sinon.stub(ethbetOraclizeService, "initBet");
+
+        etherBet = await db.EtherBet.create(etherBetData);
+      });
+
+      it('fails', async function it() {
+        try {
+          await etherBetService.callBet(etherBet.id, etherBetData.user);
+
+          throw new Error("Bet Creation should have failed");
+        }
+        catch (err) {
+          expect(err.message).to.eq('You can\'t call your own bet')
+        }
+
+        expect(emitStub.callCount).to.equal(0);
+        expect(initBetStub.callCount).to.equal(0);
+
+        let updatedBet = await db.EtherBet.findById(etherBet.id);
+        expect(updatedBet.executedAt).to.eq(null);
+      });
+
+      after(function afterTest() {
+        emitStub.restore();
+        initBetStub.restore();
+      });
+    });
+
+    context('bet already initialized in blockchain', function context() {
+      before(async function beforeTest() {
+        emitStub = sinon.stub(socketService, "emit");
+        initBetStub = sinon.stub(ethbetOraclizeService, "initBet");
+
+        isBetInitializedStub = sinon.stub(ethbetOraclizeService, "isBetInitialized");
+        isBetInitializedStub.callsFake(function (myBetId) {
+          expect(myBetId).to.eq(etherBet.id);
+
+          return Promise.resolve(true);
+        });
+
+        etherBet = await db.EtherBet.create(etherBetData);
+      });
+
+      it('fails', async function it() {
+        try {
+          await etherBetService.callBet(etherBet.id, callerUser);
+
+          throw new Error("Bet Creation should have failed");
+        }
+        catch (err) {
+          expect(err.message).to.eq('Ether Bet already marked as called')
+        }
+
+        expect(emitStub.callCount).to.equal(0);
+        expect(initBetStub.callCount).to.equal(0);
+
+        let updatedBet = await db.EtherBet.findById(etherBet.id);
+        expect(updatedBet.executedAt).to.eq(null);
+      });
+
+      after(function afterTest() {
+        emitStub.restore();
+        initBetStub.restore();
+        isBetInitializedStub.restore();
+      });
+    });
+
+    describe('bet not already initialized in blockchain', function () {
+      before(async function beforeTest() {
+        isBetInitializedStub = sinon.stub(ethbetOraclizeService, "isBetInitialized");
+        isBetInitializedStub.callsFake(function (myBetId) {
+          expect(myBetId).to.eq(etherBet.id);
+
+          return Promise.resolve(false);
+        });
+      });
+
+      describe('insufficient eth balance', function () {
+        before(async function beforeTest() {
+          emitStub = sinon.stub(socketService, "emit");
+          initBetStub = sinon.stub(ethbetOraclizeService, "initBet");
+
+          ethBalanceOfStub = sinon.stub(ethbetOraclizeService, "ethBalanceOf");
+          ethBalanceOfStub.callsFake(function (userAddress) {
+            expect(userAddress).to.eq(callerUser);
+
+            return Promise.resolve(etherBetData.amount / 2);
+          });
+
+          etherBet = await db.EtherBet.create(etherBetData);
+        });
+
+        it('fails', async function it() {
+          try {
+            await etherBetService.callBet(etherBet.id, callerUser);
+
+            throw new Error("Bet Creation should have failed");
+          }
+          catch (err) {
+            expect(err.message).to.eq('Insufficient ETH Balance for bet')
+          }
+
+          expect(emitStub.callCount).to.equal(0);
+          expect(initBetStub.callCount).to.equal(0);
+
+          let updatedBet = await db.EtherBet.findById(etherBet.id);
+          expect(updatedBet.executedAt).to.eq(null);
+        });
+
+        after(function afterTest() {
+          emitStub.restore();
+          initBetStub.restore();
+          ethBalanceOfStub.restore();
+        });
+      });
+
+      describe('sufficient eth balance', function () {
+        before(async function beforeTest() {
+          ethBalanceOfStub = sinon.stub(ethbetOraclizeService, "ethBalanceOf");
+          ethBalanceOfStub.callsFake(function (userAddress) {
+            expect(userAddress).to.eq(callerUser);
+
+            return Promise.resolve(etherBetData.amount * 2);
+          });
+        });
+
+        describe('insufficient EBET balance', function () {
+          before(async function beforeTest() {
+            emitStub = sinon.stub(socketService, "emit");
+            initBetStub = sinon.stub(ethbetOraclizeService, "initBet");
+
+            balanceOfStub = sinon.stub(ethbetOraclizeService, "balanceOf");
+            balanceOfStub.callsFake(function (userAddress) {
+              expect(userAddress).to.eq(callerUser);
+
+              return Promise.resolve(100);
+            });
+
+            etherBet = await db.EtherBet.create(etherBetData);
+          });
+
+          it('fails', async function it() {
+            try {
+              await etherBetService.callBet(etherBet.id, callerUser);
+
+              throw new Error("Bet Creation should have failed");
+            }
+            catch (err) {
+              expect(err.message).to.eq('Insufficient EBET Balance for bet')
+            }
+
+            expect(emitStub.callCount).to.equal(0);
+            expect(initBetStub.callCount).to.equal(0);
+
+            let updatedBet = await db.EtherBet.findById(etherBet.id);
+            expect(updatedBet.executedAt).to.eq(null);
+          });
+
+          after(function afterTest() {
+            emitStub.restore();
+            initBetStub.restore();
+            balanceOfStub.restore();
+          });
+        });
+
+        describe('sufficient EBET balance', function () {
+          before(async function beforeTest() {
+            balanceOfStub = sinon.stub(ethbetOraclizeService, "balanceOf");
+            balanceOfStub.callsFake(function (userAddress) {
+              expect(userAddress).to.eq(callerUser);
+
+              return Promise.resolve(400);
+            });
+          });
+
+          describe('insufficient maker locked balance', function context() {
+            before(async function beforeTest() {
+              emitStub = sinon.stub(socketService, "emit");
+
+              lockedEthBalanceOfStub = sinon.stub(ethbetOraclizeService, "lockedEthBalanceOf");
+              lockedEthBalanceOfStub.callsFake(function (userAddress) {
+                expect(userAddress).to.eq(etherBetData.user);
+
+                return Promise.resolve(etherBetData.amount / 2);
+              });
+
+              etherBet = await db.EtherBet.create(etherBetData);
+            });
+
+            it('fails', async function it() {
+              try {
+                await etherBetService.callBet(etherBet.id, callerUser);
+
+                throw new Error("Bet Creation should have failed");
+              }
+              catch (err) {
+                expect(err.message).to.eq('Maker user Locked ETH Balance is less than bet amount')
+              }
+
+              expect(emitStub.callCount).to.equal(0);
+              expect(initBetStub.callCount).to.equal(0);
+
+              let updatedBet = await db.EtherBet.findById(etherBet.id);
+              expect(updatedBet.executedAt).to.eq(null);
+            });
+
+            after(function afterTest() {
+              emitStub.restore();
+              lockedEthBalanceOfStub.restore();
+            });
+          });
+
+          describe('sufficient maker locked balance', function context() {
+            before(async function beforeTest() {
+              lockedEthBalanceOfStub = sinon.stub(ethbetOraclizeService, "lockedEthBalanceOf");
+              lockedEthBalanceOfStub.callsFake(function (userAddress) {
+                expect(userAddress).to.eq(etherBetData.user);
+
+                return Promise.resolve(etherBetData.amount * 2);
+              });
+            });
+
+            describe('conditions ok', function () {
+              let queryId = "query-id";
+              let txResults = {
+                tx: '9651asdcxvfads',
+                logs: ["event", {
+                  args: {
+                    queryId: queryId
+                  }
+                }]
+              };
+
+              before(async function beforeTest() {
+                etherBet = await db.EtherBet.create(etherBetData);
+
+                emitStub = sinon.stub(socketService, "emit");
+                emitStub.callsFake(function (event, data) {
+                  expect(event).to.eq("etherBetCalled");
+                  expect(data.id).to.eq(etherBet.id);
+                });
+
+                initBetStub = sinon.stub(ethbetOraclizeService, "initBet");
+                initBetStub.callsFake(function (myBetId, myMaker, myCaller, myAmount, myRollUnder) {
+                  expect(myBetId).to.eq(etherBet.id);
+                  expect(myMaker).to.eq(etherBet.user);
+                  expect(myCaller).to.eq(callerUser);
+                  expect(myAmount).to.eq(etherBetData.amount);
+                  expect(myRollUnder).to.eq(50.75);
+
+                  return Promise.resolve(txResults);
+                });
+
+                watchBetExecutionEventStub = sinon.stub(ethbetOraclizeService, "watchBetExecutionEvent");
+                watchBetExecutionEventStub.callsFake(function (myBetId) {
+                  expect(myBetId).to.eq(etherBet.id);
+
+                  return Promise.resolve();
+                });
+
+                checkBetExecutionStub = sinon.stub(etherBetService, "checkBetExecution");
+                checkBetExecutionStub.callsFake(function (myBetId) {
+                  expect(myBetId).to.eq(etherBet.id);
+
+                  return Promise.resolve();
+                });
+              });
+
+              it('ok', async function it() {
+                let results = await etherBetService.callBet(etherBet.id, callerUser);
+
+                expect(results).to.deep.equal({
+                  tx: txResults.tx,
+                });
+
+                let updatedBet = await db.EtherBet.findById(etherBet.id);
+                expect(!!updatedBet.initializedAt).to.equal(true);
+                expect(updatedBet.callerUser).to.equal(callerUser);
+                expect(updatedBet.queryId).to.equal(queryId);
+
+                expect(emitStub.callCount).to.equal(1);
+                expect(initBetStub.callCount).to.equal(1);
+              });
+
+              after(function afterTest() {
+                emitStub.restore();
+                initBetStub.restore();
+                watchBetExecutionEventStub.restore();
+                checkBetExecutionStub.restore();
+              });
+
+            });
+
+            after(function afterTest() {
+              lockedEthBalanceOfStub.restore();
+            });
+          });
+
+          after(function afterTest() {
+            balanceOfStub.restore();
+          });
+        });
+
+        after(function afterTest() {
+          ethBalanceOfStub.restore();
+        });
+      });
+
+      after(async function afterTest() {
+        isBetInitializedStub.restore();
+      });
+    });
+  });
+
+  describe('checkBetExecution', function () {
+    let emitStub, isBetInitializedStub, getBetByIdStub;
+    let etherBetData = {
+      amount: 0.8,
+      edge: 6,
+      user: testAddress.public,
+      initializedAt: new Date(1518620591149),
+    };
+    let contractEtherBet = {
+      "amount": 0.8,
+      "caller": "0x002",
+      "executedAt": new Date(1518620592000),
+      "maker": testAddress.public,
+      "makerWon": true,
+      "rawResult": "du",
+      "roll": 47.23,
+      "rollUnder": 53,
+    };
+    let etherBet;
+
+    context('conditions ok', function context() {
+
+      before(async function beforeTest() {
+        emitStub = sinon.stub(socketService, "emit");
+        emitStub.callsFake(function (event, data) {
+          expect(event).to.eq("etherBetExecuted");
+          expect(data.amount).to.eq(etherBetData.amount);
+        });
+
+        isBetInitializedStub = sinon.stub(ethbetOraclizeService, "isBetInitialized");
+        isBetInitializedStub.callsFake(function (myBetId) {
+          expect(myBetId).to.eq(etherBet.id);
+
+          return Promise.resolve(true);
+        });
+
+        getBetByIdStub = sinon.stub(ethbetOraclizeService, "getBetById");
+        getBetByIdStub.callsFake(function (myBetId) {
+          expect(myBetId).to.eq(etherBet.id);
+
+          return Promise.resolve(contractEtherBet);
+        });
+
+        etherBet = await db.EtherBet.create(etherBetData);
+      });
+
+      it('ok', async function it() {
+        await etherBetService.checkBetExecution(etherBet.id);
+
+        let updatedBet = await db.EtherBet.findById(etherBet.id);
+        expect(updatedBet.executedAt.toISOString()).to.equal(contractEtherBet.executedAt.toISOString());
+        expect(updatedBet.randomBytes).to.equal(contractEtherBet.rawResult);
+        expect(updatedBet.roll).to.equal(contractEtherBet.roll);
+        expect(updatedBet.makerWon).to.equal(contractEtherBet.makerWon);
+
+        expect(emitStub.callCount).to.equal(1);
+      });
+
+      after(function afterTest() {
+        emitStub.restore();
+        isBetInitializedStub.restore();
+        getBetByIdStub.restore();
+      });
+    });
+  });
 
 });
 
