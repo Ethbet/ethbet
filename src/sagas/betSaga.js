@@ -184,13 +184,13 @@ function* watchCallBet() {
   yield takeEvery(betActions.CALL_BET, callBet);
 }
 
-function* watchSetupWeb3Success() {
-  yield takeEvery(web3Actions.SETUP_WEB3.SUCCESS, loadInitialData);
+function* watchEbetLoadInitialData() {
+  yield takeEvery(web3Actions.EBET_LOAD_INITIAL_DATA, loadInitialData);
 }
 
 export default function* betSaga() {
   yield all([
-    watchSetupWeb3Success(),
+    watchEbetLoadInitialData(),
     watchSaveNewBet(),
     watchGetActiveBets(),
     watchGetExecutedBets(),

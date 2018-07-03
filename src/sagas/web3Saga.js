@@ -3,7 +3,8 @@ import {call, put, all, takeEvery,select} from 'redux-saga/effects';
 import * as web3Actions from '../actions/web3Actions';
 
 import web3Service from '../utils/web3Service';
-import logWatchService from '../utils/logWatchService';
+import ebetLogWatchService from '../utils/ebetLogWatchService';
+import etherLogWatchService from '../utils/etherLogWatchService';
 
 
 function* initWeb3(data) {
@@ -11,14 +12,27 @@ function* initWeb3(data) {
   try {
     const {web3, networkName} = yield call(web3Service.getWeb3);
     yield put(web3Actions.setupWeb3.success({web3, networkName}));
+    
+    if(data.appType === "EBET"){
+      yield put(web3Actions.ebetLoadInitialData());
+    }
+    else{
+      yield put(web3Actions.etherLoadInitialData());
+    }
+  
   } catch (error) {
     yield put(web3Actions.setupWeb3.failure({error}));
   }
 }
 
-function* startLogWatch(data) {
+function* startEbetLogWatch(data) {
   const web3 = yield select(state => state.web3Store.get("web3"));
-  yield call(logWatchService.start, web3);
+  yield call(ebetLogWatchService.start, web3);
+}
+
+function* startEtherLogWatch(data) {
+  const web3 = yield select(state => state.web3Store.get("web3"));
+  yield call(etherLogWatchService.start, web3);
 }
 
 
@@ -26,13 +40,18 @@ function* watchInitWeb3() {
   yield takeEvery(web3Actions.INIT_WEB3, initWeb3);
 }
 
-function* watchSetupWeb3Success() {
-  yield takeEvery(web3Actions.SETUP_WEB3.SUCCESS, startLogWatch);
+function* watchEbetLoadInitialData() {
+  yield takeEvery(web3Actions.EBET_LOAD_INITIAL_DATA, startEbetLogWatch);
+}
+
+function* watchEtherLoadInitialData() {
+  yield takeEvery(web3Actions.ETHER_LOAD_INITIAL_DATA, startEtherLogWatch);
 }
 
 export default function* web3Saga() {
   yield all([
     watchInitWeb3(),
-    watchSetupWeb3Success(),
+    watchEbetLoadInitialData(),
+    watchEtherLoadInitialData(),
   ]);
 }

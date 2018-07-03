@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 
-import * as web3Actions from '../actions/web3Actions';
-import * as notificationActions from '../actions/notificationActions';
+import * as web3Actions from '../../actions/web3Actions';
+import * as notificationActions from '../../actions/notificationActions';
 
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux'
@@ -10,10 +10,8 @@ const _ = require('lodash');
 
 import Notifications from 'react-notification-system-redux';
 
-import UsernameModal from './UsernameModal';
-import LeaderboardModal from './LeaderboardModal';
-import FairnessProofsModal from './FairnessProofsModal';
-import HelpModal from './HelpModal';
+import UsernameModal from '../UsernameModal';
+import HelpModal from '../HelpModal';
 
 class Navbar extends Component {
 
@@ -28,11 +26,11 @@ class Navbar extends Component {
   }
 
   componentDidMount() {
-    this.props.web3Actions.initWeb3({ appType: "EBET" });
+    this.props.web3Actions.initWeb3({ appType: "ETHER" });
 
     this.props.notificationActions.success({
       notification: {
-        message: 'Welcome to EthBet (EBET Version)',
+        message: 'Welcome to EthBet (ETH Version)',
         position: 'br'
       }
     });
@@ -115,27 +113,6 @@ class Navbar extends Component {
           </ul>
 
           <div id="navbar" className="navbar-collapse collapse">
-            <ul className="nav navbar-nav">
-              <li className="dropdown">
-                <a href="#" className="dropdown-toggle" data-toggle="dropdown"
-                   onClick={() => this.openLeaderboardModal()}>
-                  <b>Leaderboard</b>
-                </a>
-              </li>
-              <LeaderboardModal modalIsOpen={this.state.isLeaderboardModalOpen}
-                                handleModalCloseRequest={this.handleLeaderboardModalCloseRequest.bind(this)}/>
-            </ul>
-
-            <ul className="nav navbar-nav">
-              <li className="dropdown">
-                <a href="#" className="dropdown-toggle" data-toggle="dropdown"
-                   onClick={() => this.openFairnessProofsModal()}>
-                  <b>Fairness</b>
-                </a>
-              </li>
-              <FairnessProofsModal modalIsOpen={this.state.isFairnessProofsModalOpen}
-                                   handleModalCloseRequest={this.handleFairnessProofsModalCloseRequest.bind(this)}/>
-            </ul>
 
             <ul className="nav navbar-nav navbar-right">
               <li className="dropdown">

@@ -10,7 +10,8 @@ import 'font-awesome/css/font-awesome.css';
 import './css/custom.css';
 
 import Home from './components/Home';
-import Navbar from './components/Navbar';
+import EtherHome from './components/ether/Home';
+
 import history from './history'
 import socketService from './utils/socketService';
 
@@ -23,8 +24,10 @@ ReactDOM.render(
   <Provider store={store}>
     <Router history={history}>
       <div>
-        <Navbar/>
         <Route exact path="/" component={Home}/>
+        <Route exact path="/ebet" component={Home}/>
+
+        <Route exact path="/eth" component={EtherHome}/>
       </div>
     </Router>
   </Provider>

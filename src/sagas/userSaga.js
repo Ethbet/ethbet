@@ -56,8 +56,8 @@ function* saveNewUser(data) {
 }
 
 
-function* watchSetupWeb3Success() {
-  yield takeEvery(web3Actions.SETUP_WEB3.SUCCESS, loadInitialData);
+function* watchEbetLoadInitialData() {
+  yield takeEvery(web3Actions.EBET_LOAD_INITIAL_DATA, loadInitialData);
 }
 
 function* watchLoadCurrentUser() {
@@ -71,7 +71,7 @@ function* watchSaveNewUser() {
 
 export default function* userSaga() {
   yield all([
-    watchSetupWeb3Success(),
+    watchEbetLoadInitialData(),
     watchLoadCurrentUser(),
     watchSaveNewUser(),
   ]);

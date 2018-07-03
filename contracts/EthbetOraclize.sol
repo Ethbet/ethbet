@@ -24,7 +24,7 @@ contract EthbetOraclize is Ownable, usingOraclize {
   event UnlockedEthBalance(address indexed user, uint amount);
   event BetInitialized(uint betId, bytes32 queryId);
   event RelayAddressChanged(address relay);
-  event ExecutedBet(uint indexed betId, address winner, address loser, uint amount);
+  event ExecutedBet(uint indexed betId, address indexed winner, address indexed loser, uint amount);
 
   /*
   * Storage
