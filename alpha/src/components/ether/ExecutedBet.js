@@ -21,7 +21,7 @@ class ExecutedBet extends Component {
 
       <div className="col-lg-12 executed-bet" key={bet.id}>
         <div className="well">
-          <div>Amount: {bet.amount } ETHER | Edge: {bet.edge} %</div>
+          <div>Amount: {bet.amount } ETH | Edge: {bet.edge} %</div>
           <div>Winner: {winner}</div>
           <div>Loser: {loser}</div>
           <div>Time: <TimeAgo date={bet.executedAt}/></div>

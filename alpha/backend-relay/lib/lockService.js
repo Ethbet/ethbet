@@ -1,4 +1,5 @@
 const lockFile = require('lockfile');
+const fs = require('fs');
 
 function lock(id, opts = null) {
   return new Promise((resolve, reject) => {
@@ -31,7 +32,21 @@ function unlock(id) {
   });
 }
 
+function anyPendingLocks() {
+  return new Promise((resolve, reject) => {
+    fs.readdir(`/tmp/`, function (err, files) {
+      if (err) {
+        return reject(err);
+      }
+
+      let result = _.some(files, (file) => /bet.*\.lock/i.test(file));
+      resolve(result);
+    });
+  });
+}
+
 module.exports = {
   lock,
-  unlock
+  unlock,
+  anyPendingLocks
 };

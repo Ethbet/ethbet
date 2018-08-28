@@ -2,6 +2,8 @@ const contractService = require('../contractService');
 const web3Service = require('../web3Service');
 const ethUtil = require('ethereumjs-util');
 
+let GAS_PRICE = process.env.GAS_PRICE || 10 * 10 ** 9; // 10 GWei default
+
 async function balanceOf(userAddress) {
   const web3 = web3Service.getWeb3();
   const ethbetOraclizeInstance = await contractService.getDeployedInstance(web3, "EthbetOraclize");
@@ -44,6 +46,7 @@ async function chargeFeeAndLockEthBalance(userAddress, amount) {
 
   let results = await ethbetOraclizeInstance.chargeFeeAndLockEthBalance(userAddress, web3.toWei(amount, 'ether'), {
     gas: 100000,
+    gasPrice: GAS_PRICE
   });
   if (ethUtil.addHexPrefix(results.receipt.status.toString()) !== "0x1") {
     throw  new Error("Contract execution failed")
@@ -57,6 +60,7 @@ async function unlockEthBalance(userAddress, amount) {
 
   let results = await ethbetOraclizeInstance.unlockEthBalance(userAddress, web3.toWei(amount, 'ether'), {
     gas: 100000,
+    gasPrice: GAS_PRICE
   });
   if (ethUtil.addHexPrefix(results.receipt.status.toString()) !== "0x1") {
     throw  new Error("Contract execution failed")
@@ -76,6 +80,7 @@ async function initBet(betId, maker, caller, amount, rollUnder) {
   let results = await ethbetOraclizeInstance.initBet(betId, maker, caller, web3.toWei(amount, 'ether'), rollUnder * 100,
     {
       gas: 400000,
+      gasPrice: GAS_PRICE,
       value: (oraclizeGasPrice.toNumber() * oraclizeGasLimit.toNumber()) + parseInt(web3.toWei(0.00006, "ether"), 10) // Oraclize Gas price * limit  + query price 0.05 USD
     }
   );

@@ -12,6 +12,7 @@ import fairnessProofReducer from './fairnessProofReducer';
 
 import etherBalanceReducer from './etherBalanceReducer';
 import etherBetReducer from './etherBetReducer';
+import etherLeaderboardReducer from './etherLeaderboardReducer';
 
 
 const rootReducer = combineReducers({
@@ -29,7 +30,7 @@ const rootReducer = combineReducers({
   // ETH Stores
   etherBalanceStore: etherBalanceReducer,
   etherBetStore: etherBetReducer,
-
+  etherLeaderboardStore: etherLeaderboardReducer,
 
 });
 
