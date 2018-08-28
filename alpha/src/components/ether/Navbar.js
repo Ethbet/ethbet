@@ -89,7 +89,7 @@ class Navbar extends Component {
               <span className="icon-bar"/>
               <span className="icon-bar"/>
             </button>
-            <a className="navbar-brand nav-bar-logo" href="#">
+            <a className="navbar-brand nav-bar-logo" href="https://ethbet.io/">
               <img className="logo-img" src="https://ethbet.io/img/logo.png" alt="Ethbet Logo"/>
             </a>
           </div>
