@@ -164,8 +164,8 @@ describe('etherBetService', function etherBetServiceTest() {
       let results = await etherBetService.getActiveBets();
 
       expect(results.count).to.equal(1);
-      expect(results.etherBets.length).to.equal(1);
-      expect(results.etherBets[0].id).to.equal(etherBet_1.id);
+      expect(results.bets.length).to.equal(1);
+      expect(results.bets[0].id).to.equal(etherBet_1.id);
     });
   });
 

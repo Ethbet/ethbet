@@ -63,7 +63,7 @@ describe('etherBetsApi', function etherBetsApiTest() {
             return done(error);
           }
 
-          expect(result.body.etherBets).to.deep.eq(executedEtherBets);
+          expect(result.body.bets).to.deep.eq(executedEtherBets);
           done();
         });
     });

@@ -9,3 +9,9 @@ export const setupWeb3 = {
   success: (data) => action(SETUP_WEB3.SUCCESS, data),
   failure: (error) => action(SETUP_WEB3.FAILURE, error),
 };
+
+export const EBET_LOAD_INITIAL_DATA = 'EBET_LOAD_INITIAL_DATA';
+export const ebetLoadInitialData = data => action(EBET_LOAD_INITIAL_DATA, data);
+
+export const ETHER_LOAD_INITIAL_DATA = 'ETHER_LOAD_INITIAL_DATA';
+export const etherLoadInitialData = data => action(ETHER_LOAD_INITIAL_DATA, data);

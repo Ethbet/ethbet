@@ -10,6 +10,7 @@ import leaderboardSaga from './leaderboardSaga';
 import fairnessProofSaga from './fairnessProofSaga';
 
 import etherBalanceSaga from './etherBalanceSaga';
+import etherBetSaga from './etherBetSaga';
 
 export const runSagas = (sagaMiddleware) => {
   function* rootSaga() {
@@ -24,6 +25,7 @@ export const runSagas = (sagaMiddleware) => {
 
     // ETHER Sagas
     yield fork(etherBalanceSaga);
+    yield fork(etherBetSaga);
 
     yield fork(errorsSaga);
   }

@@ -4,7 +4,7 @@ const _ = require('lodash');
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux'
 
-import * as notificationActions from '../actions/notificationActions';
+import * as notificationActions from '../../actions/notificationActions';
 
 import Navbar from './Navbar';
 

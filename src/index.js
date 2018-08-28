@@ -13,11 +13,8 @@ import Home from './components/Home';
 import EtherHome from './components/ether/Home';
 
 import history from './history'
-import socketService from './utils/socketService';
 
 const store = configureStore();
-
-socketService.init();
 
 
 ReactDOM.render(

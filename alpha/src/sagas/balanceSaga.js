@@ -95,8 +95,8 @@ function* saveNewWithdrawal(data) {
 }
 
 
-function* watchSetupWeb3Success() {
-  yield takeEvery(web3Actions.SETUP_WEB3.SUCCESS, loadInitialData);
+function* watchEbetLoadInitialData() {
+  yield takeEvery(web3Actions.EBET_LOAD_INITIAL_DATA, loadInitialData);
 }
 
 function* watchLoadBalances() {
@@ -133,7 +133,7 @@ function* watchPostCallBetSuccess() {
 
 export default function* balanceSaga() {
   yield all([
-    watchSetupWeb3Success(),
+    watchEbetLoadInitialData(),
     watchLoadBalances(),
     watchSaveNewDeposit(),
     watchPostSaveNewDepositSuccess(),  

@@ -60,6 +60,10 @@ function* watchEbetLoadInitialData() {
   yield takeEvery(web3Actions.EBET_LOAD_INITIAL_DATA, loadInitialData);
 }
 
+function* watchEtherLoadInitialData() {
+  yield takeEvery(web3Actions.ETHER_LOAD_INITIAL_DATA, loadInitialData);
+}
+
 function* watchLoadCurrentUser() {
   yield takeEvery(userActions.LOAD_CURRENT_USER, loadCurrentUser);
 }
@@ -72,6 +76,7 @@ function* watchSaveNewUser() {
 export default function* userSaga() {
   yield all([
     watchEbetLoadInitialData(),
+    watchEtherLoadInitialData(),
     watchLoadCurrentUser(),
     watchSaveNewUser(),
   ]);

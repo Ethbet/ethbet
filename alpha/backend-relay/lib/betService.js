@@ -52,7 +52,6 @@ async function getActiveBets(opts = { orderField: 'createdAt', orderDirection: '
 }
 
 
-
 async function getExecutedBets() {
   let bets = await db.Bet.findAll({
     where: {
@@ -171,7 +170,15 @@ async function callBet(betId, callerSeed, callerUser) {
   let rollUnder = 50 + bet.edge / 2;
   let makerWon = (rollResults.roll <= rollUnder);
 
-  let txResults = await ethbetService.executeBet(bet.user, callerUser, makerWon, bet.amount);
+  let txResults;
+  try {
+    txResults = await ethbetService.executeBet(bet.user, callerUser, makerWon, bet.amount);
+  }
+  catch (err) {
+    lockService.unlock(getBetLockId(bet.id));
+    throw(err);
+  }
+
   logService.logger.info("Bet Called, contract updated : ", {
     tx: txResults.tx,
     betId: bet.id,

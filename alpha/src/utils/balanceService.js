@@ -45,10 +45,10 @@ async function withdraw(web3, amount) {
   return results;
 }
 
-let registryService = {
+let balanceService = {
   loadBalances: loadBalances,
   deposit: deposit,
   withdraw: withdraw,
 };
 
-export default registryService;
+export default balanceService;

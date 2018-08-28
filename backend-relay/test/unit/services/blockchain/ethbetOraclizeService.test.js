@@ -245,7 +245,7 @@ describe('ethbetOraclizeService', function ethbetOraclizeServiceTest() {
         expect(myAmount).to.eq(1.2 * 10 ** 18);
         expect(myRollUnder).to.eq(5350);
         expect(params).to.deep.eq({
-          gas: 200000,
+          gas: 400000,
           value: 2560000000000000
         });
 

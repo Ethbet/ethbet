@@ -23,8 +23,8 @@ module.exports = {
 
   getExecutedBets: async function getExecutedBets(req, res) {
     try {
-      let etherBets = await etherBetService.getExecutedBets();
-      res.status(200).json({ etherBets });
+      let bets = await etherBetService.getExecutedBets();
+      res.status(200).json({ bets });
     }
     catch (err) {
       res.status(500).json({ message: errorService.sanitize(err).message });
@@ -55,6 +55,19 @@ module.exports = {
       await etherBetService.cancelBet(id, req.body.address);
 
       res.status(200).json({});
+    }
+    catch (err) {
+      res.status(500).json({message: errorService.sanitize(err).message});
+    }
+  },
+
+  callBet: async function callBet(req, res) {
+    try {
+      let id = req.objectData.id;
+
+      let results = await etherBetService.callBet(id, req.body.address);
+
+      res.status(200).json(results);
     }
     catch (err) {
       res.status(500).json({message: errorService.sanitize(err).message});

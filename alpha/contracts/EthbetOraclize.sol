@@ -24,7 +24,7 @@ contract EthbetOraclize is Ownable, usingOraclize {
   event UnlockedEthBalance(address indexed user, uint amount);
   event BetInitialized(uint betId, bytes32 queryId);
   event RelayAddressChanged(address relay);
-  event ExecutedBet(uint indexed betId, address winner, address loser, uint amount);
+  event ExecutedBet(uint indexed betId, address indexed winner, address indexed loser, uint amount);
 
   /*
   * Storage
@@ -276,8 +276,8 @@ contract EthbetOraclize is Ownable, usingOraclize {
   * @param _betId Bet Id
   * @param _maker Maker Address
   * @param _caller Caller Address
-  * @param _amount amount
-  * @param _rollUnder roll under
+  * @param _amount amount in Wei
+  * @param _rollUnder roll under (2 decimals)
   */
   function initBet(uint _betId, address _maker, address _caller, uint _amount, uint _rollUnder) payable isRelay public {
     require(_betId > 0);

@@ -3,31 +3,31 @@ import {delay} from 'redux-saga'
 
 const _ = require('lodash');
 
-import * as betActions from '../actions/betActions';
+import * as etherBetActions from '../actions/etherBetActions';
 import * as web3Actions from '../actions/web3Actions';
 import * as notificationActions from '../actions/notificationActions';
 
-import betService from '../utils/betService';
+import etherBetService from '../utils/etherBetService';
 
 function* loadInitialData(data) {
   yield all([
-    put(betActions.getActiveBets()),
-    put(betActions.getExecutedBets())
+    put(etherBetActions.getActiveBets()),
+    put(etherBetActions.getExecutedBets())
   ])
 }
 
 function* saveNewBet(data) {
-  yield put(betActions.postSaveNewBet.request());
+  yield put(etherBetActions.postSaveNewBet.request());
   try {
     const web3 = yield select(state => state.web3Store.get("web3"));
-    const newBet = yield select(state => state.betStore.get("newBet"));
+    const newBet = yield select(state => state.etherBetStore.get("newBet"));
 
-    const results = yield call(betService.makeBet, web3, newBet);
+    const results = yield call(etherBetService.makeBet, web3, newBet);
 
     // delay to allow changes to be committed to local node
     yield delay(1000);
 
-    yield put(betActions.postSaveNewBet.success({results}));
+    yield put(etherBetActions.postSaveNewBet.success({results}));
 
     console.log("saveNewBet TX", results.tx);
     yield put(notificationActions.success({
@@ -37,7 +37,7 @@ function* saveNewBet(data) {
       }
     }));
   } catch (error) {
-    yield put(betActions.postSaveNewBet.failure({error}));
+    yield put(etherBetActions.postSaveNewBet.failure({error}));
     yield put(notificationActions.error({
       notification: {
         title: 'failed to save bet',
@@ -50,19 +50,19 @@ function* saveNewBet(data) {
 }
 
 function* getActiveBets(data) {
-  yield put(betActions.fetchGetActiveBets.request());
+  yield put(etherBetActions.fetchGetActiveBets.request());
   try {
-    const opts = yield select(state => state.betStore.get("activeBetsLoadOpts"));
-    const results = yield call(betService.getActiveBets, opts);
+    const opts = yield select(state => state.etherBetStore.get("activeBetsLoadOpts"));
+    const results = yield call(etherBetService.getActiveBets, opts);
 
     let loadMore = opts.offset > 0;
-    yield put(betActions.fetchGetActiveBets.success({
+    yield put(etherBetActions.fetchGetActiveBets.success({
       activeBets: results.bets,
       activeBetsTotalCount: results.count,
       loadMore: loadMore
     }));
   } catch (error) {
-    yield put(betActions.fetchGetActiveBets.failure({error}));
+    yield put(etherBetActions.fetchGetActiveBets.failure({error}));
     yield put(notificationActions.error({
       notification: {
         title: 'failed to get active bets',
@@ -74,12 +74,12 @@ function* getActiveBets(data) {
 }
 
 function* getExecutedBets(data) {
-  yield put(betActions.fetchGetExecutedBets.request());
+  yield put(etherBetActions.fetchGetExecutedBets.request());
   try {
-    const executedBets = yield call(betService.getExecutedBets);
-    yield put(betActions.fetchGetExecutedBets.success({executedBets}));
+    const executedBets = yield call(etherBetService.getExecutedBets);
+    yield put(etherBetActions.fetchGetExecutedBets.success({executedBets}));
   } catch (error) {
-    yield put(betActions.fetchGetExecutedBets.failure({error}));
+    yield put(etherBetActions.fetchGetExecutedBets.failure({error}));
     yield put(notificationActions.error({
       notification: {
         title: 'failed to get executed bets',
@@ -91,16 +91,16 @@ function* getExecutedBets(data) {
 }
 
 function* cancelBet(data) {
-  yield put(betActions.postCancelBet.request({betId: data.id}));
+  yield put(etherBetActions.postCancelBet.request({betId: data.id}));
   try {
     const web3 = yield select(state => state.web3Store.get("web3"));
 
-    const results = yield call(betService.cancelBet, web3, data.id);
+    const results = yield call(etherBetService.cancelBet, web3, data.id);
 
     // delay to allow changes to be committed to local node
     yield delay(1000);
 
-    yield put(betActions.postCancelBet.success({results}));
+    yield put(etherBetActions.postCancelBet.success({results}));
 
     console.log("cancelBet TX", results.tx);
     yield put(notificationActions.success({
@@ -110,7 +110,7 @@ function* cancelBet(data) {
       }
     }));
   } catch (error) {
-    yield put(betActions.postCancelBet.failure({error}));
+    yield put(etherBetActions.postCancelBet.failure({error}));
     yield put(notificationActions.error({
       notification: {
         title: 'failed to cancel bet',
@@ -124,34 +124,27 @@ function* cancelBet(data) {
 
 
 function* callBet(data) {
-  yield put(betActions.postCallBet.request({betId: data.id}));
+  yield put(etherBetActions.postCallBet.request({betId: data.id}));
   try {
     const web3 = yield select(state => state.web3Store.get("web3"));
 
-    const results = yield call(betService.callBet, web3, data.id);
+    const results = yield call(etherBetService.callBet, web3, data.id);
 
     // delay to allow changes to be committed to local node
     yield delay(1000);
 
-    yield put(betActions.postCallBet.success({results}));
+    yield put(etherBetActions.postCallBet.success({results}));
 
     console.log("callBet TX", results.data.tx);
     yield put(notificationActions.success({
       notification: {
-        title: 'Seed Generated',
-        message: results.data.seedMessage,
-        position: 'br'
-      }
-    }));
-    yield put(notificationActions.success({
-      notification: {
-        title: 'Bet Results',
-        message: results.data.resultMessage,
+        title: 'Bet Initialized',
+        message: "The bet was initialized and should be executed in the next few minutes ...",
         position: 'br'
       }
     }));
   } catch (error) {
-    yield put(betActions.postCallBet.failure({error}));
+    yield put(etherBetActions.postCallBet.failure({error}));
     yield put(notificationActions.error({
       notification: {
         title: 'failed to call bet',
@@ -165,32 +158,32 @@ function* callBet(data) {
 
 
 function* watchSaveNewBet() {
-  yield takeEvery(betActions.SAVE_NEW_BET, saveNewBet);
+  yield takeEvery(etherBetActions.SAVE_NEW_BET, saveNewBet);
 }
 
 function* watchGetActiveBets() {
-  yield takeEvery(betActions.GET_ACTIVE_BETS, getActiveBets);
+  yield takeEvery(etherBetActions.GET_ACTIVE_BETS, getActiveBets);
 }
 
 function* watchGetExecutedBets() {
-  yield takeEvery(betActions.GET_EXECUTED_BETS, getExecutedBets);
+  yield takeEvery(etherBetActions.GET_EXECUTED_BETS, getExecutedBets);
 }
 
 function* watchCancelBet() {
-  yield takeEvery(betActions.CANCEL_BET, cancelBet);
+  yield takeEvery(etherBetActions.CANCEL_BET, cancelBet);
 }
 
 function* watchCallBet() {
-  yield takeEvery(betActions.CALL_BET, callBet);
+  yield takeEvery(etherBetActions.CALL_BET, callBet);
 }
 
-function* watchEbetLoadInitialData() {
-  yield takeEvery(web3Actions.EBET_LOAD_INITIAL_DATA, loadInitialData);
+function* watchEtherLoadInitialData() {
+  yield takeEvery(web3Actions.ETHER_LOAD_INITIAL_DATA, loadInitialData);
 }
 
 export default function* betSaga() {
   yield all([
-    watchEbetLoadInitialData(),
+    watchEtherLoadInitialData(),
     watchSaveNewBet(),
     watchGetActiveBets(),
     watchGetExecutedBets(),

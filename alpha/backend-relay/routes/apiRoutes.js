@@ -27,6 +27,7 @@ module.exports = function (app) {
   // ETH bets routes
   app.post('/api/ether-bets', auth, etherBetsApiController.createBet);
   app.post('/api/ether-bets/cancel', auth, etherBetsApiController.cancelBet);
+  app.post('/api/ether-bets/call', auth, etherBetsApiController.callBet);
 
   app.get('/api/ether-bets/active', etherBetsApiController.getActiveBets);
   app.get('/api/ether-bets/executed', etherBetsApiController.getExecutedBets);

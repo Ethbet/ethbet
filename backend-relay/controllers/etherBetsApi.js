@@ -23,8 +23,8 @@ module.exports = {
 
   getExecutedBets: async function getExecutedBets(req, res) {
     try {
-      let etherBets = await etherBetService.getExecutedBets();
-      res.status(200).json({ etherBets });
+      let bets = await etherBetService.getExecutedBets();
+      res.status(200).json({ bets });
     }
     catch (err) {
       res.status(500).json({ message: errorService.sanitize(err).message });

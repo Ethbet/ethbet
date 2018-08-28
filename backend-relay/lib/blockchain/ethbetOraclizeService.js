@@ -75,7 +75,7 @@ async function initBet(betId, maker, caller, amount, rollUnder) {
 
   let results = await ethbetOraclizeInstance.initBet(betId, maker, caller, web3.toWei(amount, 'ether'), rollUnder * 100,
     {
-      gas: 200000,
+      gas: 400000,
       value: (oraclizeGasPrice.toNumber() * oraclizeGasLimit.toNumber()) + parseInt(web3.toWei(0.00006, "ether"), 10) // Oraclize Gas price * limit  + query price 0.05 USD
     }
   );

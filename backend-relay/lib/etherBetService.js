@@ -55,7 +55,7 @@ async function getActiveBets(opts = { orderField: 'createdAt', orderDirection: '
 
   let populatedEtherBets = await userService.populateUserNames(result.rows);
 
-  return { etherBets: populatedEtherBets, count: result.count };
+  return { bets: populatedEtherBets, count: result.count };
 }
 
 async function getExecutedBets() {
@@ -184,7 +184,14 @@ async function callBet(betId, callerUser) {
 
   let rollUnder = 50 + etherBet.edge / 2;
 
-  let txResults = await ethbetOraclizeService.initBet(etherBet.id, etherBet.user, callerUser, etherBet.amount, rollUnder);
+  let txResults;
+  try {
+    txResults = await ethbetOraclizeService.initBet(etherBet.id, etherBet.user, callerUser, etherBet.amount, rollUnder);
+  }
+  catch (err) {
+    lockService.unlock(getEtherBetLockId(etherBet.id));
+    throw(err);
+  }
 
   let log = txResults.logs[1];
   let loggedQueryId = log.args.queryId;

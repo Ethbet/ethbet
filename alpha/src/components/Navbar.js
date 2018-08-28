@@ -28,11 +28,11 @@ class Navbar extends Component {
   }
 
   componentDidMount() {
-    this.props.web3Actions.initWeb3();
+    this.props.web3Actions.initWeb3({ appType: "EBET" });
 
     this.props.notificationActions.success({
       notification: {
-        message: 'Welcome to EthBet',
+        message: 'Welcome to EthBet (EBET Version)',
         position: 'br'
       }
     });
@@ -108,7 +108,7 @@ class Navbar extends Component {
 
           <ul className="nav navbar-nav">
             <li className="dropdown">
-              <a href="https://token.ethbet.io/" className="dropdown-toggle"  target="_blank">
+              <a href="https://token.ethbet.io/" className="dropdown-toggle" target="_blank">
                 <b>Ethbet Tokens</b>
               </a>
             </li>

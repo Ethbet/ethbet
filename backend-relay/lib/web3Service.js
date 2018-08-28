@@ -4,7 +4,7 @@ const _ = require('lodash');
 let web3;
 
 function init() {
-  let provider = new Web3.providers.HttpProvider('http://localhost:8545');
+  let provider = new Web3.providers.HttpProvider(`http://${ process.env.ETH_NODE_HOST || 'localhost'}:8545`);
   web3 = new Web3(provider);
 
   web3.eth.getAccounts((err, accounts) => {
