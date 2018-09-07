@@ -38,6 +38,16 @@ export const fetchGetExecutedBets = {
   failure: (error) => action(FETCH_GET_EXECUTED_BETS.FAILURE, error),
 };
 
+export const GET_PENDING_BETS = 'ETHER:GET_PENDING_BETS';
+export const getPendingBets = data => action(GET_PENDING_BETS, data);
+
+export const FETCH_GET_PENDING_BETS = createRequestTypes('ETHER:FETCH_GET_PENDING_BETS');
+export const fetchGetPendingBets = {
+  request: () => action(FETCH_GET_PENDING_BETS.REQUEST),
+  success: (data) => action(FETCH_GET_PENDING_BETS.SUCCESS, data),
+  failure: (error) => action(FETCH_GET_PENDING_BETS.FAILURE, error),
+};
+
 
 export const BET_CREATED = 'ETHER:BET_CREATED';
 export const betCreated = data => action(BET_CREATED, data);

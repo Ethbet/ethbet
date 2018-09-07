@@ -32,6 +32,7 @@ module.exports = function (app) {
 
   app.get('/api/ether-bets/active', etherBetsApiController.getActiveBets);
   app.get('/api/ether-bets/executed', etherBetsApiController.getExecutedBets);
+  app.get('/api/ether-bets/pending', etherBetsApiController.getPendingBets);
 
   app.get('/api/ether-leaderboard', etherLeaderboardApiController.getLeaderboard);
 

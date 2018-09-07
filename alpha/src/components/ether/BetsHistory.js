@@ -4,19 +4,40 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux'
 
 let Loader = require('react-loader');
+const _ = require('lodash');
 
 import * as notificationActions from '../../actions/notificationActions';
 import * as etherBetActions from '../../actions/etherBetActions';
 
 import ExecutedBet from "./ExecutedBet";
+import PendingBet from "./PendingBet";
 
 class BetsHistory extends Component {
 
   render() {
-    let {etherBetStore} = this.props;
+    let { etherBetStore } = this.props;
+
+    let pendingBets = etherBetStore.get("pendingBets");
 
     return (
       <div className="col-lg-12">
+
+        {_.isEmpty(pendingBets) ?
+          null
+          :
+          <div className="well">
+            <legend>Pending Bets</legend>
+
+            <div className="row">
+              {pendingBets.map((bet) => (
+                <PendingBet bet={bet} key={bet.id}/>
+              ))}
+            </div>
+
+            <Loader color="white" loaded={!etherBetStore.get("gettingPendingBets")}/>
+          </div>
+        }
+
         <div className="well">
           <legend>Executed Bets</legend>
 

@@ -226,6 +226,64 @@ describe('etherBetService', function etherBetServiceTest() {
     });
   });
 
+  describe('getPendingBets', function () {
+    let getUsernamesStub;
+    let userAddress_1 = "0x04bd37D5393cD877f64ad36f1791ED09d847b981";
+    let userAddress_2 = "0x04bd37D5393cD877f64ad36f1791ED09d847b982";
+    let userAddress_3 = "0x04bd37D5393cD877f64ad36f1791ED09d847b983";
+    let username_1 = "Mike";
+    let username_2 = "John";
+    let username_3 = "Bob";
+    let etherBet_1, etherBet_2, etherBet_3, etherBet_4, etherBet_5;
+
+    before(async function beforeTest() {
+      etherBet_1 = await db.EtherBet.create(EtherBetFactory.build({}));
+      etherBet_2 = await db.EtherBet.create(EtherBetFactory.build({ cancelledAt: new Date() }));
+      etherBet_3 = await db.EtherBet.create(EtherBetFactory.build({
+        user: userAddress_1,
+        callerUser: userAddress_2,
+        initializedAt: new Date() - 60000
+      }));
+      etherBet_4 = await db.EtherBet.create(EtherBetFactory.build({
+        user: userAddress_2,
+        callerUser: userAddress_3,
+        initializedAt: new Date()
+      }));
+      etherBet_5 = await db.EtherBet.create(EtherBetFactory.build({ executedAt: new Date() }));
+
+      getUsernamesStub = sinon.stub(userService, "getUsernames");
+      getUsernamesStub.callsFake(function (userAddresses) {
+        expect(_.clone(userAddresses).sort()).to.deep.eq([userAddress_1, userAddress_2, userAddress_3]);
+
+        return {
+          [userAddress_1]: username_1,
+          [userAddress_2]: username_2,
+          [userAddress_3]: username_3,
+        }
+      });
+    });
+
+    it('ok', async function it() {
+      let pendingEtherBets = await etherBetService.getPendingBets();
+
+      expect(pendingEtherBets.length).to.equal(2);
+
+      let executedEtherBet_1_JSON = pendingEtherBets[0].toJSON();
+      expect(executedEtherBet_1_JSON.id).to.equal(etherBet_4.id);
+      expect(executedEtherBet_1_JSON.username).to.equal(username_2);
+      expect(executedEtherBet_1_JSON.callerUsername).to.equal(username_3);
+
+      let executedEtherBet_2_JSON = pendingEtherBets[1].toJSON();
+      expect(executedEtherBet_2_JSON.id).to.equal(etherBet_3.id);
+      expect(executedEtherBet_2_JSON.username).to.equal(username_1);
+      expect(executedEtherBet_2_JSON.callerUsername).to.equal(username_2);
+    });
+
+    after(function afterTest() {
+      getUsernamesStub.restore();
+    });
+  });
+
   describe('cancelBet', function () {
     let emitStub, lockedEthBalanceOfStub, unlockEthBalanceStub;
     let etherBetData = {

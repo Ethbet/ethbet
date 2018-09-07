@@ -7,6 +7,7 @@ const morgan = require('morgan');
 const cors = require('cors');
 const fs = require('fs');
 const https = require('https');
+const socketService = require('./lib/socketService');
 
 let serverOptions = {
   key: fs.readFileSync('../key.pem'),
@@ -58,9 +59,10 @@ if (process.env.NODE_ENV !== "test") {
   web3Service.init();
 }
 
+// init socket service
+socketService.init(io);
 
 module.exports = {
   app: app,
-  server: server,
-  io: io
+  server: server
 };
