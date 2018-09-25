@@ -1,5 +1,5 @@
-var Ethbet = artifacts.require("./Ethbet.sol");
-var EthbetToken = artifacts.require("./EthbetToken.sol");
+const Ethbet = artifacts.require("./Ethbet.sol");
+const EthbetToken = artifacts.require("./EthbetToken.sol");
 
 const Web3 = require('web3');
 
