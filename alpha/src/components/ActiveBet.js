@@ -13,14 +13,14 @@ class ActiveBet extends Component {
 
   callBet(betId) {
     let bet = this.props.bet;
-    let amount = bet.amount/100;
-    let winChance = 50 - bet.edge/2 ;
-    let loseChance = 50 + bet.edge/2;
+    let amount = bet.amount / 100;
+    let winChance = 50 - bet.edge / 2;
+    let loseChance = 50 + bet.edge / 2;
     const r = confirm(`You are calling a bet of ${amount} EBET with an edge of ${bet.edge}%.
 There is a ${winChance}% chance you will win ${amount} EBET
 There is a ${loseChance}% chance you will lose ${amount} EBET`);
     if (r === true) {
-      this.props.betActions.callBet({ id: betId });
+      this.props.betActions.callBet({ id: betId, amount: bet.amount });
     }
   }
 

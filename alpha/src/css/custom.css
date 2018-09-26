@@ -70,6 +70,10 @@
     width: auto;
 }
 
+.bet-info-modal-dialog {
+    width: 800px;
+}
+
 .nav > li > a {
     padding-left: 11px;
     padding-right: 11px;

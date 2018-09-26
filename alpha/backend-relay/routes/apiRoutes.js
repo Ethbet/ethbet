@@ -17,6 +17,7 @@ module.exports = function (app) {
 
   app.get('/api/bets/active', betsApiController.getActiveBets);
   app.get('/api/bets/executed', betsApiController.getExecutedBets);
+  app.get('/api/bets/:id', betsApiController.getBetInfo);
 
   app.post('/api/users', auth, usersApiController.createUser);
   app.get('/api/users/:address', usersApiController.getUser);

@@ -73,6 +73,34 @@ describe('betsApi', function betsApiTest() {
     });
   });
 
+  describe('getBetInfo', function getBetInfoTest() {
+    let getBetInfoStub;
+    let bet = {id: 44};
+
+    before(function beforeTest() {
+      getBetInfoStub = sinon.stub(betService, "getBetInfo");
+      getBetInfoStub.resolves(bet);
+    });
+
+    it('ok', function it(done) {
+      request(app)
+        .get('/api/bets/'+ bet.id)
+        .expect(200)
+        .end(function (error, result) {
+          if (error) {
+            return done(error);
+          }
+
+          expect(result.body).to.deep.eq(bet);
+          done();
+        });
+    });
+
+    after(function afterTest() {
+      getBetInfoStub.restore();
+    });
+  });
+
   describe('createBet', function createBetTest() {
     let createBetStub;
     let bet = {stub: "bet"};

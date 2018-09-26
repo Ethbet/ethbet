@@ -9,7 +9,7 @@ module.exports = function (deployer, network) {
   //Parameters for the contract deployment
   const relayAddress = process.env.RELAY_ADDRESS || web3.eth.accounts[0];
 
-  if (network === "live") {
+  if (network === "live" || network === "rinkeby") {
     return deployer.deploy(Ethbet, relayAddress, EthbetToken.address);
   }
   else {

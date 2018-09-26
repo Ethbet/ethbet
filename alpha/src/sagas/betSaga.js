@@ -27,7 +27,7 @@ function* saveNewBet(data) {
     // delay to allow changes to be committed to local node
     yield delay(1000);
 
-    yield put(betActions.postSaveNewBet.success({results}));
+    yield put(betActions.postSaveNewBet.success({ results }));
 
     console.log("saveNewBet TX", results.tx);
     yield put(notificationActions.success({
@@ -37,7 +37,7 @@ function* saveNewBet(data) {
       }
     }));
   } catch (error) {
-    yield put(betActions.postSaveNewBet.failure({error}));
+    yield put(betActions.postSaveNewBet.failure({ error }));
     yield put(notificationActions.error({
       notification: {
         title: 'failed to save bet',
@@ -62,7 +62,7 @@ function* getActiveBets(data) {
       loadMore: loadMore
     }));
   } catch (error) {
-    yield put(betActions.fetchGetActiveBets.failure({error}));
+    yield put(betActions.fetchGetActiveBets.failure({ error }));
     yield put(notificationActions.error({
       notification: {
         title: 'failed to get active bets',
@@ -77,9 +77,9 @@ function* getExecutedBets(data) {
   yield put(betActions.fetchGetExecutedBets.request());
   try {
     const executedBets = yield call(betService.getExecutedBets);
-    yield put(betActions.fetchGetExecutedBets.success({executedBets}));
+    yield put(betActions.fetchGetExecutedBets.success({ executedBets }));
   } catch (error) {
-    yield put(betActions.fetchGetExecutedBets.failure({error}));
+    yield put(betActions.fetchGetExecutedBets.failure({ error }));
     yield put(notificationActions.error({
       notification: {
         title: 'failed to get executed bets',
@@ -90,8 +90,26 @@ function* getExecutedBets(data) {
   }
 }
 
+function* getBetInfo(data) {
+  yield put(betActions.fetchGetBetInfo.request({ id: data.id }));
+  try {
+    const bet = yield call(betService.getBetInfo, data.id);
+    yield put(betActions.fetchGetBetInfo.success({ bet }));
+  } catch (error) {
+    yield put(betActions.fetchGetBetInfo.failure({ error }));
+    yield put(notificationActions.error({
+      notification: {
+        title: 'failed to get bet info',
+        message: error.message,
+        position: 'br'
+      }
+    }));
+  }
+}
+
+
 function* cancelBet(data) {
-  yield put(betActions.postCancelBet.request({betId: data.id}));
+  yield put(betActions.postCancelBet.request({ betId: data.id }));
   try {
     const web3 = yield select(state => state.web3Store.get("web3"));
 
@@ -100,7 +118,7 @@ function* cancelBet(data) {
     // delay to allow changes to be committed to local node
     yield delay(1000);
 
-    yield put(betActions.postCancelBet.success({results}));
+    yield put(betActions.postCancelBet.success({ results }));
 
     console.log("cancelBet TX", results.tx);
     yield put(notificationActions.success({
@@ -110,7 +128,7 @@ function* cancelBet(data) {
       }
     }));
   } catch (error) {
-    yield put(betActions.postCancelBet.failure({error}));
+    yield put(betActions.postCancelBet.failure({ error }));
     yield put(notificationActions.error({
       notification: {
         title: 'failed to cancel bet',
@@ -124,16 +142,16 @@ function* cancelBet(data) {
 
 
 function* callBet(data) {
-  yield put(betActions.postCallBet.request({betId: data.id}));
+  yield put(betActions.postCallBet.request({ betId: data.id }));
   try {
     const web3 = yield select(state => state.web3Store.get("web3"));
 
-    const results = yield call(betService.callBet, web3, data.id);
+    const results = yield call(betService.callBet, web3, data.id, data.amount);
 
     // delay to allow changes to be committed to local node
     yield delay(1000);
 
-    yield put(betActions.postCallBet.success({results}));
+    yield put(betActions.postCallBet.success({ results }));
 
     console.log("callBet TX", results.data.tx);
     yield put(notificationActions.success({
@@ -151,7 +169,7 @@ function* callBet(data) {
       }
     }));
   } catch (error) {
-    yield put(betActions.postCallBet.failure({error}));
+    yield put(betActions.postCallBet.failure({ error }));
     yield put(notificationActions.error({
       notification: {
         title: 'failed to call bet',
@@ -176,6 +194,10 @@ function* watchGetExecutedBets() {
   yield takeEvery(betActions.GET_EXECUTED_BETS, getExecutedBets);
 }
 
+function* watchGetBetInfo() {
+  yield takeEvery(betActions.GET_BET_INFO, getBetInfo);
+}
+
 function* watchCancelBet() {
   yield takeEvery(betActions.CANCEL_BET, cancelBet);
 }
@@ -194,6 +216,7 @@ export default function* betSaga() {
     watchSaveNewBet(),
     watchGetActiveBets(),
     watchGetExecutedBets(),
+    watchGetBetInfo(),
     watchCancelBet(),
     watchCallBet(),
   ]);

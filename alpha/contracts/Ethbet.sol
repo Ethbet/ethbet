@@ -170,11 +170,14 @@ contract Ethbet {
    * @param _amount amount
    */
   function executeBet(address _maker, address _caller, bool _makerWon, uint _amount) isRelay public {
-    //The caller must have enough balance
-    require(balances[_caller] >= _amount);
+    //The caller must have enough locked balance
+    require(lockedBalances[_caller] >= _amount);
 
     //The maker must have enough locked balance
     require(lockedBalances[_maker] >= _amount);
+
+    // unlock maker balance
+    unlockBalance(_caller, _amount);
 
     // unlock maker balance
     unlockBalance(_maker, _amount);

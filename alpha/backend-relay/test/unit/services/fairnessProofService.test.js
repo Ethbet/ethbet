@@ -162,5 +162,30 @@ describe('fairnessProofService', function fairnessProofServiceTest() {
     });
   });
 
+  describe('getSeedByHash', function getSeedByHashTest() {
+
+    let fairnessProof_1, fairnessProof_2;
+
+    before(async function before() {
+      fairnessProof_1 = await db.FairnessProof.create(FairnessProofFactory.build({
+        createdAt: moment().subtract(1, "day").toDate(),
+        serverSeed: "1114567890abcdef",
+        serverSeedHash: "hash1"
+      }));
+      fairnessProof_2 = await db.FairnessProof.create(FairnessProofFactory.build({
+        serverSeed: "2224567890abcdef",
+        serverSeedHash: "hash2"
+      }));
+    });
+
+    it('only provides not current seed', async function it() {
+      let serverSeed_2 = await fairnessProofService.getSeedByHash(fairnessProof_2.serverSeedHash);
+      expect(serverSeed_2).to.equal(null);
+
+      let serverSeed_1 = await fairnessProofService.getSeedByHash(fairnessProof_1.serverSeedHash);
+      expect(serverSeed_1).to.equal(fairnessProof_1.serverSeed);
+    });
+  });
+
 });
 

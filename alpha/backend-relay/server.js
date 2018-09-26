@@ -15,7 +15,7 @@ let serverOptions = {
 };
 const server = https.createServer(serverOptions, app);
 
-const io = require('socket.io')(server, {path: '/api/socket.io'});
+const io = require('socket.io')(server, { path: '/api/socket.io' });
 
 const web3Service = require('./lib/web3Service');
 
@@ -45,6 +45,8 @@ global.db = require('./models');
 const PORT = process.env.PORT || 9000;
 
 //Starting the server ------------------------------------/
+
+server.setTimeout(5 * 60 * 1000); // increase timeout to 5 minutes to avoid slow blockchain issues
 
 server.listen(PORT, function (err) {
   if (err) {

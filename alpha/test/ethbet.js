@@ -152,6 +152,9 @@ contract('Ethbet', (accounts) => {
     });
 
     it('ok if balances sufficient / maker won', async function it() {
+      // lock necessary balance
+      await ethbetInstance.lockBalance(accounts[2], 30, {from: accounts[0]});
+
       await ethbetInstance.executeBet(accounts[1], accounts[2], true, 30, {from: accounts[0]});
 
       // 250 initial + 30 unlocked + 30 won
@@ -172,6 +175,9 @@ contract('Ethbet', (accounts) => {
     });
 
     it('ok if balances sufficient / maker lost', async function it() {
+      // lock necessary balance
+      await ethbetInstance.lockBalance(accounts[2], 20, {from: accounts[0]});
+
       await ethbetInstance.executeBet(accounts[1], accounts[2], false, 20, {from: accounts[0]});
 
       // 310 initial + 20 unlocked - 20 lost

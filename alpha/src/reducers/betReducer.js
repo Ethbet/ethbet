@@ -15,6 +15,7 @@ let initialData = {
     offset: 0,
   },
   executedBets: [],
+  betsInfo: {},
 };
 
 export default function betReducer(state = new ImmutableMap(initialData), action) {
@@ -71,7 +72,6 @@ export default function betReducer(state = new ImmutableMap(initialData), action
       .set('gettingActiveBets', false);
   };
 
-
   const fetchGetExecutedBetsRequest = (state) => {
     return state
       .set('gettingExecutedBets', true);
@@ -87,7 +87,26 @@ export default function betReducer(state = new ImmutableMap(initialData), action
     return state
       .set('gettingExecutedBets', false);
   };
+  
+  const fetchGetBetInfoRequest = (state) => {
+    return state
+      .set('gettingBetInfo', action.id);
+  };
 
+  const fetchGetBetInfoSuccess = (state) => {
+    let betsInfo = state.get('betsInfo');
+    let bet = action.bet;
+    betsInfo[bet.id] = bet;
+    
+    return state
+      .set('gettingBetInfo', false)
+      .set('betsInfo', betsInfo);
+  };
+
+  const fetchGetBetInfoFailure = (state) => {
+    return state
+      .set('gettingBetInfo', false);
+  };
 
   const postCancelBetRequest = (state) => {
     return state
@@ -150,7 +169,10 @@ export default function betReducer(state = new ImmutableMap(initialData), action
     'FETCH_GET_ACTIVE_BETS_FAILURE': () => fetchGetActiveBetsFailure(state),
     'FETCH_GET_EXECUTED_BETS_REQUEST': () => fetchGetExecutedBetsRequest(state),
     'FETCH_GET_EXECUTED_BETS_SUCCESS': () => fetchGetExecutedBetsSuccess(state),
-    'FETCH_GET_EXECUTED_BETS_FAILURE': () => fetchGetExecutedBetsFailure(state),
+    'FETCH_GET_EXECUTED_BETS_FAILURE': () => fetchGetExecutedBetsFailure(state),  
+    'FETCH_GET_BET_INFO_REQUEST': () => fetchGetBetInfoRequest(state),
+    'FETCH_GET_BET_INFO_SUCCESS': () => fetchGetBetInfoSuccess(state),
+    'FETCH_GET_BET_INFO_FAILURE': () => fetchGetBetInfoFailure(state),
     'POST_CANCEL_BET_REQUEST': () => postCancelBetRequest(state),
     'POST_CANCEL_BET_SUCCESS': () => postCancelBetSuccess(state),
     'POST_CANCEL_BET_FAILURE': () => postCancelBetFailure(state),

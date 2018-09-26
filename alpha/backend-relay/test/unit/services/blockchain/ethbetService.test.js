@@ -11,12 +11,17 @@ const testAddress = require('../../../support/testAddress.json');
 describe('ethbetService', function ethbetServiceTest() {
   let web3 = {toWei: ()=> {}};
   let ethbetInstance;
-  let getWeb3Stub, getDeployedInstanceStub;
+  let getWeb3Stub,getGasPriceStub, getDeployedInstanceStub;
 
   before(function beforeTest() {
     getWeb3Stub = sinon.stub(web3Service, 'getWeb3');
     getWeb3Stub.callsFake(function () {
       return web3;
+    });
+
+    getGasPriceStub = sinon.stub(web3Service, 'getGasPrice');
+    getGasPriceStub.callsFake(function () {
+      return 20 * 10 ** 9;
     });
 
     ethbetInstance = {
@@ -186,6 +191,7 @@ describe('ethbetService', function ethbetServiceTest() {
 
   after(function afterTest() {
     getWeb3Stub.restore();
+    getGasPriceStub.restore();
     getDeployedInstanceStub.restore();
   });
 

@@ -1,7 +1,9 @@
 const Web3 = require('web3');
 const _ = require('lodash');
+const axios = require('axios');
 
 let web3;
+let axiosClient = axios.create({});
 
 function init() {
   let provider = new Web3.providers.HttpProvider(`http://${ process.env.ETH_NODE_HOST || 'localhost'}:8545`);
@@ -72,7 +74,22 @@ function getWeb3() {
   return web3;
 }
 
+async function getGasPrice() {
+  let MAX_GAS_PRICE = 30 * 10 ** 9;
+
+  try {
+    let response = await axiosClient.get('https://api.blockcypher.com/v1/eth/main');
+
+    return Math.min(response.data.high_gas_price, MAX_GAS_PRICE); // MAX 30 GWEI
+  }
+  catch (err) {
+    console.log("getGasPrice", err);
+    return MAX_GAS_PRICE;
+  }
+}
+
 module.exports = {
   init: init,
-  getWeb3: getWeb3
+  getWeb3: getWeb3,
+  getGasPrice
 };

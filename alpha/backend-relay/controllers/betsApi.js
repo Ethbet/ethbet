@@ -30,6 +30,18 @@ module.exports = {
     }
   },
 
+
+  getBetInfo: async function getBetInfo(req, res) {
+    try {
+      let bet = await betService.getBetInfo(req.params.id);
+      res.status(200).json(bet);
+    }
+    catch (err) {
+      res.status(500).json({message: errorService.sanitize(err).message});
+    }
+  },
+
+
   createBet: async function createBet(req, res) {
     try {
       let betData = {

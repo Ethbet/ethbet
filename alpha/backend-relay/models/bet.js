@@ -72,7 +72,12 @@ module.exports = function (sequelize, DataTypes) {
     makerWon: {
       type: DataTypes.BOOLEAN,
     },
-
+    txHash: {
+      type: DataTypes.STRING,
+    },
+    txSuccess: {
+      type: DataTypes.BOOLEAN,
+    },
 
     cancelledAt: DataTypes.DATE,
     executedAt: DataTypes.DATE,

@@ -24,6 +24,11 @@ async function deposit(web3, amount) {
 
   // no need to await as this would run previous to the deposit
   tokenInstance.increaseApproval(ethbetInstance.address, amount, { from: web3.eth.defaultAccount, gas: 100000 });
+
+  // avoid metamask issue wrong order of transactions
+  const wait = ms => new Promise(res => setTimeout(res, ms));
+  await wait(2000);
+
   let results = await ethbetInstance.deposit(amount, { from: web3.eth.defaultAccount, gas: 100000 });
 
   if (ethUtil.addHexPrefix(results.receipt.status.toString()) !== "0x1") {

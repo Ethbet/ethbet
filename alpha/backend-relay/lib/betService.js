@@ -4,6 +4,7 @@ let socketService = require('./socketService');
 let ethbetService = require('./blockchain/ethbetService');
 let userService = require('./userService');
 let diceService = require('./diceService');
+let fairnessProofService = require('./fairnessProofService');
 let lockService = require('./lockService');
 let logService = require('./logService');
 
@@ -70,6 +71,19 @@ async function getExecutedBets() {
   return populatedBets;
 }
 
+async function getBetInfo(betId) {
+  let bet = await db.Bet.findById(betId);
+
+  // check if bet executed
+  if (bet.serverSeedHash) {
+    let serverSeed = await fairnessProofService.getSeedByHash(bet.serverSeedHash);
+    bet.dataValues.serverSeed = serverSeed;
+  }
+
+  let populatedBets = await userService.populateUserNames([bet]);
+  return populatedBets[0];
+}
+
 
 function getBetLockId(betId) {
   return `bet-${betId}`;
@@ -104,19 +118,21 @@ async function cancelBet(betId, user) {
     }
   }
 
+  let cancelledAt = new Date();
+  await bet.update({ cancelledAt });
+  logService.logger.info("cancelBet: pre-tx db updated", { betId: bet.id, cancelledAt });
+
   let results = await ethbetService.unlockBalance(bet.user, bet.amount);
 
-  logService.logger.info("Bet Canceled, balance unlocked : ", {
+  logService.logger.info("cancelBet: balance unlocked", {
     tx: results.tx,
     betId: bet.id,
     user: bet.user,
     amount: bet.amount
   });
 
-  let cancelledAt = new Date();
-  await bet.update({ cancelledAt });
-
-  logService.logger.info("Bet Canceled, db updated : ", { betId: bet.id, cancelledAt });
+  await bet.update({ txHash: results.tx, txSuccess: true });
+  logService.logger.info("cancelBet: post-tx db updated", { betId: bet.id, cancelledAt });
 
   await lockService.unlock(getBetLockId(betId));
 
@@ -160,6 +176,21 @@ async function callBet(betId, callerSeed, callerUser) {
     }
   }
 
+  logService.logger.info("callBet, locking caller's balance :", {
+    betId: bet.id,
+    callerUser: callerUser,
+    amount: bet.amount
+  });
+
+  let lockResults = await ethbetService.lockBalance(callerUser, bet.amount);
+
+  logService.logger.info("callBet, locked caller's balance :", {
+    tx: lockResults.tx,
+    betId: bet.id,
+    callerUser: callerUser,
+    amount: bet.amount
+  });
+
   let rollInput = {
     makerSeed: bet.seed,
     callerSeed: callerSeed,
@@ -170,6 +201,24 @@ async function callBet(betId, callerSeed, callerUser) {
   let rollUnder = 50 + bet.edge / 2;
   let makerWon = (rollResults.roll <= rollUnder);
 
+  logService.logger.info("callBet: roll calculated", {
+    rollInput: rollInput,
+    rollResults: rollResults,
+    rollUnder,
+    makerWon
+  });
+
+  let initialDbUpdateAttrs = {
+    executedAt: rollResults.executedAt,
+    callerUser: callerUser,
+    callerSeed: callerSeed,
+    serverSeedHash: rollResults.serverSeedHash,
+    roll: rollResults.roll,
+    makerWon: makerWon
+  };
+  await bet.update(initialDbUpdateAttrs);
+  logService.logger.info("callBet: pre-tx db update", Object.assign({}, bet.toJSON(), initialDbUpdateAttrs));
+
   let txResults;
   try {
     txResults = await ethbetService.executeBet(bet.user, callerUser, makerWon, bet.amount);
@@ -179,25 +228,17 @@ async function callBet(betId, callerSeed, callerUser) {
     throw(err);
   }
 
-  logService.logger.info("Bet Called, contract updated : ", {
+  logService.logger.info("callBet: tx executed", {
     tx: txResults.tx,
     betId: bet.id,
-    makerUser: bet.user,
-    callerUser,
-    amount: bet.amount,
-    makerWon
   });
 
-  let dbUpdateAttrs = {
-    executedAt: rollResults.executedAt,
-    callerUser: callerUser,
-    callerSeed: callerSeed,
-    serverSeedHash: rollResults.serverSeedHash,
-    roll: rollResults.roll,
-    makerWon: makerWon
+  let postTxDbUpdateAttrs = {
+    txHash: txResults.tx,
+    txSuccess: true,
   };
-  await bet.update(dbUpdateAttrs);
-  logService.logger.info("Bet Called, db updated : ", Object.assign({}, bet.toJSON(), dbUpdateAttrs));
+  await bet.update(postTxDbUpdateAttrs);
+  logService.logger.info("callBet: post-tx db update", Object.assign({}, bet.toJSON(), postTxDbUpdateAttrs));
 
   await lockService.unlock(getBetLockId(bet.id));
 
@@ -218,5 +259,6 @@ module.exports = {
   getActiveBets,
   getExecutedBets,
   cancelBet,
-  callBet
+  callBet,
+  getBetInfo
 };
