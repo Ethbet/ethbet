@@ -22,17 +22,13 @@ function* saveNewBet(data) {
     const web3 = yield select(state => state.web3Store.get("web3"));
     const newBet = yield select(state => state.betStore.get("newBet"));
 
-    const results = yield call(betService.makeBet, web3, newBet);
+    yield call(betService.makeBet, web3, newBet);
 
-    // delay to allow changes to be committed to local node
-    yield delay(1000);
+    yield put(betActions.postSaveNewBet.success());
 
-    yield put(betActions.postSaveNewBet.success({ results }));
-
-    console.log("saveNewBet TX", results.tx);
     yield put(notificationActions.success({
       notification: {
-        title: 'new bet saved successfully',
+        title: 'new bet creation ongoing, you will be notified when it is complete ...',
         position: 'br'
       }
     }));
@@ -46,6 +42,18 @@ function* saveNewBet(data) {
         position: 'br'
       }
     }));
+  }
+}
+
+
+function* notifyBetCreated(data) {
+  const web3 = yield select(state => state.web3Store.get("web3"));
+  const bet = data.bet;
+
+  // notify if creator
+  if (_.get(web3, 'eth.defaultAccount') === bet.user) {
+    console.log("betCreated ID:", bet.id);
+    yield put(notificationActions.successMessage(`new bet created. ID: ${bet.id}, Amount: ${bet.amount / 100}, Edge: ${bet.edge}`));
   }
 }
 
@@ -186,6 +194,10 @@ function* watchSaveNewBet() {
   yield takeEvery(betActions.SAVE_NEW_BET, saveNewBet);
 }
 
+function* watchBetCreated() {
+  yield takeEvery(betActions.BET_CREATED, notifyBetCreated);
+}
+
 function* watchGetActiveBets() {
   yield takeEvery(betActions.GET_ACTIVE_BETS, getActiveBets);
 }
@@ -214,6 +226,7 @@ export default function* betSaga() {
   yield all([
     watchEbetLoadInitialData(),
     watchSaveNewBet(),
+    watchBetCreated(),
     watchGetActiveBets(),
     watchGetExecutedBets(),
     watchGetBetInfo(),

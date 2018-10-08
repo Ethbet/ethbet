@@ -27,12 +27,6 @@ describe('betService', function betServiceTest() {
       let results = { stub: 'results' };
 
       before(function beforeTest() {
-        emitStub = sinon.stub(socketService, "emit");
-        emitStub.callsFake(function (event, data) {
-          expect(event).to.eq("betCreated");
-          expect(data.amount).to.eq(betData.amount);
-        });
-
         balanceOfStub = sinon.stub(ethbetService, "balanceOf");
         balanceOfStub.callsFake(function (userAddress) {
           expect(userAddress).to.eq(testAddress.public);
@@ -49,18 +43,27 @@ describe('betService', function betServiceTest() {
         });
       });
 
-      it('ok', async function it() {
-        let bet = await betService.createBet(betData);
+      it('ok', function it(done) {
+        // check results in the socket callback
+        emitStub = sinon.stub(socketService, "emit");
+        emitStub.callsFake(function (event, data) {
+          expect(event).to.equal("betCreated");
+          let bet = data;
 
-        let myBet = await db.Bet.findById(bet.id);
+          db.Bet.findById(bet.id).then((myBet) => {
+            expect(myBet.amount).to.equal(500);
+            expect(myBet.edge).to.equal(1.55);
+            expect(myBet.user).to.equal(testAddress.public);
+            expect(myBet.seed).to.equal("123456abcd123456");
 
-        expect(myBet.amount).to.equal(500);
-        expect(myBet.edge).to.equal(1.55);
-        expect(myBet.user).to.equal(testAddress.public);
-        expect(myBet.seed).to.equal("123456abcd123456");
+            expect(emitStub.callCount).to.equal(1);
+            expect(lockBalanceStub.callCount).to.equal(1);
 
-        expect(emitStub.callCount).to.equal(1);
-        expect(lockBalanceStub.callCount).to.equal(1);
+            done();
+          }).catch(done);
+        });
+
+        betService.createBet(betData);
       });
 
       after(function afterTest() {
@@ -461,7 +464,8 @@ describe('betService', function betServiceTest() {
 
 
   describe('callBet', function () {
-    let emitStub, balanceOfStub, lockedBalanceOfStub,lockBalanceStub, executeBetStub, calculateRollStub;
+    let emitStub, balanceOfStub, lockedBalanceOfStub, lockBalanceStub, executeBetStub, calculateRollStub,
+      getCurrentServerSeedStub;
     let callerUser = "0x05ad37D5393cD877f64ad36f1791ED09d847b123";
     let callerSeed = "callerAbcde12345";
     let betData = {
@@ -701,6 +705,11 @@ describe('betService', function betServiceTest() {
 
           return Promise.resolve(betData.amount);
         });
+
+        getCurrentServerSeedStub = sinon.stub(fairnessProofService, "getCurrentServerSeed");
+        getCurrentServerSeedStub.callsFake(function () {
+          return Promise.resolve("123456");
+        });
       });
 
       describe('maker won', function describe() {
@@ -861,6 +870,7 @@ describe('betService', function betServiceTest() {
       after(function afterTest() {
         balanceOfStub.restore();
         lockedBalanceOfStub.restore();
+        getCurrentServerSeedStub.restore();
       });
 
     });

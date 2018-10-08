@@ -15,23 +15,28 @@ async function createBet(betData) {
     throw new Error("Insufficient Balance for bet");
   }
 
-  let bet = await db.Bet.create(betData);
+  ethbetService.lockBalance(betData.user, betData.amount).then(async (results) => {
+    logService.logger.info("createBet: balance locked", {
+      tx: results.tx,
+      user: betData.user,
+      amount: betData.amount,
+      seed: betData.seed,
+    });
 
-  logService.logger.info("New Bet, db updated: ", bet.toJSON());
+    let bet = await db.Bet.create(betData);
 
-  let results = await ethbetService.lockBalance(bet.user, bet.amount);
+    logService.logger.info("createBet: db updated", bet.toJSON());
 
-  logService.logger.info("New Bet, balance locked : ", {
-    tx: results.tx,
-    betId: bet.id,
-    user: bet.user,
-    amount: bet.amount
+    bet.dataValues.username = await userService.getUsername(bet.user);
+    socketService.emit("betCreated", bet);
+  }).catch((err) => {
+    logService.logger.info("createBet: error", {
+      user: bet.user,
+      amount: bet.amount,
+      seed: bet.seed,
+      err: err
+    });
   });
-
-  bet.dataValues.username = await userService.getUsername(bet.user);
-  socketService.emit("betCreated", bet);
-
-  return bet;
 }
 
 async function getActiveBets(opts = { orderField: 'createdAt', orderDirection: 'DESC', offset: 0 }) {
@@ -166,6 +171,12 @@ async function callBet(betId, callerSeed, callerUser) {
   if (lockedMakerUserBalance < bet.amount) {
     throw new Error("Maker user Locked Balance is less than bet amount");
   }
+
+  let currentServerSeed = await fairnessProofService.getCurrentServerSeed();
+  if(!currentServerSeed){
+    throw new Error("Not possible to call bet: Server Seed not generated");
+  }
+
 
   try {
     await lockService.lock(getBetLockId(bet.id));
