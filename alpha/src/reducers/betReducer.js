@@ -87,7 +87,7 @@ export default function betReducer(state = new ImmutableMap(initialData), action
     return state
       .set('gettingExecutedBets', false);
   };
-  
+
   const fetchGetBetInfoRequest = (state) => {
     return state
       .set('gettingBetInfo', action.id);
@@ -97,7 +97,7 @@ export default function betReducer(state = new ImmutableMap(initialData), action
     let betsInfo = state.get('betsInfo');
     let bet = action.bet;
     betsInfo[bet.id] = bet;
-    
+
     return state
       .set('gettingBetInfo', false)
       .set('betsInfo', betsInfo);
@@ -111,11 +111,6 @@ export default function betReducer(state = new ImmutableMap(initialData), action
   const postCancelBetRequest = (state) => {
     return state
       .set('cancelingBet', action.betId);
-  };
-
-  const postCancelBetSuccess = (state) => {
-    return state
-      .set('cancelingBet', null);
   };
 
   const postCancelBetFailure = (state) => {
@@ -147,6 +142,7 @@ export default function betReducer(state = new ImmutableMap(initialData), action
 
   const betCanceled = (state) => {
     return state
+      .set('cancelingBet', null)
       .set('activeBets', state.get('activeBets').filter((bet) => bet.id !== action.bet.id))
       .set('activeBetsTotalCount', state.get('activeBetsTotalCount') - 1);
   };
@@ -169,12 +165,11 @@ export default function betReducer(state = new ImmutableMap(initialData), action
     'FETCH_GET_ACTIVE_BETS_FAILURE': () => fetchGetActiveBetsFailure(state),
     'FETCH_GET_EXECUTED_BETS_REQUEST': () => fetchGetExecutedBetsRequest(state),
     'FETCH_GET_EXECUTED_BETS_SUCCESS': () => fetchGetExecutedBetsSuccess(state),
-    'FETCH_GET_EXECUTED_BETS_FAILURE': () => fetchGetExecutedBetsFailure(state),  
+    'FETCH_GET_EXECUTED_BETS_FAILURE': () => fetchGetExecutedBetsFailure(state),
     'FETCH_GET_BET_INFO_REQUEST': () => fetchGetBetInfoRequest(state),
     'FETCH_GET_BET_INFO_SUCCESS': () => fetchGetBetInfoSuccess(state),
     'FETCH_GET_BET_INFO_FAILURE': () => fetchGetBetInfoFailure(state),
     'POST_CANCEL_BET_REQUEST': () => postCancelBetRequest(state),
-    'POST_CANCEL_BET_SUCCESS': () => postCancelBetSuccess(state),
     'POST_CANCEL_BET_FAILURE': () => postCancelBetFailure(state),
     'POST_CALL_BET_REQUEST': () => postCallBetRequest(state),
     'POST_CALL_BET_SUCCESS': () => postCallBetSuccess(state),

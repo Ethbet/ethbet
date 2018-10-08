@@ -15,6 +15,12 @@ async function createBet(betData) {
     throw new Error("Insufficient Balance for bet");
   }
 
+  logService.logger.info("createBet: locking balance", {
+    user: betData.user,
+    amount: betData.amount,
+    seed: betData.seed,
+  });
+
   ethbetService.lockBalance(betData.user, betData.amount).then(async (results) => {
     logService.logger.info("createBet: balance locked", {
       tx: results.tx,
@@ -31,9 +37,9 @@ async function createBet(betData) {
     socketService.emit("betCreated", bet);
   }).catch((err) => {
     logService.logger.info("createBet: error", {
-      user: bet.user,
-      amount: bet.amount,
-      seed: bet.seed,
+      user: betData.user,
+      amount: betData.amount,
+      seed: betData.seed,
       err: err
     });
   });
@@ -119,31 +125,39 @@ async function cancelBet(betId, user) {
   }
   catch (err) {
     if (err.code === 'EEXIST') {
-      throw new Error("Somebody else is currently calling or cancelling this bet ...");
+      throw new Error("Somebody is currently calling or cancelling this bet ...");
     }
   }
 
-  let cancelledAt = new Date();
-  await bet.update({ cancelledAt });
-  logService.logger.info("cancelBet: pre-tx db updated", { betId: bet.id, cancelledAt });
-
-  let results = await ethbetService.unlockBalance(bet.user, bet.amount);
-
-  logService.logger.info("cancelBet: balance unlocked", {
-    tx: results.tx,
+  logService.logger.info("cancelBet: unlocking balance", {
     betId: bet.id,
     user: bet.user,
     amount: bet.amount
   });
 
-  await bet.update({ txHash: results.tx, txSuccess: true });
-  logService.logger.info("cancelBet: post-tx db updated", { betId: bet.id, cancelledAt });
+  ethbetService.unlockBalance(bet.user, bet.amount).then(async (results) => {
+    logService.logger.info("cancelBet: balance unlocked", {
+      tx: results.tx,
+      betId: bet.id,
+      user: bet.user,
+      amount: bet.amount
+    });
 
-  await lockService.unlock(getBetLockId(betId));
+    let cancelledAt = new Date();
+    await bet.update({ cancelledAt, txHash: results.tx, txSuccess: true });
+    logService.logger.info("cancelBet: db updated", { betId: bet.id, cancelledAt });
 
-  socketService.emit("betCanceled", bet);
+    await lockService.unlock(getBetLockId(betId));
 
-  return bet;
+    socketService.emit("betCanceled", bet);
+  }).catch((err) => {
+    logService.logger.info("cancelBet: error", {
+      betId: bet.id,
+      user: bet.user,
+      amount: bet.amount,
+      err: err
+    });
+  });
 }
 
 async function callBet(betId, callerSeed, callerUser) {
@@ -173,7 +187,7 @@ async function callBet(betId, callerSeed, callerUser) {
   }
 
   let currentServerSeed = await fairnessProofService.getCurrentServerSeed();
-  if(!currentServerSeed){
+  if (!currentServerSeed) {
     throw new Error("Not possible to call bet: Server Seed not generated");
   }
 

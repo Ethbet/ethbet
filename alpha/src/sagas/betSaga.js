@@ -26,12 +26,7 @@ function* saveNewBet(data) {
 
     yield put(betActions.postSaveNewBet.success());
 
-    yield put(notificationActions.success({
-      notification: {
-        title: 'new bet creation ongoing, you will be notified when it is complete ...',
-        position: 'br'
-      }
-    }));
+    yield put(notificationActions.successMessage('bet creation ongoing, you will be notified when it is complete ...'));
   } catch (error) {
     yield put(betActions.postSaveNewBet.failure({ error }));
     yield put(notificationActions.error({
@@ -121,20 +116,11 @@ function* cancelBet(data) {
   try {
     const web3 = yield select(state => state.web3Store.get("web3"));
 
-    const results = yield call(betService.cancelBet, web3, data.id);
+    yield call(betService.cancelBet, web3, data.id);
 
-    // delay to allow changes to be committed to local node
-    yield delay(1000);
+    yield put(betActions.postCancelBet.success({  }));
 
-    yield put(betActions.postCancelBet.success({ results }));
-
-    console.log("cancelBet TX", results.tx);
-    yield put(notificationActions.success({
-      notification: {
-        title: 'bet canceled successfully',
-        position: 'br'
-      }
-    }));
+    yield put(notificationActions.successMessage('bet cancellation ongoing, you will be notified when it is complete ...'));
   } catch (error) {
     yield put(betActions.postCancelBet.failure({ error }));
     yield put(notificationActions.error({
@@ -145,6 +131,17 @@ function* cancelBet(data) {
         position: 'br'
       }
     }));
+  }
+}
+
+function* notifyBetCanceled(data) {
+  const web3 = yield select(state => state.web3Store.get("web3"));
+  const bet = data.bet;
+
+  // notify if creator
+  if (_.get(web3, 'eth.defaultAccount') === bet.user) {
+    console.log("betCanceled ID:", bet.id);
+    yield put(notificationActions.successMessage(`bet canceled. ID: ${bet.id}`));
   }
 }
 
@@ -214,6 +211,10 @@ function* watchCancelBet() {
   yield takeEvery(betActions.CANCEL_BET, cancelBet);
 }
 
+function* watchBetCanceled() {
+  yield takeEvery(betActions.BET_CANCELED, notifyBetCanceled);
+}
+
 function* watchCallBet() {
   yield takeEvery(betActions.CALL_BET, callBet);
 }
@@ -231,6 +232,7 @@ export default function* betSaga() {
     watchGetExecutedBets(),
     watchGetBetInfo(),
     watchCancelBet(),
+    watchBetCanceled(),
     watchCallBet(),
   ]);
 }

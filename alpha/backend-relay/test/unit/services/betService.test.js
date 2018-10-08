@@ -418,12 +418,6 @@ describe('betService', function betServiceTest() {
       let results = { tx: '12asd45dfa' };
 
       before(async function beforeTest() {
-        emitStub = sinon.stub(socketService, "emit");
-        emitStub.callsFake(function (event, data) {
-          expect(event).to.eq("betCanceled");
-          expect(data.amount).to.eq(betData.amount);
-        });
-
         lockedBalanceOfStub = sinon.stub(ethbetService, "lockedBalanceOf");
         lockedBalanceOfStub.callsFake(function (userAddress) {
           expect(userAddress).to.eq(testAddress.public);
@@ -442,16 +436,25 @@ describe('betService', function betServiceTest() {
         bet = await db.Bet.create(betData);
       });
 
-      it('ok', async function it() {
-        await betService.cancelBet(bet.id, testAddress.public);
+      it('ok', function it(done) {
+        // check results in the socket callback
+        emitStub = sinon.stub(socketService, "emit");
+        emitStub.callsFake(function (event, data) {
+          expect(event).to.equal("betCanceled");
+          let bet = data;
 
-        let updatedBet = await db.Bet.findById(bet.id);
-        expect(!!updatedBet.cancelledAt).to.equal(true);
-        expect(updatedBet.txHash).to.equal(results.tx);
-        expect(updatedBet.txSuccess).to.equal(true);
+          db.Bet.findById(bet.id).then((updatedBet) => {
+            expect(!!updatedBet.cancelledAt).to.equal(true);
+            expect(updatedBet.txHash).to.equal(results.tx);
+            expect(updatedBet.txSuccess).to.equal(true);
 
-        expect(emitStub.callCount).to.equal(1);
-        expect(unlockBalanceStub.callCount).to.equal(1);
+            expect(emitStub.callCount).to.equal(1);
+            expect(unlockBalanceStub.callCount).to.equal(1);
+            done();
+          }).catch(done);
+        });
+
+        betService.cancelBet(bet.id, testAddress.public);
       });
 
       after(function afterTest() {

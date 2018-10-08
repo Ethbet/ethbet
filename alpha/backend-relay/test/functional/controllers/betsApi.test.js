@@ -121,7 +121,7 @@ describe('betsApi', function betsApiTest() {
           user: testAddress.public
         });
 
-        return Promise.resolve(bet);
+        return Promise.resolve();
       });
 
       message = signService.buildMessage(betData, testAddress);
@@ -137,7 +137,6 @@ describe('betsApi', function betsApiTest() {
             return done(error);
           }
 
-          expect(result.body.bet).to.deep.eq(bet);
           done();
         });
     });
