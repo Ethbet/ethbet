@@ -89,3 +89,8 @@
     max-height: 100%;
     vertical-align: middle;
 }
+
+.balance-ul {
+    padding-left: 0px;
+    list-style-type: none;
+}

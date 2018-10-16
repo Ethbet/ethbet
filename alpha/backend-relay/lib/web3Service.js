@@ -80,7 +80,7 @@ async function getGasPrice() {
   try {
     let response = await axiosClient.get('https://api.blockcypher.com/v1/eth/main');
 
-    return Math.min(response.data.high_gas_price, MAX_GAS_PRICE); // MAX 30 GWEI
+    return Math.min(response.data.medium_gas_price, MAX_GAS_PRICE); // MAX 30 GWEI
   }
   catch (err) {
     console.log("getGasPrice", err);

@@ -145,7 +145,7 @@ function* saveNewEthWithdrawal(data) {
     console.log("saveNewEthWithdrawal TX", results.tx);
     yield put(notificationActions.success({
       notification: {
-        title: 'new withdrawal saved successfully',
+        title: 'new ETH withdrawal saved successfully',
         position: 'br'
       }
     }));
@@ -153,7 +153,7 @@ function* saveNewEthWithdrawal(data) {
     yield put(etherBalanceActions.postSaveNewEthWithdrawal.failure({ error }));
     yield put(notificationActions.error({
       notification: {
-        title: 'failed to save withdrawal',
+        title: 'failed to save ETH withdrawal',
         message: error.message,
         position: 'br'
       }

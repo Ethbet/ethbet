@@ -4,6 +4,10 @@ import {Map as ImmutableMap} from 'immutable';
 let initialData = {
   newDepositValue: 0,
   newWithdrawalValue: 0,
+
+  newEthDepositValue: 0,
+  newEthWithdrawalValue: 0,
+
   savingNewDeposit: false
 };
 
@@ -17,9 +21,13 @@ export default function balanceReducer(state = new ImmutableMap(initialData), ac
   const fetchLoadBalanceSuccess = (state) => {
     return state
       .set('loadingBalance', false)
+      // EBET
       .set('balance', action.balance)
       .set('lockedBalance', action.lockedBalance)
-      .set('walletBalance', action.walletBalance);
+      .set('walletBalance', action.walletBalance)
+      // ETH
+      .set('ethBalance', action.ethBalance)
+      .set('walletEthBalance', action.walletEthBalance);
   };
 
   const fetchLoadBalanceFailure = (state) => {
@@ -69,6 +77,51 @@ export default function balanceReducer(state = new ImmutableMap(initialData), ac
       .set('savingNewWithdrawal', false);
   };
 
+  // ETH
+
+  const setNewEthDepositValue = (state) => {
+    return state
+      .set('newEthDepositValue', action.newEthDepositValue);
+  };
+
+  const postSaveNewEthDepositRequest = (state) => {
+    return state
+      .set('savingNewEthDeposit', true);
+  };
+
+  const postSaveNewEthDepositSuccess = (state) => {
+    return state
+      .set('savingNewEthDeposit', false)
+      .set('newEthDepositValue', 0);
+  };
+
+  const postSaveNewEthDepositFailure = (state) => {
+    return state
+      .set('savingNewEthDeposit', false);
+  };
+
+  const setNewEthWithdrawalValue = (state) => {
+    return state
+      .set('newEthWithdrawalValue', action.newEthWithdrawalValue);
+  };
+
+  const postSaveNewEthWithdrawalRequest = (state) => {
+    return state
+      .set('savingNewEthWithdrawal', true);
+  };
+
+  const postSaveNewEthWithdrawalSuccess = (state) => {
+    return state
+      .set('savingNewEthWithdrawal', false)
+      .set('newEthWithdrawalValue', 0);
+  };
+
+  const postSaveNewEthWithdrawalFailure = (state) => {
+    return state
+      .set('savingNewEthWithdrawal', false);
+  };
+
+
   const actions = {
     'FETCH_LOAD_BALANCE_REQUEST': () => fetchLoadBalanceRequest(state),
     'FETCH_LOAD_BALANCE_SUCCESS': () => fetchLoadBalanceSuccess(state),
@@ -81,6 +134,17 @@ export default function balanceReducer(state = new ImmutableMap(initialData), ac
     'POST_SAVE_NEW_WITHDRAWAL_REQUEST': () => postSaveNewWithdrawalRequest(state),
     'POST_SAVE_NEW_WITHDRAWAL_SUCCESS': () => postSaveNewWithdrawalSuccess(state),
     'POST_SAVE_NEW_WITHDRAWAL_FAILURE': () => postSaveNewWithdrawalFailure(state),
+
+    'SET_NEW_ETH_DEPOSIT_VALUE': () => setNewEthDepositValue(state),
+    'POST_SAVE_NEW_ETH_DEPOSIT_REQUEST': () => postSaveNewEthDepositRequest(state),
+    'POST_SAVE_NEW_ETH_DEPOSIT_SUCCESS': () => postSaveNewEthDepositSuccess(state),
+    'POST_SAVE_NEW_ETH_DEPOSIT_FAILURE': () => postSaveNewEthDepositFailure(state),
+
+    'SET_NEW_ETH_WITHDRAWAL_VALUE': () => setNewEthWithdrawalValue(state),
+    'POST_SAVE_NEW_ETH_WITHDRAWAL_REQUEST': () => postSaveNewEthWithdrawalRequest(state),
+    'POST_SAVE_NEW_ETH_WITHDRAWAL_SUCCESS': () => postSaveNewEthWithdrawalSuccess(state),
+    'POST_SAVE_NEW_ETH_WITHDRAWAL_FAILURE': () => postSaveNewEthWithdrawalFailure(state),
+
     'DEFAULT': () => state
   };
 

@@ -15,7 +15,7 @@ const BetFactory = require('../../factories/bets').BetFactory;
 describe('betService', function betServiceTest() {
 
   describe('createBet', function () {
-    let emitStub, balanceOfStub, lockBalanceStub;
+    let emitStub, balanceOfStub, ethBalanceOfStub, lockBalanceStub, createFeeStub;
     let betData = {
       amount: 500,
       edge: 1.55,
@@ -25,6 +25,7 @@ describe('betService', function betServiceTest() {
 
     context('sufficient balance', function context() {
       let results = { stub: 'results' };
+      let createFee = 50000000;
 
       before(function beforeTest() {
         balanceOfStub = sinon.stub(ethbetService, "balanceOf");
@@ -34,10 +35,24 @@ describe('betService', function betServiceTest() {
           return Promise.resolve(betData.amount * 2);
         });
 
+        ethBalanceOfStub = sinon.stub(ethbetService, "ethBalanceOf");
+        ethBalanceOfStub.callsFake(function (userAddress) {
+          expect(userAddress).to.eq(testAddress.public);
+
+          return Promise.resolve(createFee + 1);
+        });
+
         lockBalanceStub = sinon.stub(ethbetService, "lockBalance");
-        lockBalanceStub.callsFake(function (userAddress, amount) {
+        lockBalanceStub.callsFake(function (userAddress, amount, operationType) {
           expect(userAddress).to.eq(testAddress.public);
           expect(amount).to.eq(betData.amount);
+          expect(operationType).to.eq("create");
+
+          return Promise.resolve(results);
+        });
+
+        createFeeStub = sinon.stub(ethbetService, "createFee");
+        createFeeStub.callsFake(function () {
 
           return Promise.resolve(results);
         });
@@ -69,7 +84,9 @@ describe('betService', function betServiceTest() {
       after(function afterTest() {
         emitStub.restore();
         balanceOfStub.restore();
+        ethBalanceOfStub.restore();
         lockBalanceStub.restore();
+        createFeeStub.restore();
       });
     });
 

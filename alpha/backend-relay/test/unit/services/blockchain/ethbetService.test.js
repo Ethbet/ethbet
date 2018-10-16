@@ -9,9 +9,13 @@ const testAddress = require('../../../support/testAddress.json');
 
 
 describe('ethbetService', function ethbetServiceTest() {
-  let web3 = {toWei: ()=> {}};
+  let web3 = {
+    toWei: () => {
+    }
+  };
   let ethbetInstance;
-  let getWeb3Stub,getGasPriceStub, getDeployedInstanceStub;
+  let getWeb3Stub, getGasPriceStub, getDeployedInstanceStub;
+  let gasPrice = 20 * 10 ** 9;
 
   before(function beforeTest() {
     getWeb3Stub = sinon.stub(web3Service, 'getWeb3');
@@ -21,11 +25,13 @@ describe('ethbetService', function ethbetServiceTest() {
 
     getGasPriceStub = sinon.stub(web3Service, 'getGasPrice');
     getGasPriceStub.callsFake(function () {
-      return 20 * 10 ** 9;
+      return gasPrice;
     });
 
     ethbetInstance = {
       balanceOf: () => {
+      },
+      ethBalanceOf: () => {
       },
       lockBalance: () => {
       },
@@ -56,7 +62,7 @@ describe('ethbetService', function ethbetServiceTest() {
       balanceOfStub.callsFake(function (myUserAddress) {
         expect(myUserAddress).to.eq(userAddress);
 
-        return Promise.resolve({toNumber: () => balance});
+        return Promise.resolve({ toNumber: () => balance });
       });
     });
 
@@ -71,6 +77,32 @@ describe('ethbetService', function ethbetServiceTest() {
     });
   });
 
+  describe('ethBalanceOf', function () {
+    let balance = 40;
+    let userAddress = testAddress.public;
+    let ethBalanceOfStub;
+
+    before(function beforeTest() {
+      ethBalanceOfStub = sinon.stub(ethbetInstance, 'ethBalanceOf');
+      ethBalanceOfStub.callsFake(function (myUserAddress) {
+        expect(myUserAddress).to.eq(userAddress);
+
+        return Promise.resolve({ toNumber: () => balance });
+      });
+    });
+
+    it('ok', async function it() {
+      let myBalance = await ethbetService.ethBalanceOf(userAddress);
+
+      expect(myBalance).to.equal(balance);
+    });
+
+    after(function afterTest() {
+      ethBalanceOfStub.restore();
+    });
+  });
+
+
   describe('lockedBalanceOf', function () {
     let lockedBalance = 50;
     let userAddress = testAddress.public;
@@ -81,7 +113,7 @@ describe('ethbetService', function ethbetServiceTest() {
       lockedBalanceOfStub.callsFake(function (myUserAddress) {
         expect(myUserAddress).to.eq(userAddress);
 
-        return Promise.resolve({toNumber: () => lockedBalance});
+        return Promise.resolve({ toNumber: () => lockedBalance });
       });
     });
 
@@ -98,22 +130,23 @@ describe('ethbetService', function ethbetServiceTest() {
 
   describe('lockBalance', function () {
     let amount = 100;
-    let results = {receipt: {status:"0x1"}};
+    let results = { receipt: { status: "0x1" } };
     let userAddress = testAddress.public;
     let lockBalanceStub;
 
     before(function beforeTest() {
       lockBalanceStub = sinon.stub(ethbetInstance, 'lockBalance');
-      lockBalanceStub.callsFake(function (myUserAddress, myAmount) {
+      lockBalanceStub.callsFake(function (myUserAddress, myAmount, myFee) {
         expect(myUserAddress).to.eq(userAddress);
         expect(myAmount).to.eq(amount);
+        expect(myFee).to.eq(ethbetService.CREATE_GAS * gasPrice );
 
         return Promise.resolve(results);
       });
     });
 
     it('ok', async function it() {
-      let myResults = await ethbetService.lockBalance(userAddress, amount);
+      let myResults = await ethbetService.lockBalance(userAddress, amount , "create");
 
       expect(myResults).to.equal(results);
     });
@@ -123,23 +156,18 @@ describe('ethbetService', function ethbetServiceTest() {
     });
   });
 
-  after(function afterTest() {
-    getWeb3Stub.restore();
-    getDeployedInstanceStub.restore();
-  });
-
-
   describe('unlockBalance', function () {
     let amount = 100;
-    let results = {receipt: {status:"0x1"}};
+    let results = { receipt: { status: "0x1" } };
     let userAddress = testAddress.public;
     let unlockBalanceStub;
 
     before(function beforeTest() {
       unlockBalanceStub = sinon.stub(ethbetInstance, 'unlockBalance');
-      unlockBalanceStub.callsFake(function (myUserAddress, myAmount) {
+      unlockBalanceStub.callsFake(function (myUserAddress, myAmount, myFee) {
         expect(myUserAddress).to.eq(userAddress);
         expect(myAmount).to.eq(amount);
+        expect(myFee).to.eq(gasPrice * ethbetService.CANCEL_GAS);
 
         return Promise.resolve(results);
       });
@@ -156,14 +184,10 @@ describe('ethbetService', function ethbetServiceTest() {
     });
   });
 
-  after(function afterTest() {
-    getWeb3Stub.restore();
-    getDeployedInstanceStub.restore();
-  });
 
   describe('executeBet', function () {
     let maker = "0x001", caller = "0x002", makerWon = true, amount = 200;
-    let results = {receipt: {status:"0x1"}};
+    let results = { receipt: { status: "0x1" } };
     let executeBetStub;
 
     before(function beforeTest() {
@@ -189,10 +213,35 @@ describe('ethbetService', function ethbetServiceTest() {
     });
   });
 
+  describe('createFee', function () {
+    it('ok', async function it() {
+      let createFee = await ethbetService.createFee();
+
+      expect(createFee).to.equal(ethbetService.CREATE_GAS * gasPrice);
+    });
+  });
+
+  describe('callFee', function () {
+    it('ok', async function it() {
+      let callFee = await ethbetService.callFee();
+
+      expect(callFee).to.equal(ethbetService.CALL_GAS * gasPrice);
+    });
+  });
+
+  describe('cancelFee', function () {
+    it('ok', async function it() {
+      let cancelFee = await ethbetService.cancelFee();
+
+      expect(cancelFee).to.equal(ethbetService.CANCEL_GAS * gasPrice);
+    });
+  });
+
   after(function afterTest() {
     getWeb3Stub.restore();
     getGasPriceStub.restore();
     getDeployedInstanceStub.restore();
   });
+
 
 });

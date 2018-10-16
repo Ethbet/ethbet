@@ -13,15 +13,12 @@ contract Ethbet {
   */
 
   event Deposit(address indexed user, uint amount, uint balance);
-
   event Withdraw(address indexed user, uint amount, uint balance);
-
   event LockedBalance(address indexed user, uint amount);
-
   event UnlockedBalance(address indexed user, uint amount);
-
+  event EthDeposit(address indexed user, uint amount, uint balance);
+  event EthWithdraw(address indexed user, uint amount, uint balance);
   event ExecutedBet(address indexed winner, address indexed loser, uint amount);
-
   event RelayAddressChanged(address relay);
 
 
@@ -32,9 +29,12 @@ contract Ethbet {
 
   EthbetToken public token;
 
+  // Users EBET balances
   mapping(address => uint256) balances;
-
   mapping(address => uint256) lockedBalances;
+
+  // Users ETH balances
+  mapping(address => uint256) public ethBalances;
 
   /*
   * Modifiers
@@ -109,13 +109,43 @@ contract Ethbet {
     Withdraw(msg.sender, _amount, balances[msg.sender]);
   }
 
+  /**
+   * @dev deposit ETH into the contract
+   */
+  function depositEth() public payable {
+    require(msg.value > 0);
+
+    // add the ETH to the user's balance
+    ethBalances[msg.sender] = ethBalances[msg.sender].add(msg.value);
+
+    EthDeposit(msg.sender, msg.value, ethBalances[msg.sender]);
+  }
+
+  /**
+   * @dev withdraw ETH  from the contract
+   * @param _amount Amount to withdraw in WEI
+   */
+  function withdrawEth(uint _amount) public {
+    require(_amount > 0);
+    require(ethBalances[msg.sender] >= _amount);
+
+    // subtract ether from the user's balance
+    ethBalances[msg.sender] = ethBalances[msg.sender].sub(_amount);
+
+    // transfer ether from the contract to the user
+    msg.sender.transfer(_amount);
+
+    EthWithdraw(msg.sender, _amount, ethBalances[msg.sender]);
+  }
+
 
   /**
    * @dev Lock user balance to be used for bet
    * @param _userAddress User Address
    * @param _amount Amount to be locked
+   * @param _fee Fee in wei to be charged
    */
-  function lockBalance(address _userAddress, uint _amount) public isRelay {
+  function lockBalance(address _userAddress, uint _amount, uint _fee) public isRelay {
     require(_amount > 0);
     require(balances[_userAddress] >= _amount);
 
@@ -125,15 +155,36 @@ contract Ethbet {
     // add the tokens to the user's locked balance
     lockedBalances[_userAddress] = lockedBalances[_userAddress].add(_amount);
 
+    if (_fee > 0) {
+      // charge fees
+      chargeGasFee(_userAddress, _fee);
+    }
+
     LockedBalance(_userAddress, _amount);
+  }
+
+  /**
+   * @dev charge gas fee
+   * @param _userAddress User Address
+   * @param _fee Fee in wei to be charged
+   */
+  function chargeGasFee(address _userAddress, uint _fee) internal isRelay {
+    require(ethBalances[_userAddress] >= _fee);
+
+    // charge fee
+    ethBalances[_userAddress] = ethBalances[_userAddress].sub(_fee);
+
+    // transfer ether from the contract to the relay
+    relay.transfer(_fee);
   }
 
   /**
    * @dev Unlock user balance
    * @param _userAddress User Address
    * @param _amount Amount to be locked
+   * @param _fee Fee in wei to be charged
    */
-  function unlockBalance(address _userAddress, uint _amount) public isRelay {
+  function unlockBalance(address _userAddress, uint _amount, uint _fee) public isRelay {
     require(_amount > 0);
     require(lockedBalances[_userAddress] >= _amount);
 
@@ -142,6 +193,11 @@ contract Ethbet {
 
     // add the tokens to the user's  balance
     balances[_userAddress] = balances[_userAddress].add(_amount);
+
+    if (_fee > 0) {
+      // charge fees
+      chargeGasFee(_userAddress, _fee);
+    }
 
     UnlockedBalance(_userAddress, _amount);
   }
@@ -152,6 +208,14 @@ contract Ethbet {
   */
   function balanceOf(address _userAddress) constant public returns (uint) {
     return balances[_userAddress];
+  }
+
+  /**
+   * @dev Get user ETH balance
+   * @param _userAddress User Address
+   */
+  function ethBalanceOf(address _userAddress) constant public returns (uint) {
+    return ethBalances[_userAddress];
   }
 
   /**
@@ -177,10 +241,10 @@ contract Ethbet {
     require(lockedBalances[_maker] >= _amount);
 
     // unlock maker balance
-    unlockBalance(_caller, _amount);
+    unlockBalance(_caller, _amount, 0);
 
     // unlock maker balance
-    unlockBalance(_maker, _amount);
+    unlockBalance(_maker, _amount, 0);
 
     var winner = _makerWon ? _maker : _caller;
     var loser = _makerWon ? _caller : _maker;

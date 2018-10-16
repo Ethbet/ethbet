@@ -10,9 +10,14 @@ let logService = require('./logService');
 
 async function createBet(betData) {
   let userBalance = await ethbetService.balanceOf(betData.user);
-
   if (userBalance < betData.amount) {
     throw new Error("Insufficient Balance for bet");
+  }
+
+  let createFee = await ethbetService.createFee();
+  let userEthBalance = await ethbetService.ethBalanceOf(betData.user);
+  if (userEthBalance < createFee) {
+    throw new Error("Insufficient ETH Balance for fees, currently estimated at: " + (createFee / (10 ** 18)) + " ETH");
   }
 
   logService.logger.info("createBet: locking balance", {
@@ -21,7 +26,7 @@ async function createBet(betData) {
     seed: betData.seed,
   });
 
-  ethbetService.lockBalance(betData.user, betData.amount).then(async (results) => {
+  ethbetService.lockBalance(betData.user, betData.amount, "create").then(async (results) => {
     logService.logger.info("createBet: balance locked", {
       tx: results.tx,
       user: betData.user,

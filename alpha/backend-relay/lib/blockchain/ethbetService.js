@@ -2,11 +2,30 @@ const contractService = require('../contractService');
 const web3Service = require('../web3Service');
 const ethUtil = require('ethereumjs-util');
 
+const CREATE_GAS = 67000;
+const CALL_GAS = 21000;
+const CANCEL_GAS = 18000;
+
+let GAS = {
+  create: CREATE_GAS,
+  call: CALL_GAS,
+  cancel: CANCEL_GAS
+};
+
 async function balanceOf(userAddress) {
   const web3 = web3Service.getWeb3();
   const ethbetInstance = await contractService.getDeployedInstance(web3, "Ethbet");
 
   const balance = await ethbetInstance.balanceOf(userAddress);
+
+  return balance.toNumber();
+}
+
+async function ethBalanceOf(userAddress) {
+  const web3 = web3Service.getWeb3();
+  const ethbetInstance = await contractService.getDeployedInstance(web3, "Ethbet");
+
+  const balance = await ethbetInstance.ethBalanceOf(userAddress);
 
   return balance.toNumber();
 }
@@ -20,13 +39,13 @@ async function lockedBalanceOf(userAddress) {
   return lockedBalance.toNumber();
 }
 
-async function lockBalance(userAddress, amount) {
+async function lockBalance(userAddress, amount, operationType) {
   const web3 = web3Service.getWeb3();
   const ethbetInstance = await contractService.getDeployedInstance(web3, "Ethbet");
 
   let gasPrice = await web3Service.getGasPrice();
 
-  let results = await ethbetInstance.lockBalance(userAddress, amount, {
+  let results = await ethbetInstance.lockBalance(userAddress, amount, gasPrice * GAS[operationType], {
     gas: 100000,
     gasPrice: gasPrice
   });
@@ -42,7 +61,7 @@ async function unlockBalance(userAddress, amount) {
 
   let gasPrice = await web3Service.getGasPrice();
 
-  let results = await ethbetInstance.unlockBalance(userAddress, amount, {
+  let results = await ethbetInstance.unlockBalance(userAddress, amount, gasPrice * CANCEL_GAS, {
     gas: 100000,
     gasPrice: gasPrice
   });
@@ -68,10 +87,35 @@ async function executeBet(maker, caller, makerWon, amount) {
   return results;
 }
 
+async function createFee() {
+  let gasPrice = await web3Service.getGasPrice();
+
+  return gasPrice * CREATE_GAS;
+}
+
+async function callFee() {
+  let gasPrice = await web3Service.getGasPrice();
+
+  return gasPrice * CALL_GAS;
+}
+
+async function cancelFee() {
+  let gasPrice = await web3Service.getGasPrice();
+
+  return gasPrice * CANCEL_GAS;
+}
+
 module.exports = {
   balanceOf: balanceOf,
+  ethBalanceOf: ethBalanceOf,
   lockedBalanceOf: lockedBalanceOf,
   lockBalance: lockBalance,
   unlockBalance: unlockBalance,
   executeBet: executeBet,
+  createFee: createFee,
+  callFee: callFee,
+  cancelFee: cancelFee,
+  CREATE_GAS,
+  CALL_GAS,
+  CANCEL_GAS,
 };

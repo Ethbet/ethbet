@@ -94,6 +94,73 @@ function* saveNewWithdrawal(data) {
   }
 }
 
+function* saveNewEthDeposit(data) {
+  yield put(balanceActions.postSaveNewEthDeposit.request());
+  try {
+    const web3 = yield select(state => state.web3Store.get("web3"));
+
+    const newEthDepositValue = yield select(state => state.balanceStore.get("newEthDepositValue"));
+    let parseNewEthDepositValue = parseFloat(newEthDepositValue);
+
+    const results = yield call(balanceService.depositEth, web3, parseNewEthDepositValue);
+
+    // delay to allow changes to be committed to local node
+    yield delay(1000);
+
+    yield put(balanceActions.postSaveNewEthDeposit.success({ results }));
+
+    console.log("saveNewEthDeposit TX", results.tx);
+    yield put(notificationActions.success({
+      notification: {
+        title: 'new ETH deposit saved successfully',
+        position: 'br'
+      }
+    }));
+  } catch (error) {
+    yield put(balanceActions.postSaveNewEthDeposit.failure({ error }));
+    yield put(notificationActions.error({
+      notification: {
+        title: 'failed to save ETH deposit',
+        message: error.message,
+        position: 'br'
+      }
+    }));
+  }
+}
+
+function* saveNewEthWithdrawal(data) {
+  yield put(balanceActions.postSaveNewEthWithdrawal.request());
+  try {
+    const web3 = yield select(state => state.web3Store.get("web3"));
+
+    const newEthWithdrawalValue = yield select(state => state.balanceStore.get("newEthWithdrawalValue"));
+    let parseNewEthWithdrawalValue = parseFloat(newEthWithdrawalValue);
+
+    const results = yield call(balanceService.withdrawEth, web3, parseNewEthWithdrawalValue);
+
+    // delay to allow changes to be committed to local node
+    yield delay(1000);
+
+    yield put(balanceActions.postSaveNewEthWithdrawal.success({ results }));
+
+    console.log("saveNewEthWithdrawal TX", results.tx);
+    yield put(notificationActions.success({
+      notification: {
+        title: 'new ETH withdrawal saved successfully',
+        position: 'br'
+      }
+    }));
+  } catch (error) {
+    yield put(balanceActions.postSaveNewEthWithdrawal.failure({ error }));
+    yield put(notificationActions.error({
+      notification: {
+        title: 'failed to save ETH withdrawal',
+        message: error.message,
+        position: 'br'
+      }
+    }));
+  }
+}
 
 function* watchEbetLoadInitialData() {
   yield takeEvery(web3Actions.EBET_LOAD_INITIAL_DATA, loadInitialData);
@@ -119,6 +186,22 @@ function* watchPostSaveNewWithdrawalSuccess() {
   yield takeEvery(balanceActions.POST_SAVE_NEW_WITHDRAWAL.SUCCESS, loadBalances);
 }
 
+function* watchSaveNewEthDeposit() {
+  yield takeEvery(balanceActions.SAVE_NEW_ETH_DEPOSIT, saveNewEthDeposit);
+}
+
+function* watchPostSaveNewEthDepositSuccess() {
+  yield takeEvery(balanceActions.POST_SAVE_NEW_ETH_DEPOSIT.SUCCESS, loadBalances);
+}
+
+function* watchSaveNewEthWithdrawal() {
+  yield takeEvery(balanceActions.SAVE_NEW_ETH_WITHDRAWAL, saveNewEthWithdrawal);
+}
+
+function* watchPostSaveNewEthWithdrawalSuccess() {
+  yield takeEvery(balanceActions.POST_SAVE_NEW_ETH_WITHDRAWAL.SUCCESS, loadBalances);
+}
+
 function* watchPostSaveNewBetSuccess() {
   yield takeEvery(betActions.POST_SAVE_NEW_BET.SUCCESS, loadBalances);
 }
@@ -139,6 +222,10 @@ export default function* balanceSaga() {
     watchPostSaveNewDepositSuccess(),  
     watchSaveNewWithdrawal(),
     watchPostSaveNewWithdrawalSuccess(),
+    watchSaveNewEthDeposit(),
+    watchPostSaveNewEthDepositSuccess(),
+    watchSaveNewEthWithdrawal(),
+    watchPostSaveNewEthWithdrawalSuccess(),    
     watchPostSaveNewBetSuccess(),
     watchPostCancelBetSuccess(),
     watchPostCallBetSuccess(),
