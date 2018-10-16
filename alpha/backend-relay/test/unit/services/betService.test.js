@@ -737,12 +737,6 @@ describe('betService', function betServiceTest() {
             return Promise.resolve(rollResults);
           });
 
-          emitStub = sinon.stub(socketService, "emit");
-          emitStub.callsFake(function (event, data) {
-            expect(event).to.eq("betCalled");
-            expect(data.id).to.eq(bet.id);
-          });
-
           lockBalanceStub = sinon.stub(ethbetService, "lockBalance");
           lockBalanceStub.callsFake(function (caller, amount) {
             expect(caller).to.eq(callerUser);
@@ -762,26 +756,33 @@ describe('betService', function betServiceTest() {
           });
         });
 
-        it('ok', async function it() {
-          let results = await betService.callBet(bet.id, callerSeed, callerUser);
+        it('ok', function it(done) {
+          // check results in the socket callback
+          emitStub = sinon.stub(socketService, "emit");
+          emitStub.callsFake(function (event, data) {
+            expect(event).to.equal("betCalled");
 
-          expect(results).to.deep.equal({
-            tx: txResults.tx,
-            resultMessage: "You rolled a 53.9 (needed 54) and lost 6 EBET!'",
-            seedMessage: "We combined the makerSeed (123456abcd123456), the callerSeed (callerAbcde12345) and the server seed (Hidden until next day), and the betID (1) in order to produce the fullSeed for the rolls"
+            expect(data.bet.id).to.eq(bet.id);
+            expect(data.tx).to.eq(txResults.tx);
+            expect(data.resultMessage).to.eq("You rolled a 53.9 (needed 54) and lost 6 EBET!");
+            expect(data.seedMessage).to.eq("We combined the makerSeed (123456abcd123456), the callerSeed (callerAbcde12345) and the server seed (Hidden until next day), and the betID (1) in order to produce the fullSeed for the rolls");
+
+            db.Bet.findById(bet.id).then((updatedBet) => {
+              expect(updatedBet.executedAt.toISOString()).to.equal(rollResults.executedAt.toISOString());
+              expect(updatedBet.callerUser).to.equal(callerUser);
+              expect(updatedBet.serverSeedHash).to.equal(rollResults.serverSeedHash);
+              expect(updatedBet.roll).to.equal(rollResults.roll);
+              expect(updatedBet.makerWon).to.equal(true);
+              expect(updatedBet.txHash).to.equal(txResults.tx);
+              expect(updatedBet.txSuccess).to.equal(true);
+
+              expect(emitStub.callCount).to.equal(1);
+              expect(executeBetStub.callCount).to.equal(1);
+              done();
+            }).catch(done);
           });
 
-          let updatedBet = await db.Bet.findById(bet.id);
-          expect(updatedBet.executedAt.toISOString()).to.equal(rollResults.executedAt.toISOString());
-          expect(updatedBet.callerUser).to.equal(callerUser);
-          expect(updatedBet.serverSeedHash).to.equal(rollResults.serverSeedHash);
-          expect(updatedBet.roll).to.equal(rollResults.roll);
-          expect(updatedBet.makerWon).to.equal(true);
-          expect(updatedBet.txHash).to.equal(txResults.tx);
-          expect(updatedBet.txSuccess).to.equal(true);
-
-          expect(emitStub.callCount).to.equal(1);
-          expect(executeBetStub.callCount).to.equal(1);
+          betService.callBet(bet.id, callerSeed, callerUser);
         });
 
         after(function afterTest() {
@@ -814,12 +815,6 @@ describe('betService', function betServiceTest() {
             return Promise.resolve(rollResults);
           });
 
-          emitStub = sinon.stub(socketService, "emit");
-          emitStub.callsFake(function (event, data) {
-            expect(event).to.eq("betCalled");
-            expect(data.id).to.eq(bet.id);
-          });
-
           lockBalanceStub = sinon.stub(ethbetService, "lockBalance");
           lockBalanceStub.callsFake(function (caller, amount) {
             expect(caller).to.eq(callerUser);
@@ -839,26 +834,33 @@ describe('betService', function betServiceTest() {
           });
         });
 
-        it('ok', async function it() {
-          let results = await betService.callBet(bet.id, callerSeed, callerUser);
+        it('ok', function it(done) {
+          // check results in the socket callback
+          emitStub = sinon.stub(socketService, "emit");
+          emitStub.callsFake(function (event, data) {
+            expect(event).to.equal("betCalled");
 
-          expect(results).to.deep.equal({
-            tx: txResults.tx,
-            resultMessage: "You rolled a 54.1 (needed 54) and won 6 EBET!'",
-            seedMessage: "We combined the makerSeed (123456abcd123456), the callerSeed (callerAbcde12345) and the server seed (Hidden until next day), and the betID (1) in order to produce the fullSeed for the rolls"
+            expect(data.bet.id).to.eq(bet.id);
+            expect(data.tx).to.eq(txResults.tx);
+            expect(data.resultMessage).to.eq("You rolled a 54.1 (needed 54) and won 6 EBET!");
+            expect(data.seedMessage).to.eq("We combined the makerSeed (123456abcd123456), the callerSeed (callerAbcde12345) and the server seed (Hidden until next day), and the betID (1) in order to produce the fullSeed for the rolls");
+
+            db.Bet.findById(bet.id).then((updatedBet) => {
+              expect(updatedBet.executedAt.toISOString()).to.equal(rollResults.executedAt.toISOString());
+              expect(updatedBet.callerUser).to.equal(callerUser);
+              expect(updatedBet.serverSeedHash).to.equal(rollResults.serverSeedHash);
+              expect(updatedBet.roll).to.equal(rollResults.roll);
+              expect(updatedBet.makerWon).to.equal(false);
+              expect(updatedBet.txHash).to.equal(txResults.tx);
+              expect(updatedBet.txSuccess).to.equal(true);
+
+              expect(emitStub.callCount).to.equal(1);
+              expect(executeBetStub.callCount).to.equal(1);
+              done();
+            }).catch(done);
           });
 
-          let updatedBet = await db.Bet.findById(bet.id);
-          expect(updatedBet.executedAt.toISOString()).to.equal(rollResults.executedAt.toISOString());
-          expect(updatedBet.callerUser).to.equal(callerUser);
-          expect(updatedBet.serverSeedHash).to.equal(rollResults.serverSeedHash);
-          expect(updatedBet.roll).to.equal(rollResults.roll);
-          expect(updatedBet.makerWon).to.equal(false);
-          expect(updatedBet.txHash).to.equal(txResults.tx);
-          expect(updatedBet.txSuccess).to.equal(true);
-
-          expect(emitStub.callCount).to.equal(1);
-          expect(executeBetStub.callCount).to.equal(1);
+          betService.callBet(bet.id, callerSeed, callerUser);
         });
 
         after(function afterTest() {

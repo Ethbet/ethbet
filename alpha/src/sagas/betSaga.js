@@ -1,5 +1,4 @@
 import {call, put, all, takeEvery, select} from 'redux-saga/effects';
-import {delay} from 'redux-saga'
 
 const _ = require('lodash');
 
@@ -118,7 +117,7 @@ function* cancelBet(data) {
 
     yield call(betService.cancelBet, web3, data.id);
 
-    yield put(betActions.postCancelBet.success({  }));
+    yield put(betActions.postCancelBet.success({}));
 
     yield put(notificationActions.successMessage('bet cancellation ongoing, you will be notified when it is complete ...'));
   } catch (error) {
@@ -151,28 +150,11 @@ function* callBet(data) {
   try {
     const web3 = yield select(state => state.web3Store.get("web3"));
 
-    const results = yield call(betService.callBet, web3, data.id, data.amount);
+    yield call(betService.callBet, web3, data.id, data.amount);
 
-    // delay to allow changes to be committed to local node
-    yield delay(1000);
+    yield put(betActions.postCallBet.success({}));
 
-    yield put(betActions.postCallBet.success({ results }));
-
-    console.log("callBet TX", results.data.tx);
-    yield put(notificationActions.success({
-      notification: {
-        title: 'Seed Generated',
-        message: results.data.seedMessage,
-        position: 'br'
-      }
-    }));
-    yield put(notificationActions.success({
-      notification: {
-        title: 'Bet Results',
-        message: results.data.resultMessage,
-        position: 'br'
-      }
-    }));
+    yield put(notificationActions.successMessage('bet call ongoing, you will be notified when it is complete ...'));
   } catch (error) {
     yield put(betActions.postCallBet.failure({ error }));
     yield put(notificationActions.error({
@@ -180,6 +162,31 @@ function* callBet(data) {
         title: 'failed to call bet',
         // handle axios error format if available
         message: _.get(error, 'response.data.message') || error.message,
+        position: 'br'
+      }
+    }));
+  }
+}
+
+function* notifyBetCalled(actionData) {
+  const web3 = yield select(state => state.web3Store.get("web3"));
+  const bet = actionData.data.bet;
+
+  // notify if caller
+  if (_.get(web3, 'eth.defaultAccount') === bet.callerUser) {
+    console.log("betCalled ID:", bet.id);
+
+    yield put(notificationActions.success({
+      notification: {
+        title: 'Seed Generated',
+        message: actionData.data.seedMessage,
+        position: 'br'
+      }
+    }));
+    yield put(notificationActions.success({
+      notification: {
+        title: 'Bet Results',
+        message: actionData.data.resultMessage,
         position: 'br'
       }
     }));
@@ -219,6 +226,10 @@ function* watchCallBet() {
   yield takeEvery(betActions.CALL_BET, callBet);
 }
 
+function* watchBetCalled() {
+  yield takeEvery(betActions.BET_CALLED, notifyBetCalled);
+}
+
 function* watchEbetLoadInitialData() {
   yield takeEvery(web3Actions.EBET_LOAD_INITIAL_DATA, loadInitialData);
 }
@@ -234,5 +245,6 @@ export default function* betSaga() {
     watchCancelBet(),
     watchBetCanceled(),
     watchCallBet(),
+    watchBetCalled(),
   ]);
 }

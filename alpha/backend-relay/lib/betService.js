@@ -207,75 +207,81 @@ async function callBet(betId, callerSeed, callerUser) {
     amount: bet.amount
   });
 
-  let lockResults = await ethbetService.lockBalance(callerUser, bet.amount);
+  ethbetService.lockBalance(callerUser, bet.amount).then(async (lockResults) => {
+    logService.logger.info("callBet, locked caller's balance :", {
+      tx: lockResults.tx,
+      betId: bet.id,
+      callerUser: callerUser,
+      amount: bet.amount
+    });
 
-  logService.logger.info("callBet, locked caller's balance :", {
-    tx: lockResults.tx,
-    betId: bet.id,
-    callerUser: callerUser,
-    amount: bet.amount
+    let rollInput = {
+      makerSeed: bet.seed,
+      callerSeed: callerSeed,
+      betId: bet.id,
+    };
+    let rollResults = await diceService.calculateRoll(rollInput);
+
+    let rollUnder = 50 + bet.edge / 2;
+    let makerWon = (rollResults.roll <= rollUnder);
+
+    logService.logger.info("callBet: roll calculated", {
+      rollInput: rollInput,
+      rollResults: rollResults,
+      rollUnder,
+      makerWon
+    });
+
+    let initialDbUpdateAttrs = {
+      executedAt: rollResults.executedAt,
+      callerUser: callerUser,
+      callerSeed: callerSeed,
+      serverSeedHash: rollResults.serverSeedHash,
+      roll: rollResults.roll,
+      makerWon: makerWon
+    };
+    await bet.update(initialDbUpdateAttrs);
+    logService.logger.info("callBet: pre-tx db update", Object.assign({}, bet.toJSON(), initialDbUpdateAttrs));
+
+    let txResults;
+    try {
+      txResults = await ethbetService.executeBet(bet.user, callerUser, makerWon, bet.amount);
+    }
+    catch (err) {
+      lockService.unlock(getBetLockId(bet.id));
+      throw(err);
+    }
+
+    logService.logger.info("callBet: tx executed", {
+      tx: txResults.tx,
+      betId: bet.id,
+    });
+
+    let postTxDbUpdateAttrs = {
+      txHash: txResults.tx,
+      txSuccess: true,
+    };
+    await bet.update(postTxDbUpdateAttrs);
+    logService.logger.info("callBet: post-tx db update", Object.assign({}, bet.toJSON(), postTxDbUpdateAttrs));
+
+    await lockService.unlock(getBetLockId(bet.id));
+
+    bet.dataValues.username = await userService.getUsername(bet.user);
+    bet.dataValues.callerUsername = await userService.getUsername(bet.callerUser);
+    socketService.emit("betCalled", {
+      bet: bet,
+      tx: txResults.tx,
+      seedMessage: `We combined the makerSeed (${rollInput.makerSeed}), the callerSeed (${rollInput.callerSeed}) and the server seed (Hidden until next day), and the betID (${rollInput.betId}) in order to produce the fullSeed for the rolls`,
+      resultMessage: `You rolled a ${Math.round(rollResults.roll * 100) / 100} (needed ${_.round(rollUnder, 4)}) and ${makerWon ? 'lost' : 'won'} ${bet.amount / 100} EBET!`
+    });
+  }).catch((err) => {
+    logService.logger.info("callBet: error", {
+      betId: bet.id,
+      user: bet.user,
+      amount: bet.amount,
+      err: err
+    });
   });
-
-  let rollInput = {
-    makerSeed: bet.seed,
-    callerSeed: callerSeed,
-    betId: bet.id,
-  };
-  let rollResults = await diceService.calculateRoll(rollInput);
-
-  let rollUnder = 50 + bet.edge / 2;
-  let makerWon = (rollResults.roll <= rollUnder);
-
-  logService.logger.info("callBet: roll calculated", {
-    rollInput: rollInput,
-    rollResults: rollResults,
-    rollUnder,
-    makerWon
-  });
-
-  let initialDbUpdateAttrs = {
-    executedAt: rollResults.executedAt,
-    callerUser: callerUser,
-    callerSeed: callerSeed,
-    serverSeedHash: rollResults.serverSeedHash,
-    roll: rollResults.roll,
-    makerWon: makerWon
-  };
-  await bet.update(initialDbUpdateAttrs);
-  logService.logger.info("callBet: pre-tx db update", Object.assign({}, bet.toJSON(), initialDbUpdateAttrs));
-
-  let txResults;
-  try {
-    txResults = await ethbetService.executeBet(bet.user, callerUser, makerWon, bet.amount);
-  }
-  catch (err) {
-    lockService.unlock(getBetLockId(bet.id));
-    throw(err);
-  }
-
-  logService.logger.info("callBet: tx executed", {
-    tx: txResults.tx,
-    betId: bet.id,
-  });
-
-  let postTxDbUpdateAttrs = {
-    txHash: txResults.tx,
-    txSuccess: true,
-  };
-  await bet.update(postTxDbUpdateAttrs);
-  logService.logger.info("callBet: post-tx db update", Object.assign({}, bet.toJSON(), postTxDbUpdateAttrs));
-
-  await lockService.unlock(getBetLockId(bet.id));
-
-  bet.dataValues.username = await userService.getUsername(bet.user);
-  bet.dataValues.callerUsername = await userService.getUsername(bet.callerUser);
-  socketService.emit("betCalled", bet);
-
-  return {
-    tx: txResults.tx,
-    seedMessage: `We combined the makerSeed (${rollInput.makerSeed}), the callerSeed (${rollInput.callerSeed}) and the server seed (Hidden until next day), and the betID (${rollInput.betId}) in order to produce the fullSeed for the rolls`,
-    resultMessage: `You rolled a ${Math.round(rollResults.roll * 100) / 100} (needed ${_.round(rollUnder, 4)}) and ${makerWon ? 'lost' : 'won'} ${bet.amount / 100} EBET!'`
-  };
 }
 
 
