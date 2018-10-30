@@ -92,7 +92,7 @@ class Balance extends Component {
             </div>
             <div className="col-lg-6">
               <h5>ETH</h5>
-              <legend>Balance: {_.round(balanceStore.get("ethBalance"), 4)} ETH</legend>
+              <legend>Balance: {_.round(balanceStore.get("ethBalance"), 5)} ETH</legend>
 
               <ul className="balance-ul">
                 <li>Wallet Balance: {_.round(balanceStore.get("walletEthBalance"), 4)} ETH</li>

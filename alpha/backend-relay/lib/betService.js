@@ -125,6 +125,12 @@ async function cancelBet(betId, user) {
     throw new Error("Locked Balance is less than bet amount");
   }
 
+  let cancelFee = await ethbetService.cancelFee();
+  let userEthBalance = await ethbetService.ethBalanceOf(user);
+  if (userEthBalance < cancelFee) {
+    throw new Error("Insufficient ETH Balance for fees, currently estimated at: " + (cancelFee / (10 ** 18)) + " ETH");
+  }
+
   try {
     await lockService.lock(getBetLockId(betId));
   }

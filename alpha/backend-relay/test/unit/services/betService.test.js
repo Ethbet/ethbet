@@ -54,7 +54,7 @@ describe('betService', function betServiceTest() {
         createFeeStub = sinon.stub(ethbetService, "createFee");
         createFeeStub.callsFake(function () {
 
-          return Promise.resolve(results);
+          return Promise.resolve(createFee);
         });
       });
 
@@ -267,6 +267,7 @@ describe('betService', function betServiceTest() {
       seed: "123456abcd123456"
     };
     let bet;
+    let cancelFee = 50000000;
 
     context('insufficient locked balance', function context() {
       before(async function beforeTest() {
@@ -450,6 +451,19 @@ describe('betService', function betServiceTest() {
           return Promise.resolve(results);
         });
 
+        ethBalanceOfStub = sinon.stub(ethbetService, "ethBalanceOf");
+        ethBalanceOfStub.callsFake(function (userAddress) {
+          expect(userAddress).to.eq(testAddress.public);
+
+          return Promise.resolve(cancelFee + 1);
+        });
+
+        cancelFeeStub = sinon.stub(ethbetService, "cancelFee");
+        cancelFeeStub.callsFake(function () {
+
+          return Promise.resolve(cancelFee);
+        });
+
         bet = await db.Bet.create(betData);
       });
 
@@ -478,6 +492,8 @@ describe('betService', function betServiceTest() {
         emitStub.restore();
         lockedBalanceOfStub.restore();
         unlockBalanceStub.restore();
+        ethBalanceOfStub.restore();
+        cancelFeeStub.restore();
       });
     });
   });

@@ -85,7 +85,7 @@ async function withdrawEth(web3, amount) {
   });
 
   if (ethUtil.addHexPrefix(results.receipt.status.toString()) !== "0x1") {
-    throw  new Error("Contract execution failed")
+    throw new Error("Contract execution failed")
   }
 
   return results;

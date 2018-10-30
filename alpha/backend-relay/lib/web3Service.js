@@ -76,6 +76,7 @@ function getWeb3() {
 
 async function getGasPrice() {
   let MAX_GAS_PRICE = 30 * 10 ** 9;
+  let DEFAULT_GAS_PRICE = 20 * 10 ** 9;
 
   try {
     let response = await axiosClient.get('https://api.blockcypher.com/v1/eth/main');
@@ -84,7 +85,7 @@ async function getGasPrice() {
   }
   catch (err) {
     console.log("getGasPrice", err);
-    return MAX_GAS_PRICE;
+    return DEFAULT_GAS_PRICE;
   }
 }
 
