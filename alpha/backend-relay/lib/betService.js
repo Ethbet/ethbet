@@ -202,6 +202,11 @@ async function callBet(betId, callerSeed, callerUser) {
     throw new Error("Not possible to call bet: Server Seed not generated");
   }
 
+  let callFee = await ethbetService.callFee();
+  let userEthBalance = await ethbetService.ethBalanceOf(callerUser);
+  if (userEthBalance < callFee) {
+    throw new Error("Insufficient ETH Balance for fees, currently estimated at: " + (callFee / (10 ** 18)) + " ETH");
+  }
 
   try {
     await lockService.lock(getBetLockId(bet.id));
@@ -218,7 +223,7 @@ async function callBet(betId, callerSeed, callerUser) {
     amount: bet.amount
   });
 
-  ethbetService.lockBalance(callerUser, bet.amount).then(async (lockResults) => {
+  ethbetService.lockBalance(callerUser, bet.amount, "call").then(async (lockResults) => {
     logService.logger.info("callBet, locked caller's balance :", {
       tx: lockResults.tx,
       betId: bet.id,

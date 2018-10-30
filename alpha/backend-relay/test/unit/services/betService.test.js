@@ -726,6 +726,8 @@ describe('betService', function betServiceTest() {
     context('conditions ok', function context() {
       let txResults = { tx: '9651asdcxvfads' };
       let lockTxResults = { tx: '12sadfr12rt' };
+      let callFee = 8000000000;
+      let ethBalanceOfStub, callFeeStub;
 
       before(function beforeTest() {
         balanceOfStub = sinon.stub(ethbetService, "balanceOf");
@@ -746,6 +748,20 @@ describe('betService', function betServiceTest() {
         getCurrentServerSeedStub.callsFake(function () {
           return Promise.resolve("123456");
         });
+
+        ethBalanceOfStub = sinon.stub(ethbetService, "ethBalanceOf");
+        ethBalanceOfStub.callsFake(function (userAddress) {
+          expect(userAddress).to.eq(callerUser);
+
+          return Promise.resolve(callFee + 1);
+        });
+
+        callFeeStub = sinon.stub(ethbetService, "callFee");
+        callFeeStub.callsFake(function () {
+
+          return Promise.resolve(callFee);
+        });
+
       });
 
       describe('maker won', function describe() {
@@ -771,9 +787,10 @@ describe('betService', function betServiceTest() {
           });
 
           lockBalanceStub = sinon.stub(ethbetService, "lockBalance");
-          lockBalanceStub.callsFake(function (caller, amount) {
+          lockBalanceStub.callsFake(function (caller, amount, operationType) {
             expect(caller).to.eq(callerUser);
             expect(amount).to.eq(betData.amount);
+            expect(operationType).to.eq("call");
 
             return Promise.resolve(lockTxResults);
           });
@@ -904,11 +921,12 @@ describe('betService', function betServiceTest() {
         });
       });
 
-
       after(function afterTest() {
         balanceOfStub.restore();
         lockedBalanceOfStub.restore();
         getCurrentServerSeedStub.restore();
+        ethBalanceOfStub.restore();
+        callFeeStub.restore();
       });
 
     });
