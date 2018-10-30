@@ -1,11 +1,16 @@
-function getIo() {
-  return require('../server.js').io;
+let io;
+
+function init(_io) {
+  io = _io;
 }
 
 function emit(event, data) {
-  getIo().emit(event, data);
+  if(io){
+    io.emit(event, data);
+  }
 }
 
 module.exports = {
-  emit: emit
+  emit,
+  init
 };

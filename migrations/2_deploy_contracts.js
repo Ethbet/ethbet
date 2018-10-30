@@ -1,16 +1,20 @@
-var Ethbet = artifacts.require("./Ethbet.sol");
-var EthbetToken = artifacts.require("./EthbetToken.sol");
+const Ethbet = artifacts.require("./Ethbet.sol");
+const EthbetToken = artifacts.require("./EthbetToken.sol");
 
 const Web3 = require('web3');
 
-module.exports = function (deployer) {
+module.exports = function (deployer, network) {
   const web3 = new Web3(deployer.provider);
 
   //Parameters for the contract deployment
   const relayAddress = process.env.RELAY_ADDRESS || web3.eth.accounts[0];
 
-  deployer.deploy(EthbetToken).then(() => {
+  if (network === "live" || network === "rinkeby") {
     return deployer.deploy(Ethbet, relayAddress, EthbetToken.address);
-  });
-
+  }
+  else {
+    deployer.deploy(EthbetToken).then(() => {
+      return deployer.deploy(Ethbet, relayAddress, EthbetToken.address);
+    });
+  }
 };

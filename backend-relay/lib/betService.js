@@ -4,33 +4,50 @@ let socketService = require('./socketService');
 let ethbetService = require('./blockchain/ethbetService');
 let userService = require('./userService');
 let diceService = require('./diceService');
+let fairnessProofService = require('./fairnessProofService');
 let lockService = require('./lockService');
 let logService = require('./logService');
 
 async function createBet(betData) {
   let userBalance = await ethbetService.balanceOf(betData.user);
-
   if (userBalance < betData.amount) {
     throw new Error("Insufficient Balance for bet");
   }
 
-  let bet = await db.Bet.create(betData);
+  let createFee = await ethbetService.createFee();
+  let userEthBalance = await ethbetService.ethBalanceOf(betData.user);
+  if (userEthBalance < createFee) {
+    throw new Error("Insufficient ETH Balance for fees, currently estimated at: " + (createFee / (10 ** 18)) + " ETH");
+  }
 
-  logService.logger.info("New Bet, db updated: ", bet.toJSON());
-
-  let results = await ethbetService.lockBalance(bet.user, bet.amount);
-
-  logService.logger.info("New Bet, balance locked : ", {
-    tx: results.tx,
-    betId: bet.id,
-    user: bet.user,
-    amount: bet.amount
+  logService.logger.info("createBet: locking balance", {
+    user: betData.user,
+    amount: betData.amount,
+    seed: betData.seed,
   });
 
-  bet.dataValues.username = await userService.getUsername(bet.user);
-  socketService.emit("betCreated", bet);
+  ethbetService.lockBalance(betData.user, betData.amount, "create").then(async (results) => {
+    logService.logger.info("createBet: balance locked", {
+      tx: results.tx,
+      user: betData.user,
+      amount: betData.amount,
+      seed: betData.seed,
+    });
 
-  return bet;
+    let bet = await db.Bet.create(betData);
+
+    logService.logger.info("createBet: db updated", bet.toJSON());
+
+    bet.dataValues.username = await userService.getUsername(bet.user);
+    socketService.emit("betCreated", bet);
+  }).catch((err) => {
+    logService.logger.info("createBet: error", {
+      user: betData.user,
+      amount: betData.amount,
+      seed: betData.seed,
+      err: err
+    });
+  });
 }
 
 async function getActiveBets(opts = { orderField: 'createdAt', orderDirection: 'DESC', offset: 0 }) {
@@ -70,6 +87,19 @@ async function getExecutedBets() {
   return populatedBets;
 }
 
+async function getBetInfo(betId) {
+  let bet = await db.Bet.findById(betId);
+
+  // check if bet executed
+  if (bet.serverSeedHash) {
+    let serverSeed = await fairnessProofService.getSeedByHash(bet.serverSeedHash);
+    bet.dataValues.serverSeed = serverSeed;
+  }
+
+  let populatedBets = await userService.populateUserNames([bet]);
+  return populatedBets[0];
+}
+
 
 function getBetLockId(betId) {
   return `bet-${betId}`;
@@ -95,34 +125,50 @@ async function cancelBet(betId, user) {
     throw new Error("Locked Balance is less than bet amount");
   }
 
+  let cancelFee = await ethbetService.cancelFee();
+  let userEthBalance = await ethbetService.ethBalanceOf(user);
+  if (userEthBalance < cancelFee) {
+    throw new Error("Insufficient ETH Balance for fees, currently estimated at: " + (cancelFee / (10 ** 18)) + " ETH");
+  }
+
   try {
     await lockService.lock(getBetLockId(betId));
   }
   catch (err) {
     if (err.code === 'EEXIST') {
-      throw new Error("Somebody else is currently calling or cancelling this bet ...");
+      throw new Error("Somebody is currently calling or cancelling this bet ...");
     }
   }
 
-  let results = await ethbetService.unlockBalance(bet.user, bet.amount);
-
-  logService.logger.info("Bet Canceled, balance unlocked : ", {
-    tx: results.tx,
+  logService.logger.info("cancelBet: unlocking balance", {
     betId: bet.id,
     user: bet.user,
     amount: bet.amount
   });
 
-  let cancelledAt = new Date();
-  await bet.update({ cancelledAt });
+  ethbetService.unlockBalance(bet.user, bet.amount).then(async (results) => {
+    logService.logger.info("cancelBet: balance unlocked", {
+      tx: results.tx,
+      betId: bet.id,
+      user: bet.user,
+      amount: bet.amount
+    });
 
-  logService.logger.info("Bet Canceled, db updated : ", { betId: bet.id, cancelledAt });
+    let cancelledAt = new Date();
+    await bet.update({ cancelledAt, txHash: results.tx, txSuccess: true });
+    logService.logger.info("cancelBet: db updated", { betId: bet.id, cancelledAt });
 
-  await lockService.unlock(getBetLockId(betId));
+    await lockService.unlock(getBetLockId(betId));
 
-  socketService.emit("betCanceled", bet);
-
-  return bet;
+    socketService.emit("betCanceled", bet);
+  }).catch((err) => {
+    logService.logger.info("cancelBet: error", {
+      betId: bet.id,
+      user: bet.user,
+      amount: bet.amount,
+      err: err
+    });
+  });
 }
 
 async function callBet(betId, callerSeed, callerUser) {
@@ -151,6 +197,17 @@ async function callBet(betId, callerSeed, callerUser) {
     throw new Error("Maker user Locked Balance is less than bet amount");
   }
 
+  let currentServerSeed = await fairnessProofService.getCurrentServerSeed();
+  if (!currentServerSeed) {
+    throw new Error("Not possible to call bet: Server Seed not generated");
+  }
+
+  let callFee = await ethbetService.callFee();
+  let userEthBalance = await ethbetService.ethBalanceOf(callerUser);
+  if (userEthBalance < callFee) {
+    throw new Error("Insufficient ETH Balance for fees, currently estimated at: " + (callFee / (10 ** 18)) + " ETH");
+  }
+
   try {
     await lockService.lock(getBetLockId(bet.id));
   }
@@ -160,56 +217,87 @@ async function callBet(betId, callerSeed, callerUser) {
     }
   }
 
-  let rollInput = {
-    makerSeed: bet.seed,
-    callerSeed: callerSeed,
+  logService.logger.info("callBet, locking caller's balance :", {
     betId: bet.id,
-  };
-  let rollResults = await diceService.calculateRoll(rollInput);
-
-  let rollUnder = 50 + bet.edge / 2;
-  let makerWon = (rollResults.roll <= rollUnder);
-
-  let txResults;
-  try {
-    txResults = await ethbetService.executeBet(bet.user, callerUser, makerWon, bet.amount);
-  }
-  catch (err) {
-    lockService.unlock(getBetLockId(bet.id));
-    throw(err);
-  }
-
-  logService.logger.info("Bet Called, contract updated : ", {
-    tx: txResults.tx,
-    betId: bet.id,
-    makerUser: bet.user,
-    callerUser,
-    amount: bet.amount,
-    makerWon
+    callerUser: callerUser,
+    amount: bet.amount
   });
 
-  let dbUpdateAttrs = {
-    executedAt: rollResults.executedAt,
-    callerUser: callerUser,
-    callerSeed: callerSeed,
-    serverSeedHash: rollResults.serverSeedHash,
-    roll: rollResults.roll,
-    makerWon: makerWon
-  };
-  await bet.update(dbUpdateAttrs);
-  logService.logger.info("Bet Called, db updated : ", Object.assign({}, bet.toJSON(), dbUpdateAttrs));
+  ethbetService.lockBalance(callerUser, bet.amount, "call").then(async (lockResults) => {
+    logService.logger.info("callBet, locked caller's balance :", {
+      tx: lockResults.tx,
+      betId: bet.id,
+      callerUser: callerUser,
+      amount: bet.amount
+    });
 
-  await lockService.unlock(getBetLockId(bet.id));
+    let rollInput = {
+      makerSeed: bet.seed,
+      callerSeed: callerSeed,
+      betId: bet.id,
+    };
+    let rollResults = await diceService.calculateRoll(rollInput);
 
-  bet.dataValues.username = await userService.getUsername(bet.user);
-  bet.dataValues.callerUsername = await userService.getUsername(bet.callerUser);
-  socketService.emit("betCalled", bet);
+    let rollUnder = 50 + bet.edge / 2;
+    let makerWon = (rollResults.roll <= rollUnder);
 
-  return {
-    tx: txResults.tx,
-    seedMessage: `We combined the makerSeed (${rollInput.makerSeed}), the callerSeed (${rollInput.callerSeed}) and the server seed (Hidden until next day), and the betID (${rollInput.betId}) in order to produce the fullSeed for the rolls`,
-    resultMessage: `You rolled a ${Math.round(rollResults.roll * 100) / 100} (needed ${_.round(rollUnder, 4)}) and ${makerWon ? 'lost' : 'won'} ${bet.amount / 100} EBET!'`
-  };
+    logService.logger.info("callBet: roll calculated", {
+      rollInput: rollInput,
+      rollResults: rollResults,
+      rollUnder,
+      makerWon
+    });
+
+    let initialDbUpdateAttrs = {
+      executedAt: rollResults.executedAt,
+      callerUser: callerUser,
+      callerSeed: callerSeed,
+      serverSeedHash: rollResults.serverSeedHash,
+      roll: rollResults.roll,
+      makerWon: makerWon
+    };
+    await bet.update(initialDbUpdateAttrs);
+    logService.logger.info("callBet: pre-tx db update", Object.assign({}, bet.toJSON(), initialDbUpdateAttrs));
+
+    let txResults;
+    try {
+      txResults = await ethbetService.executeBet(bet.user, callerUser, makerWon, bet.amount);
+    }
+    catch (err) {
+      lockService.unlock(getBetLockId(bet.id));
+      throw(err);
+    }
+
+    logService.logger.info("callBet: tx executed", {
+      tx: txResults.tx,
+      betId: bet.id,
+    });
+
+    let postTxDbUpdateAttrs = {
+      txHash: txResults.tx,
+      txSuccess: true,
+    };
+    await bet.update(postTxDbUpdateAttrs);
+    logService.logger.info("callBet: post-tx db update", Object.assign({}, bet.toJSON(), postTxDbUpdateAttrs));
+
+    await lockService.unlock(getBetLockId(bet.id));
+
+    bet.dataValues.username = await userService.getUsername(bet.user);
+    bet.dataValues.callerUsername = await userService.getUsername(bet.callerUser);
+    socketService.emit("betCalled", {
+      bet: bet,
+      tx: txResults.tx,
+      seedMessage: `We combined the makerSeed (${rollInput.makerSeed}), the callerSeed (${rollInput.callerSeed}) and the server seed (Hidden until next day), and the betID (${rollInput.betId}) in order to produce the fullSeed for the rolls`,
+      resultMessage: `You rolled a ${Math.round(rollResults.roll * 100) / 100} (needed ${_.round(rollUnder, 4)}) and ${makerWon ? 'lost' : 'won'} ${bet.amount / 100} EBET!`
+    });
+  }).catch((err) => {
+    logService.logger.info("callBet: error", {
+      betId: bet.id,
+      user: bet.user,
+      amount: bet.amount,
+      err: err
+    });
+  });
 }
 
 
@@ -218,5 +306,6 @@ module.exports = {
   getActiveBets,
   getExecutedBets,
   cancelBet,
-  callBet
+  callBet,
+  getBetInfo
 };

@@ -31,6 +31,16 @@ module.exports = {
     }
   },
 
+  getPendingBets: async function getPendingBets(req, res) {
+    try {
+      let bets = await etherBetService.getPendingBets();
+      res.status(200).json({ bets });
+    }
+    catch (err) {
+      res.status(500).json({ message: errorService.sanitize(err).message });
+    }
+  },
+
   createBet: async function createBet(req, res) {
     try {
       let betData = {

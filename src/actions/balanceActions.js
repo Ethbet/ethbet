@@ -37,3 +37,31 @@ export const postSaveNewWithdrawal = {
   success: (data) => action(POST_SAVE_NEW_WITHDRAWAL.SUCCESS, data),
   failure: (error) => action(POST_SAVE_NEW_WITHDRAWAL.FAILURE, error),
 };
+
+
+export const SET_NEW_ETH_DEPOSIT_VALUE = 'SET_NEW_ETH_DEPOSIT_VALUE';
+export const setNewEthDepositValue = data => action(SET_NEW_ETH_DEPOSIT_VALUE, data);
+
+export const SAVE_NEW_ETH_DEPOSIT = 'SAVE_NEW_ETH_DEPOSIT';
+export const saveNewEthDeposit = data => action(SAVE_NEW_ETH_DEPOSIT, data);
+
+export const POST_SAVE_NEW_ETH_DEPOSIT = createRequestTypes('POST_SAVE_NEW_ETH_DEPOSIT');
+export const postSaveNewEthDeposit = {
+  request: () => action(POST_SAVE_NEW_ETH_DEPOSIT.REQUEST),
+  success: (data) => action(POST_SAVE_NEW_ETH_DEPOSIT.SUCCESS, data),
+  failure: (error) => action(POST_SAVE_NEW_ETH_DEPOSIT.FAILURE, error),
+};
+
+
+export const SET_NEW_ETH_WITHDRAWAL_VALUE = 'SET_NEW_ETH_WITHDRAWAL_VALUE';
+export const setNewEthWithdrawalValue = data => action(SET_NEW_ETH_WITHDRAWAL_VALUE, data);
+
+export const SAVE_NEW_ETH_WITHDRAWAL = 'SAVE_NEW_ETH_WITHDRAWAL';
+export const saveNewEthWithdrawal = data => action(SAVE_NEW_ETH_WITHDRAWAL, data);
+
+export const POST_SAVE_NEW_ETH_WITHDRAWAL = createRequestTypes('POST_SAVE_NEW_ETH_WITHDRAWAL');
+export const postSaveNewEthWithdrawal = {
+  request: () => action(POST_SAVE_NEW_ETH_WITHDRAWAL.REQUEST),
+  success: (data) => action(POST_SAVE_NEW_ETH_WITHDRAWAL.SUCCESS, data),
+  failure: (error) => action(POST_SAVE_NEW_ETH_WITHDRAWAL.FAILURE, error),
+};

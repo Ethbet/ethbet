@@ -33,8 +33,8 @@ function startListeners() {
   });
 
   // Bet called
-  socket.on('betCalled', function (bet) {
-    store.dispatch(betActions.betCalled({bet}));
+  socket.on('betCalled', function (data) {
+    store.dispatch(betActions.betCalled({data}));
   });
 }
 

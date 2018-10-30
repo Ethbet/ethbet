@@ -73,6 +73,34 @@ describe('etherBetsApi', function etherBetsApiTest() {
     });
   });
 
+  describe('getPendingBets', function getPendingBetsTest() {
+    let getPendingBetsStub;
+    let pendingEtherBets = [{stub: "pendingBet"}];
+
+    before(function beforeTest() {
+      getPendingBetsStub = sinon.stub(etherBetService, "getPendingBets");
+      getPendingBetsStub.resolves(pendingEtherBets);
+    });
+
+    it('ok', function it(done) {
+      request(app)
+        .get('/api/ether-bets/pending')
+        .expect(200)
+        .end(function (error, result) {
+          if (error) {
+            return done(error);
+          }
+
+          expect(result.body.bets).to.deep.eq(pendingEtherBets);
+          done();
+        });
+    });
+
+    after(function afterTest() {
+      getPendingBetsStub.restore();
+    });
+  });
+
   describe('createBet', function createBetTest() {
     let createBetStub;
     let etherBet = {stub: "etherBet"};

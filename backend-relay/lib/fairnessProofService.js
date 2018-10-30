@@ -2,6 +2,7 @@ const moment = require("moment");
 
 let randomService = require('../lib/randomService');
 let cryptoService = require('./cryptoService');
+let fairnessProofService = require('../lib/fairnessProofService');
 
 async function create() {
   let isDaySeedExists = await this.daySeedExists();
@@ -72,9 +73,36 @@ async function getFairnessProofs() {
 }
 
 
+async function getSeedByHash(serverSeedHash) {
+  let fairnessProof = await db.FairnessProof.findOne({
+    where: { serverSeedHash }
+  });
+
+  let lastFairnessProof = (await db.FairnessProof.findAll({
+    where: {},
+    order: [
+      ['createdAt', 'DESC']
+    ],
+    limit: 1
+  }))[0];
+
+  if (!fairnessProof) {
+    throw new Error("Server Seed not found");
+  }
+
+  // do not provide the current seed
+  if (lastFairnessProof.id === fairnessProof.id) {
+    return null;
+  }
+
+  return fairnessProof.serverSeed;
+}
+
+
 module.exports = {
   getCurrentServerSeed,
   daySeedExists,
   create,
-  getFairnessProofs
+  getFairnessProofs,
+  getSeedByHash
 };

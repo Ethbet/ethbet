@@ -7,6 +7,7 @@ let betService = require('../../../lib/betService');
 let ethbetService = require('../../../lib/blockchain/ethbetService');
 let userService = require('../../../lib/userService');
 let diceService = require('../../../lib/diceService');
+let fairnessProofService = require('../../../lib/fairnessProofService');
 const testAddress = require('../../support/testAddress.json');
 
 const BetFactory = require('../../factories/bets').BetFactory;
@@ -14,7 +15,7 @@ const BetFactory = require('../../factories/bets').BetFactory;
 describe('betService', function betServiceTest() {
 
   describe('createBet', function () {
-    let emitStub, balanceOfStub, lockBalanceStub;
+    let emitStub, balanceOfStub, ethBalanceOfStub, lockBalanceStub, createFeeStub;
     let betData = {
       amount: 500,
       edge: 1.55,
@@ -23,15 +24,10 @@ describe('betService', function betServiceTest() {
     };
 
     context('sufficient balance', function context() {
-      let results = {stub: 'results'};
+      let results = { stub: 'results' };
+      let createFee = 50000000;
 
       before(function beforeTest() {
-        emitStub = sinon.stub(socketService, "emit");
-        emitStub.callsFake(function (event, data) {
-          expect(event).to.eq("betCreated");
-          expect(data.amount).to.eq(betData.amount);
-        });
-
         balanceOfStub = sinon.stub(ethbetService, "balanceOf");
         balanceOfStub.callsFake(function (userAddress) {
           expect(userAddress).to.eq(testAddress.public);
@@ -39,33 +35,58 @@ describe('betService', function betServiceTest() {
           return Promise.resolve(betData.amount * 2);
         });
 
+        ethBalanceOfStub = sinon.stub(ethbetService, "ethBalanceOf");
+        ethBalanceOfStub.callsFake(function (userAddress) {
+          expect(userAddress).to.eq(testAddress.public);
+
+          return Promise.resolve(createFee + 1);
+        });
+
         lockBalanceStub = sinon.stub(ethbetService, "lockBalance");
-        lockBalanceStub.callsFake(function (userAddress, amount) {
+        lockBalanceStub.callsFake(function (userAddress, amount, operationType) {
           expect(userAddress).to.eq(testAddress.public);
           expect(amount).to.eq(betData.amount);
+          expect(operationType).to.eq("create");
 
           return Promise.resolve(results);
         });
+
+        createFeeStub = sinon.stub(ethbetService, "createFee");
+        createFeeStub.callsFake(function () {
+
+          return Promise.resolve(createFee);
+        });
       });
 
-      it('ok', async function it() {
-        let bet = await betService.createBet(betData);
+      it('ok', function it(done) {
+        // check results in the socket callback
+        emitStub = sinon.stub(socketService, "emit");
+        emitStub.callsFake(function (event, data) {
+          expect(event).to.equal("betCreated");
+          let bet = data;
 
-        let myBet = await db.Bet.findById(bet.id);
+          db.Bet.findById(bet.id).then((myBet) => {
+            expect(myBet.amount).to.equal(500);
+            expect(myBet.edge).to.equal(1.55);
+            expect(myBet.user).to.equal(testAddress.public);
+            expect(myBet.seed).to.equal("123456abcd123456");
 
-        expect(myBet.amount).to.equal(500);
-        expect(myBet.edge).to.equal(1.55);
-        expect(myBet.user).to.equal(testAddress.public);
-        expect(myBet.seed).to.equal("123456abcd123456");
+            expect(emitStub.callCount).to.equal(1);
+            expect(lockBalanceStub.callCount).to.equal(1);
 
-        expect(emitStub.callCount).to.equal(1);
-        expect(lockBalanceStub.callCount).to.equal(1);
+            done();
+          }).catch(done);
+        });
+
+        betService.createBet(betData);
       });
 
       after(function afterTest() {
         emitStub.restore();
         balanceOfStub.restore();
+        ethBalanceOfStub.restore();
         lockBalanceStub.restore();
+        createFeeStub.restore();
       });
     });
 
@@ -111,8 +132,8 @@ describe('betService', function betServiceTest() {
 
     before(async function beforeTest() {
       bet_1 = await db.Bet.create(BetFactory.build({}));
-      bet_2 = await db.Bet.create(BetFactory.build({cancelledAt: new Date()}));
-      bet_3 = await db.Bet.create(BetFactory.build({executedAt: new Date()}));
+      bet_2 = await db.Bet.create(BetFactory.build({ cancelledAt: new Date() }));
+      bet_3 = await db.Bet.create(BetFactory.build({ executedAt: new Date() }));
     });
 
     it('ok', async function it() {
@@ -137,7 +158,7 @@ describe('betService', function betServiceTest() {
 
     before(async function beforeTest() {
       bet_1 = await db.Bet.create(BetFactory.build({}));
-      bet_2 = await db.Bet.create(BetFactory.build({cancelledAt: new Date()}));
+      bet_2 = await db.Bet.create(BetFactory.build({ cancelledAt: new Date() }));
       bet_3 = await db.Bet.create(BetFactory.build({
         user: userAddress_1,
         callerUser: userAddress_2,
@@ -183,6 +204,60 @@ describe('betService', function betServiceTest() {
   });
 
 
+  describe('getBetInfo', function () {
+    let getUsernamesStub, getSeedByHashStub;
+    let userAddress_1 = "0x04bd37D5393cD877f64ad36f1791ED09d847b981";
+    let userAddress_2 = "0x04bd37D5393cD877f64ad36f1791ED09d847b982";
+    let serverSeedHash = "174d12efa75cca9fd2d89b69fc73f3f5691b13a3c1fe45683b59d76cad105c2a9ed9452648b346b4d9aea9a1d09805fd3919321badf9a28e3ee7c2ccac367660";
+    let seed = "521e871926b78847";
+
+    let username_1 = "Mike";
+    let username_2 = "John";
+    let bet_1;
+
+    before(async function beforeTest() {
+      bet_1 = await db.Bet.create(BetFactory.build({
+        user: userAddress_1,
+        callerUser: userAddress_2,
+        executedAt: new Date(),
+        serverSeedHash: serverSeedHash
+      }));
+
+      getSeedByHashStub = sinon.stub(fairnessProofService, "getSeedByHash");
+      getSeedByHashStub.callsFake(function (myServerSeedHash) {
+        expect(myServerSeedHash).to.eq(serverSeedHash);
+
+        return seed;
+      });
+
+      getUsernamesStub = sinon.stub(userService, "getUsernames");
+      getUsernamesStub.callsFake(function (userAddresses) {
+        expect(_.clone(userAddresses).sort()).to.deep.eq([userAddress_1, userAddress_2]);
+
+        return {
+          [userAddress_1]: username_1,
+          [userAddress_2]: username_2,
+        }
+      });
+    });
+
+    it('ok', async function it() {
+      let bet = await betService.getBetInfo(bet_1.id);
+
+      let betJSON = bet.toJSON();
+      expect(betJSON.id).to.equal(bet_1.id);
+      expect(betJSON.serverSeed).to.equal(seed);
+      expect(betJSON.username).to.equal(username_1);
+      expect(betJSON.callerUsername).to.equal(username_2);
+    });
+
+    after(function afterTest() {
+      getSeedByHashStub.restore();
+      getUsernamesStub.restore();
+    });
+  });
+
+
   describe('cancelBet', function () {
     let emitStub, lockedBalanceOfStub, unlockBalanceStub;
     let betData = {
@@ -192,6 +267,7 @@ describe('betService', function betServiceTest() {
       seed: "123456abcd123456"
     };
     let bet;
+    let cancelFee = 50000000;
 
     context('insufficient locked balance', function context() {
       before(async function beforeTest() {
@@ -268,7 +344,7 @@ describe('betService', function betServiceTest() {
         emitStub = sinon.stub(socketService, "emit");
         unlockBalanceStub = sinon.stub(ethbetService, "unlockBalance");
 
-        bet = await db.Bet.create(Object.assign({}, betData, {cancelledAt: new Date()}));
+        bet = await db.Bet.create(Object.assign({}, betData, { cancelledAt: new Date() }));
       });
 
       it('fails', async function it() {
@@ -299,7 +375,7 @@ describe('betService', function betServiceTest() {
         emitStub = sinon.stub(socketService, "emit");
         unlockBalanceStub = sinon.stub(ethbetService, "unlockBalance");
 
-        bet = await db.Bet.create(Object.assign({}, betData, {executedAt: new Date()}));
+        bet = await db.Bet.create(Object.assign({}, betData, { executedAt: new Date() }));
       });
 
       it('fails', async function it() {
@@ -330,7 +406,7 @@ describe('betService', function betServiceTest() {
         emitStub = sinon.stub(socketService, "emit");
         unlockBalanceStub = sinon.stub(ethbetService, "unlockBalance");
 
-        bet = await db.Bet.create(Object.assign({}, betData, {user: "0x12f7c4c8977a5b9addb52b83e23c9d0f3b89be16"}));
+        bet = await db.Bet.create(Object.assign({}, betData, { user: "0x12f7c4c8977a5b9addb52b83e23c9d0f3b89be16" }));
       });
 
       it('fails', async function it() {
@@ -357,15 +433,9 @@ describe('betService', function betServiceTest() {
     });
 
     context('sufficient locked balance', function context() {
-      let results = {stub: 'results'};
+      let results = { tx: '12asd45dfa' };
 
       before(async function beforeTest() {
-        emitStub = sinon.stub(socketService, "emit");
-        emitStub.callsFake(function (event, data) {
-          expect(event).to.eq("betCanceled");
-          expect(data.amount).to.eq(betData.amount);
-        });
-
         lockedBalanceOfStub = sinon.stub(ethbetService, "lockedBalanceOf");
         lockedBalanceOfStub.callsFake(function (userAddress) {
           expect(userAddress).to.eq(testAddress.public);
@@ -381,30 +451,57 @@ describe('betService', function betServiceTest() {
           return Promise.resolve(results);
         });
 
+        ethBalanceOfStub = sinon.stub(ethbetService, "ethBalanceOf");
+        ethBalanceOfStub.callsFake(function (userAddress) {
+          expect(userAddress).to.eq(testAddress.public);
+
+          return Promise.resolve(cancelFee + 1);
+        });
+
+        cancelFeeStub = sinon.stub(ethbetService, "cancelFee");
+        cancelFeeStub.callsFake(function () {
+
+          return Promise.resolve(cancelFee);
+        });
+
         bet = await db.Bet.create(betData);
       });
 
-      it('ok', async function it() {
-        await betService.cancelBet(bet.id, testAddress.public);
+      it('ok', function it(done) {
+        // check results in the socket callback
+        emitStub = sinon.stub(socketService, "emit");
+        emitStub.callsFake(function (event, data) {
+          expect(event).to.equal("betCanceled");
+          let bet = data;
 
-        let updatedBet = await db.Bet.findById(bet.id);
-        expect(!!updatedBet.cancelledAt).to.equal(true);
+          db.Bet.findById(bet.id).then((updatedBet) => {
+            expect(!!updatedBet.cancelledAt).to.equal(true);
+            expect(updatedBet.txHash).to.equal(results.tx);
+            expect(updatedBet.txSuccess).to.equal(true);
 
-        expect(emitStub.callCount).to.equal(1);
-        expect(unlockBalanceStub.callCount).to.equal(1);
+            expect(emitStub.callCount).to.equal(1);
+            expect(unlockBalanceStub.callCount).to.equal(1);
+            done();
+          }).catch(done);
+        });
+
+        betService.cancelBet(bet.id, testAddress.public);
       });
 
       after(function afterTest() {
         emitStub.restore();
         lockedBalanceOfStub.restore();
         unlockBalanceStub.restore();
+        ethBalanceOfStub.restore();
+        cancelFeeStub.restore();
       });
     });
   });
 
 
   describe('callBet', function () {
-    let emitStub, balanceOfStub, lockedBalanceOfStub, executeBetStub, calculateRollStub;
+    let emitStub, balanceOfStub, lockedBalanceOfStub, lockBalanceStub, executeBetStub, calculateRollStub,
+      getCurrentServerSeedStub;
     let callerUser = "0x05ad37D5393cD877f64ad36f1791ED09d847b123";
     let callerSeed = "callerAbcde12345";
     let betData = {
@@ -451,7 +548,7 @@ describe('betService', function betServiceTest() {
         emitStub = sinon.stub(socketService, "emit");
         executeBetStub = sinon.stub(ethbetService, "executeBet");
 
-        bet = await db.Bet.create(Object.assign({}, betData, {cancelledAt: new Date()}));
+        bet = await db.Bet.create(Object.assign({}, betData, { cancelledAt: new Date() }));
       });
 
       it('fails', async function it() {
@@ -483,7 +580,7 @@ describe('betService', function betServiceTest() {
         emitStub = sinon.stub(socketService, "emit");
         executeBetStub = sinon.stub(ethbetService, "executeBet");
 
-        bet = await db.Bet.create(Object.assign({}, betData, {executedAt: new Date(2017, 3, 4)}));
+        bet = await db.Bet.create(Object.assign({}, betData, { executedAt: new Date(2017, 3, 4) }));
       });
 
       it('fails', async function it() {
@@ -627,7 +724,10 @@ describe('betService', function betServiceTest() {
     });
 
     context('conditions ok', function context() {
-      let txResults = {tx: '9651asdcxvfads'};
+      let txResults = { tx: '9651asdcxvfads' };
+      let lockTxResults = { tx: '12sadfr12rt' };
+      let callFee = 8000000000;
+      let ethBalanceOfStub, callFeeStub;
 
       before(function beforeTest() {
         balanceOfStub = sinon.stub(ethbetService, "balanceOf");
@@ -643,6 +743,25 @@ describe('betService', function betServiceTest() {
 
           return Promise.resolve(betData.amount);
         });
+
+        getCurrentServerSeedStub = sinon.stub(fairnessProofService, "getCurrentServerSeed");
+        getCurrentServerSeedStub.callsFake(function () {
+          return Promise.resolve("123456");
+        });
+
+        ethBalanceOfStub = sinon.stub(ethbetService, "ethBalanceOf");
+        ethBalanceOfStub.callsFake(function (userAddress) {
+          expect(userAddress).to.eq(callerUser);
+
+          return Promise.resolve(callFee + 1);
+        });
+
+        callFeeStub = sinon.stub(ethbetService, "callFee");
+        callFeeStub.callsFake(function () {
+
+          return Promise.resolve(callFee);
+        });
+
       });
 
       describe('maker won', function describe() {
@@ -667,10 +786,13 @@ describe('betService', function betServiceTest() {
             return Promise.resolve(rollResults);
           });
 
-          emitStub = sinon.stub(socketService, "emit");
-          emitStub.callsFake(function (event, data) {
-            expect(event).to.eq("betCalled");
-            expect(data.id).to.eq(bet.id);
+          lockBalanceStub = sinon.stub(ethbetService, "lockBalance");
+          lockBalanceStub.callsFake(function (caller, amount, operationType) {
+            expect(caller).to.eq(callerUser);
+            expect(amount).to.eq(betData.amount);
+            expect(operationType).to.eq("call");
+
+            return Promise.resolve(lockTxResults);
           });
 
           executeBetStub = sinon.stub(ethbetService, "executeBet");
@@ -684,28 +806,38 @@ describe('betService', function betServiceTest() {
           });
         });
 
-        it('ok', async function it() {
-          let results = await betService.callBet(bet.id, callerSeed, callerUser);
+        it('ok', function it(done) {
+          // check results in the socket callback
+          emitStub = sinon.stub(socketService, "emit");
+          emitStub.callsFake(function (event, data) {
+            expect(event).to.equal("betCalled");
 
-          expect(results).to.deep.equal({
-            tx: txResults.tx,
-            resultMessage: "You rolled a 53.9 (needed 54) and lost 6 EBET!'",
-            seedMessage: "We combined the makerSeed (123456abcd123456), the callerSeed (callerAbcde12345) and the server seed (Hidden until next day), and the betID (1) in order to produce the fullSeed for the rolls"
+            expect(data.bet.id).to.eq(bet.id);
+            expect(data.tx).to.eq(txResults.tx);
+            expect(data.resultMessage).to.eq("You rolled a 53.9 (needed 54) and lost 6 EBET!");
+            expect(data.seedMessage).to.eq("We combined the makerSeed (123456abcd123456), the callerSeed (callerAbcde12345) and the server seed (Hidden until next day), and the betID (1) in order to produce the fullSeed for the rolls");
+
+            db.Bet.findById(bet.id).then((updatedBet) => {
+              expect(updatedBet.executedAt.toISOString()).to.equal(rollResults.executedAt.toISOString());
+              expect(updatedBet.callerUser).to.equal(callerUser);
+              expect(updatedBet.serverSeedHash).to.equal(rollResults.serverSeedHash);
+              expect(updatedBet.roll).to.equal(rollResults.roll);
+              expect(updatedBet.makerWon).to.equal(true);
+              expect(updatedBet.txHash).to.equal(txResults.tx);
+              expect(updatedBet.txSuccess).to.equal(true);
+
+              expect(emitStub.callCount).to.equal(1);
+              expect(executeBetStub.callCount).to.equal(1);
+              done();
+            }).catch(done);
           });
 
-          let updatedBet = await db.Bet.findById(bet.id);
-          expect(updatedBet.executedAt.toISOString()).to.equal(rollResults.executedAt.toISOString());
-          expect(updatedBet.callerUser).to.equal(callerUser);
-          expect(updatedBet.serverSeedHash).to.equal(rollResults.serverSeedHash);
-          expect(updatedBet.roll).to.equal(rollResults.roll);
-          expect(updatedBet.makerWon).to.equal(true);
-
-          expect(emitStub.callCount).to.equal(1);
-          expect(executeBetStub.callCount).to.equal(1);
+          betService.callBet(bet.id, callerSeed, callerUser);
         });
 
         after(function afterTest() {
           emitStub.restore();
+          lockBalanceStub.restore();
           executeBetStub.restore();
           calculateRollStub.restore();
         });
@@ -733,10 +865,12 @@ describe('betService', function betServiceTest() {
             return Promise.resolve(rollResults);
           });
 
-          emitStub = sinon.stub(socketService, "emit");
-          emitStub.callsFake(function (event, data) {
-            expect(event).to.eq("betCalled");
-            expect(data.id).to.eq(bet.id);
+          lockBalanceStub = sinon.stub(ethbetService, "lockBalance");
+          lockBalanceStub.callsFake(function (caller, amount) {
+            expect(caller).to.eq(callerUser);
+            expect(amount).to.eq(betData.amount);
+
+            return Promise.resolve(lockTxResults);
           });
 
           executeBetStub = sinon.stub(ethbetService, "executeBet");
@@ -750,37 +884,49 @@ describe('betService', function betServiceTest() {
           });
         });
 
-        it('ok', async function it() {
-          let results = await betService.callBet(bet.id, callerSeed, callerUser);
+        it('ok', function it(done) {
+          // check results in the socket callback
+          emitStub = sinon.stub(socketService, "emit");
+          emitStub.callsFake(function (event, data) {
+            expect(event).to.equal("betCalled");
 
-          expect(results).to.deep.equal({
-            tx: txResults.tx,
-            resultMessage: "You rolled a 54.1 (needed 54) and won 6 EBET!'",
-            seedMessage: "We combined the makerSeed (123456abcd123456), the callerSeed (callerAbcde12345) and the server seed (Hidden until next day), and the betID (1) in order to produce the fullSeed for the rolls"
+            expect(data.bet.id).to.eq(bet.id);
+            expect(data.tx).to.eq(txResults.tx);
+            expect(data.resultMessage).to.eq("You rolled a 54.1 (needed 54) and won 6 EBET!");
+            expect(data.seedMessage).to.eq("We combined the makerSeed (123456abcd123456), the callerSeed (callerAbcde12345) and the server seed (Hidden until next day), and the betID (1) in order to produce the fullSeed for the rolls");
+
+            db.Bet.findById(bet.id).then((updatedBet) => {
+              expect(updatedBet.executedAt.toISOString()).to.equal(rollResults.executedAt.toISOString());
+              expect(updatedBet.callerUser).to.equal(callerUser);
+              expect(updatedBet.serverSeedHash).to.equal(rollResults.serverSeedHash);
+              expect(updatedBet.roll).to.equal(rollResults.roll);
+              expect(updatedBet.makerWon).to.equal(false);
+              expect(updatedBet.txHash).to.equal(txResults.tx);
+              expect(updatedBet.txSuccess).to.equal(true);
+
+              expect(emitStub.callCount).to.equal(1);
+              expect(executeBetStub.callCount).to.equal(1);
+              done();
+            }).catch(done);
           });
 
-          let updatedBet = await db.Bet.findById(bet.id);
-          expect(updatedBet.executedAt.toISOString()).to.equal(rollResults.executedAt.toISOString());
-          expect(updatedBet.callerUser).to.equal(callerUser);
-          expect(updatedBet.serverSeedHash).to.equal(rollResults.serverSeedHash);
-          expect(updatedBet.roll).to.equal(rollResults.roll);
-          expect(updatedBet.makerWon).to.equal(false);
-
-          expect(emitStub.callCount).to.equal(1);
-          expect(executeBetStub.callCount).to.equal(1);
+          betService.callBet(bet.id, callerSeed, callerUser);
         });
 
         after(function afterTest() {
           emitStub.restore();
+          lockBalanceStub.restore();
           executeBetStub.restore();
           calculateRollStub.restore();
         });
       });
 
-
       after(function afterTest() {
         balanceOfStub.restore();
         lockedBalanceOfStub.restore();
+        getCurrentServerSeedStub.restore();
+        ethBalanceOfStub.restore();
+        callFeeStub.restore();
       });
 
     });

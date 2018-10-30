@@ -7,6 +7,7 @@ const morgan = require('morgan');
 const cors = require('cors');
 const fs = require('fs');
 const https = require('https');
+const socketService = require('./lib/socketService');
 
 let serverOptions = {
   key: fs.readFileSync('../key.pem'),
@@ -14,7 +15,7 @@ let serverOptions = {
 };
 const server = https.createServer(serverOptions, app);
 
-const io = require('socket.io')(server, {path: '/api/socket.io'});
+const io = require('socket.io')(server, { path: '/api/socket.io' });
 
 const web3Service = require('./lib/web3Service');
 
@@ -45,6 +46,8 @@ const PORT = process.env.PORT || 9000;
 
 //Starting the server ------------------------------------/
 
+server.setTimeout(5 * 60 * 1000); // increase timeout to 5 minutes to avoid slow blockchain issues
+
 server.listen(PORT, function (err) {
   if (err) {
     console.error(err);
@@ -58,9 +61,10 @@ if (process.env.NODE_ENV !== "test") {
   web3Service.init();
 }
 
+// init socket service
+socketService.init(io);
 
 module.exports = {
   app: app,
-  server: server,
-  io: io
+  server: server
 };

@@ -12,7 +12,8 @@ import etherBetService from '../utils/etherBetService';
 function* loadInitialData(data) {
   yield all([
     put(etherBetActions.getActiveBets()),
-    put(etherBetActions.getExecutedBets())
+    put(etherBetActions.getExecutedBets()),
+    put(etherBetActions.getPendingBets())
   ])
 }
 
@@ -83,6 +84,23 @@ function* getExecutedBets(data) {
     yield put(notificationActions.error({
       notification: {
         title: 'failed to get executed bets',
+        message: error.message,
+        position: 'br'
+      }
+    }));
+  }
+}
+
+function* getPendingBets(data) {
+  yield put(etherBetActions.fetchGetPendingBets.request());
+  try {
+    const pendingBets = yield call(etherBetService.getPendingBets);
+    yield put(etherBetActions.fetchGetPendingBets.success({pendingBets}));
+  } catch (error) {
+    yield put(etherBetActions.fetchGetPendingBets.failure({error}));
+    yield put(notificationActions.error({
+      notification: {
+        title: 'failed to get pending bets',
         message: error.message,
         position: 'br'
       }
@@ -169,6 +187,10 @@ function* watchGetExecutedBets() {
   yield takeEvery(etherBetActions.GET_EXECUTED_BETS, getExecutedBets);
 }
 
+function* watchGetPendingBets() {
+  yield takeEvery(etherBetActions.GET_PENDING_BETS, getPendingBets);
+}
+
 function* watchCancelBet() {
   yield takeEvery(etherBetActions.CANCEL_BET, cancelBet);
 }
@@ -187,6 +209,7 @@ export default function* betSaga() {
     watchSaveNewBet(),
     watchGetActiveBets(),
     watchGetExecutedBets(),
+    watchGetPendingBets(),
     watchCancelBet(),
     watchCallBet(),
   ]);

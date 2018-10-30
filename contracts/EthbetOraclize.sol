@@ -25,6 +25,7 @@ contract EthbetOraclize is Ownable, usingOraclize {
   event BetInitialized(uint betId, bytes32 queryId);
   event RelayAddressChanged(address relay);
   event ExecutedBet(uint indexed betId, address indexed winner, address indexed loser, uint amount);
+  event LogOraclizeProofError(bytes32 _queryId, string _result, bytes _proof);
 
   /*
   * Storage
@@ -331,6 +332,7 @@ contract EthbetOraclize is Ownable, usingOraclize {
 
     if (oraclize_randomDS_proofVerify__returnCode(_queryId, _result, _proof) != 0) {
       // the proof verification has failed
+      LogOraclizeProofError(_queryId, _result, _proof);
     } else {
       // the random number was safely generated
 

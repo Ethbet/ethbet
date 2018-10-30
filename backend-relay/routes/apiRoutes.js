@@ -4,6 +4,7 @@ let leaderboardApiController = require('../controllers/leaderboardApi');
 let fairnessProofApiController = require('../controllers/fairnessProofApi');
 
 let etherBetsApiController = require('../controllers/etherBetsApi');
+let etherLeaderboardApiController = require('../controllers/etherLeaderboardApi');
 
 
 let auth = require('../lib/authMiddleware');
@@ -16,6 +17,7 @@ module.exports = function (app) {
 
   app.get('/api/bets/active', betsApiController.getActiveBets);
   app.get('/api/bets/executed', betsApiController.getExecutedBets);
+  app.get('/api/bets/:id', betsApiController.getBetInfo);
 
   app.post('/api/users', auth, usersApiController.createUser);
   app.get('/api/users/:address', usersApiController.getUser);
@@ -31,5 +33,9 @@ module.exports = function (app) {
 
   app.get('/api/ether-bets/active', etherBetsApiController.getActiveBets);
   app.get('/api/ether-bets/executed', etherBetsApiController.getExecutedBets);
+  app.get('/api/ether-bets/pending', etherBetsApiController.getPendingBets);
+
+  app.get('/api/ether-leaderboard', etherLeaderboardApiController.getLeaderboard);
+
 
 };

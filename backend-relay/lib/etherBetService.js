@@ -1,4 +1,5 @@
 let _ = require('lodash');
+const BlueBirdPromise = require("bluebird");
 
 let socketService = require('./socketService');
 let ethbetOraclizeService = require('./blockchain/ethbetOraclizeService');
@@ -67,6 +68,26 @@ async function getExecutedBets() {
     },
     order: [
       ['executedAt', 'DESC']
+    ],
+    limit: 20
+  });
+
+  let populatedEtherBets = await userService.populateUserNames(bets);
+
+  return populatedEtherBets;
+}
+
+async function getPendingBets() {
+  let bets = await db.EtherBet.findAll({
+    where: {
+      cancelledAt: null,
+      executedAt: null,
+      initializedAt: {
+        [db.Sequelize.Op.ne]: null
+      },
+    },
+    order: [
+      ['initializedAt', 'DESC']
     ],
     limit: 20
   });
@@ -274,11 +295,19 @@ async function checkBetExecution(betId) {
   socketService.emit("etherBetExecuted", etherBet);
 }
 
+async function checkPendingBets() {
+  let pendingEtherBets = await this.getPendingBets();
+
+  await BlueBirdPromise.map(pendingEtherBets, (etherBet) => this.checkBetExecution(etherBet.id), { concurrency: 5 });
+}
+
 module.exports = {
   createBet,
   getActiveBets,
   getExecutedBets,
+  getPendingBets,
   cancelBet,
   callBet,
   checkBetExecution,
+  checkPendingBets,
 };

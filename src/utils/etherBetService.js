@@ -45,12 +45,19 @@ async function getExecutedBets() {
   return response.data.bets;
 }
 
+async function getPendingBets() {
+  let response = await client.get(apiRoot + '/ether-bets/pending');
+
+  return response.data.bets;
+}
+
 let etherBetService = {
   makeBet,
   cancelBet,
   callBet,
   getActiveBets,
   getExecutedBets,
+  getPendingBets,
 };
 
 export default etherBetService;

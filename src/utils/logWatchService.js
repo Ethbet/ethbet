@@ -63,6 +63,25 @@ async function start(web3) {
 
     store.dispatch(balanceActions.loadBalances());
   });
+
+  const ethDepositEvent = ethbetInstance.EthDeposit({user: web3.eth.defaultAccount});
+  ethDepositEvent.watch(function (error, result) {
+    if (error) {
+      return console.log("[logWatchService] error:", error);
+    }
+
+    store.dispatch(balanceActions.loadBalances());
+  });
+
+  const ethWithdrawEvent = ethbetInstance.EthWithdraw({user: web3.eth.defaultAccount});
+  ethWithdrawEvent.watch(function (error, result) {
+    if (error) {
+      return console.log("[logWatchService] error:", error);
+    }
+
+    store.dispatch(balanceActions.loadBalances());
+  });
+
 }
 
 

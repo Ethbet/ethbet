@@ -8,23 +8,22 @@ import TimeAgo from 'react-timeago'
 import * as notificationActions from '../../actions/notificationActions';
 import * as etherBetActions from '../../actions/etherBetActions';
 
-
-class ExecutedBet extends Component {
+class PendingBet extends Component {
 
   render() {
-    let {bet} = this.props;
+    let { bet } = this.props;
 
-    let winner = (bet.makerWon ? bet.username : bet.callerUsername) || "Anonymous";
-    let loser = (!bet.makerWon ? bet.username : bet.callerUsername) || "Anonymous";
+    let maker = bet.username || "Anonymous";
+    let caller = bet.callerUsername || "Anonymous";
 
     return (
 
-      <div className="col-lg-12 executed-bet" key={bet.id}>
+      <div className="col-lg-12 pending-bet" key={bet.id}>
         <div className="well">
-          <div>Amount: {bet.amount } ETH | Edge: {bet.edge} %</div>
-          <div>Winner: {winner}</div>
-          <div>Loser: {loser}</div>
-          <div>Time: <TimeAgo date={bet.executedAt}/></div>
+          <div>Amount: {bet.amount} ETH | Edge: {bet.edge} %</div>
+          <div>Maker: {maker}</div>
+          <div>Caller: {caller}</div>
+          <div>Initialized At: <TimeAgo date={bet.initializedAt}/></div>
         </div>
       </div>
     );
@@ -48,4 +47,4 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(ExecutedBet);
+)(PendingBet);

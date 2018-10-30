@@ -48,7 +48,7 @@ export const cancelBet = data => action(CANCEL_BET, data);
 
 export const POST_CANCEL_BET = createRequestTypes('POST_CANCEL_BET');
 export const postCancelBet = {
-  request: (data) => action(POST_CANCEL_BET.REQUEST,data),
+  request: (data) => action(POST_CANCEL_BET.REQUEST, data),
   success: (data) => action(POST_CANCEL_BET.SUCCESS, data),
   failure: (error) => action(POST_CANCEL_BET.FAILURE, error),
 };
@@ -57,16 +57,26 @@ export const BET_CANCELED = 'BET_CANCELED';
 export const betCanceled = data => action(BET_CANCELED, data);
 
 
-
 export const CALL_BET = 'CALL_BET';
 export const callBet = data => action(CALL_BET, data);
 
 export const POST_CALL_BET = createRequestTypes('POST_CALL_BET');
 export const postCallBet = {
-  request: (data) => action(POST_CALL_BET.REQUEST,data),
+  request: (data) => action(POST_CALL_BET.REQUEST, data),
   success: (data) => action(POST_CALL_BET.SUCCESS, data),
   failure: (error) => action(POST_CALL_BET.FAILURE, error),
 };
 
 export const BET_CALLED = 'BET_CALLED';
 export const betCalled = data => action(BET_CALLED, data);
+
+
+export const GET_BET_INFO = 'GET_BET_INFO';
+export const getBetInfo = data => action(GET_BET_INFO, data);
+
+export const FETCH_GET_BET_INFO = createRequestTypes('FETCH_GET_BET_INFO');
+export const fetchGetBetInfo = {
+  request: (data) => action(FETCH_GET_BET_INFO.REQUEST, data),
+  success: (data) => action(FETCH_GET_BET_INFO.SUCCESS, data),
+  failure: (error) => action(FETCH_GET_BET_INFO.FAILURE, error),
+};

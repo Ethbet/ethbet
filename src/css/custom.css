@@ -7,6 +7,11 @@
     text-align: center;
 }
 
+.pending-bet .well {
+    border: 1px solid;
+    text-align: center;
+}
+
 .executed-bet .well {
     border: 1px solid;
     text-align: center;
@@ -65,6 +70,10 @@
     width: auto;
 }
 
+.bet-info-modal-dialog {
+    width: 800px;
+}
+
 .nav > li > a {
     padding-left: 11px;
     padding-right: 11px;
@@ -79,4 +88,9 @@
     height: auto;
     max-height: 100%;
     vertical-align: middle;
+}
+
+.balance-ul {
+    padding-left: 0px;
+    list-style-type: none;
 }
