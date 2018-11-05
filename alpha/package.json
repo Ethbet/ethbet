@@ -53,6 +53,7 @@
     "dotenv": "^2.0.0",
     "ethereumjs-util": "5.1.2",
     "font-awesome": "^4.7.0",
+    "hoek": "^5.0.3",
     "immutable": "^3.8.2",
     "lockfile": "^1.0.3",
     "moment": "^2.20.1",
