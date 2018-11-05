@@ -14,7 +14,7 @@ async function createBet(betData) {
     throw new Error("Insufficient Balance for bet");
   }
 
-  let createFee = await ethbetService.createFee();
+  let createFee = await ethbetService.createFee(betData.gasPriceType);
   let userEthBalance = await ethbetService.ethBalanceOf(betData.user);
   if (userEthBalance < createFee) {
     throw new Error("Insufficient ETH Balance for fees, currently estimated at: " + (createFee / (10 ** 18)) + " ETH");
@@ -26,7 +26,7 @@ async function createBet(betData) {
     seed: betData.seed,
   });
 
-  ethbetService.lockBalance(betData.user, betData.amount, "create").then(async (results) => {
+  ethbetService.lockBalance(betData.user, betData.amount, "create", betData.gasPriceType).then(async (results) => {
     logService.logger.info("createBet: balance locked", {
       tx: results.tx,
       user: betData.user,
@@ -105,7 +105,7 @@ function getBetLockId(betId) {
   return `bet-${betId}`;
 }
 
-async function cancelBet(betId, user) {
+async function cancelBet(betId, user, gasPriceType) {
   let bet = await db.Bet.findById(betId);
   if (!bet) {
     throw new Error("Bet not found");
@@ -125,7 +125,7 @@ async function cancelBet(betId, user) {
     throw new Error("Locked Balance is less than bet amount");
   }
 
-  let cancelFee = await ethbetService.cancelFee();
+  let cancelFee = await ethbetService.cancelFee(gasPriceType);
   let userEthBalance = await ethbetService.ethBalanceOf(user);
   if (userEthBalance < cancelFee) {
     throw new Error("Insufficient ETH Balance for fees, currently estimated at: " + (cancelFee / (10 ** 18)) + " ETH");
@@ -146,7 +146,7 @@ async function cancelBet(betId, user) {
     amount: bet.amount
   });
 
-  ethbetService.unlockBalance(bet.user, bet.amount).then(async (results) => {
+  ethbetService.unlockBalance(bet.user, bet.amount, gasPriceType).then(async (results) => {
     logService.logger.info("cancelBet: balance unlocked", {
       tx: results.tx,
       betId: bet.id,
@@ -171,7 +171,7 @@ async function cancelBet(betId, user) {
   });
 }
 
-async function callBet(betId, callerSeed, callerUser) {
+async function callBet(betId, callerSeed, callerUser, gasPriceType) {
   let bet = await db.Bet.findById(betId);
 
   if (!bet) {
@@ -202,7 +202,7 @@ async function callBet(betId, callerSeed, callerUser) {
     throw new Error("Not possible to call bet: Server Seed not generated");
   }
 
-  let callFee = await ethbetService.callFee();
+  let callFee = await ethbetService.callFee(gasPriceType);
   let userEthBalance = await ethbetService.ethBalanceOf(callerUser);
   if (userEthBalance < callFee) {
     throw new Error("Insufficient ETH Balance for fees, currently estimated at: " + (callFee / (10 ** 18)) + " ETH");
@@ -223,7 +223,7 @@ async function callBet(betId, callerSeed, callerUser) {
     amount: bet.amount
   });
 
-  ethbetService.lockBalance(callerUser, bet.amount, "call").then(async (lockResults) => {
+  ethbetService.lockBalance(callerUser, bet.amount, "call", gasPriceType).then(async (lockResults) => {
     logService.logger.info("callBet, locked caller's balance :", {
       tx: lockResults.tx,
       betId: bet.id,
@@ -261,7 +261,7 @@ async function callBet(betId, callerSeed, callerUser) {
 
     let txResults;
     try {
-      txResults = await ethbetService.executeBet(bet.user, callerUser, makerWon, bet.amount);
+      txResults = await ethbetService.executeBet(bet.user, callerUser, makerWon, bet.amount, gasPriceType);
     }
     catch (err) {
       lockService.unlock(getBetLockId(bet.id));

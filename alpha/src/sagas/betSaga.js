@@ -19,9 +19,10 @@ function* saveNewBet(data) {
   yield put(betActions.postSaveNewBet.request());
   try {
     const web3 = yield select(state => state.web3Store.get("web3"));
+    const gasPriceType = yield select(state => state.web3Store.get("gasPriceType"));
     const newBet = yield select(state => state.betStore.get("newBet"));
 
-    yield call(betService.makeBet, web3, newBet);
+    yield call(betService.makeBet, web3, gasPriceType, newBet);
 
     yield put(betActions.postSaveNewBet.success());
 
@@ -114,8 +115,9 @@ function* cancelBet(data) {
   yield put(betActions.postCancelBet.request({ betId: data.id }));
   try {
     const web3 = yield select(state => state.web3Store.get("web3"));
+    const gasPriceType = yield select(state => state.web3Store.get("gasPriceType"));
 
-    yield call(betService.cancelBet, web3, data.id);
+    yield call(betService.cancelBet, web3, gasPriceType, data.id);
 
     yield put(betActions.postCancelBet.success({}));
 
@@ -149,8 +151,9 @@ function* callBet(data) {
   yield put(betActions.postCallBet.request({ betId: data.id }));
   try {
     const web3 = yield select(state => state.web3Store.get("web3"));
+    const gasPriceType = yield select(state => state.web3Store.get("gasPriceType"));
 
-    yield call(betService.callBet, web3, data.id, data.amount);
+    yield call(betService.callBet, web3, gasPriceType, data.id, data.amount);
 
     yield put(betActions.postCallBet.success({}));
 

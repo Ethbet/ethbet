@@ -15,3 +15,6 @@ export const ebetLoadInitialData = data => action(EBET_LOAD_INITIAL_DATA, data);
 
 export const ETHER_LOAD_INITIAL_DATA = 'ETHER_LOAD_INITIAL_DATA';
 export const etherLoadInitialData = data => action(ETHER_LOAD_INITIAL_DATA, data);
+
+export const SET_GAS_PRICE_TYPE = 'SET_GAS_PRICE_TYPE';
+export const setGasPriceType = data => action(SET_GAS_PRICE_TYPE, data);

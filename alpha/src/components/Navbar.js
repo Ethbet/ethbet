@@ -70,12 +70,17 @@ class Navbar extends Component {
     this.setState({ isHelpModalOpen: false });
   }
 
+  setGasPriceType(gasPriceType) {
+    this.props.web3Actions.setGasPriceType({ gasPriceType });
+  }
 
   render() {
     let { web3Store, userStore } = this.props;
     let web3 = web3Store.get("web3");
     let networkName = web3Store.get("networkName");
     let currentUser = userStore.get("currentUser");
+    let gasPriceType = web3Store.get("gasPriceType");
+
 
     return (
       <nav className="navbar navbar-default">
@@ -145,9 +150,28 @@ class Navbar extends Component {
               </li>
 
               <li className="dropdown">
-                <a href="#" className="dropdown-toggle" data-toggle="dropdown">
-                  <b>Account:</b> {web3 ? web3.eth.defaultAccount : null}
+                <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                   aria-expanded="false">
+                  <b>Account:</b> {web3 ? _.truncate(web3.eth.defaultAccount, { length: 12 }) : null}
+                  <span className="caret"></span>
                 </a>
+                <ul className="dropdown-menu account-menu">
+                  <li><a>{web3 ? web3.eth.defaultAccount : null}</a></li>
+                </ul>
+              </li>
+
+              <li className="dropdown">
+                <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                   aria-expanded="false">
+                  <b>Gas Price:</b>  &nbsp;
+                  {_.capitalize(gasPriceType)}
+                  <span className="caret"></span>
+                </a>
+                <ul className="dropdown-menu gas-price-menu">
+                  <li><a href="#" onClick={() => this.setGasPriceType("high")}>High</a></li>
+                  <li><a href="#" onClick={() => this.setGasPriceType("medium")}>Medium</a></li>
+                  <li><a href="#" onClick={() => this.setGasPriceType("low")}>Low</a></li>
+                </ul>
               </li>
 
               <li className="dropdown">

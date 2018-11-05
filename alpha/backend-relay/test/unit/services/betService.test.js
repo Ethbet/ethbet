@@ -20,7 +20,8 @@ describe('betService', function betServiceTest() {
       amount: 500,
       edge: 1.55,
       user: testAddress.public,
-      seed: "123456abcd123456"
+      seed: "123456abcd123456",
+      gasPriceType: "low",
     };
 
     context('sufficient balance', function context() {
@@ -52,7 +53,8 @@ describe('betService', function betServiceTest() {
         });
 
         createFeeStub = sinon.stub(ethbetService, "createFee");
-        createFeeStub.callsFake(function () {
+        createFeeStub.callsFake(function (myGasPriceType) {
+          expect(myGasPriceType).to.eq(betData.gasPriceType);
 
           return Promise.resolve(createFee);
         });
@@ -266,6 +268,7 @@ describe('betService', function betServiceTest() {
       user: testAddress.public,
       seed: "123456abcd123456"
     };
+    let gasPriceType = "low";
     let bet;
     let cancelFee = 50000000;
 
@@ -286,7 +289,7 @@ describe('betService', function betServiceTest() {
 
       it('fails', async function it() {
         try {
-          await betService.cancelBet(bet.id, testAddress.public);
+          await betService.cancelBet(bet.id, testAddress.public, gasPriceType);
 
           throw new Error("Bet Creation should have failed");
         }
@@ -318,7 +321,7 @@ describe('betService', function betServiceTest() {
 
       it('fails', async function it() {
         try {
-          await betService.cancelBet(bet.id + 100, testAddress.public);
+          await betService.cancelBet(bet.id + 100, testAddress.public, gasPriceType);
 
           throw new Error("Bet Creation should have failed");
         }
@@ -349,7 +352,7 @@ describe('betService', function betServiceTest() {
 
       it('fails', async function it() {
         try {
-          await betService.cancelBet(bet.id, testAddress.public);
+          await betService.cancelBet(bet.id, testAddress.public, gasPriceType);
 
           throw new Error("Bet Creation should have failed");
         }
@@ -380,7 +383,7 @@ describe('betService', function betServiceTest() {
 
       it('fails', async function it() {
         try {
-          await betService.cancelBet(bet.id, testAddress.public);
+          await betService.cancelBet(bet.id, testAddress.public, gasPriceType);
 
           throw new Error("Bet Creation should have failed");
         }
@@ -411,7 +414,7 @@ describe('betService', function betServiceTest() {
 
       it('fails', async function it() {
         try {
-          await betService.cancelBet(bet.id, testAddress.public);
+          await betService.cancelBet(bet.id, testAddress.public, gasPriceType);
 
           throw new Error("Bet Creation should have failed");
         }
@@ -459,7 +462,8 @@ describe('betService', function betServiceTest() {
         });
 
         cancelFeeStub = sinon.stub(ethbetService, "cancelFee");
-        cancelFeeStub.callsFake(function () {
+        cancelFeeStub.callsFake(function (myGasPriceType) {
+          expect(myGasPriceType).to.eq(gasPriceType);
 
           return Promise.resolve(cancelFee);
         });
@@ -485,7 +489,7 @@ describe('betService', function betServiceTest() {
           }).catch(done);
         });
 
-        betService.cancelBet(bet.id, testAddress.public);
+        betService.cancelBet(bet.id, testAddress.public, gasPriceType);
       });
 
       after(function afterTest() {
@@ -510,6 +514,7 @@ describe('betService', function betServiceTest() {
       user: testAddress.public,
       seed: "123456abcd123456"
     };
+    let gasPriceType = "low";
     let bet;
 
     context('bet does not exist', function context() {
@@ -522,7 +527,7 @@ describe('betService', function betServiceTest() {
 
       it('fails', async function it() {
         try {
-          await betService.callBet(bet.id + 100, callerSeed, callerUser);
+          await betService.callBet(bet.id + 100, callerSeed, callerUser, gasPriceType);
 
           throw new Error("Bet Creation should have failed");
         }
@@ -553,7 +558,7 @@ describe('betService', function betServiceTest() {
 
       it('fails', async function it() {
         try {
-          await betService.callBet(bet.id, callerSeed, callerUser);
+          await betService.callBet(bet.id, callerSeed, callerUser, gasPriceType);
 
           throw new Error("Bet Creation should have failed");
         }
@@ -585,7 +590,7 @@ describe('betService', function betServiceTest() {
 
       it('fails', async function it() {
         try {
-          await betService.callBet(bet.id, callerSeed, callerUser);
+          await betService.callBet(bet.id, callerSeed, callerUser, gasPriceType);
 
           throw new Error("Bet Creation should have failed");
         }
@@ -616,7 +621,7 @@ describe('betService', function betServiceTest() {
 
       it('fails', async function it() {
         try {
-          await betService.callBet(bet.id, callerSeed, betData.user);
+          await betService.callBet(bet.id, callerSeed, betData.user, gasPriceType);
 
           throw new Error("Bet Creation should have failed");
         }
@@ -654,7 +659,7 @@ describe('betService', function betServiceTest() {
 
       it('fails', async function it() {
         try {
-          await betService.callBet(bet.id, callerSeed, callerUser);
+          await betService.callBet(bet.id, callerSeed, callerUser, gasPriceType);
 
           throw new Error("Bet Creation should have failed");
         }
@@ -700,7 +705,7 @@ describe('betService', function betServiceTest() {
 
       it('fails', async function it() {
         try {
-          await betService.callBet(bet.id, callerSeed, callerUser);
+          await betService.callBet(bet.id, callerSeed, callerUser, gasPriceType);
 
           throw new Error("Bet Creation should have failed");
         }
@@ -757,7 +762,8 @@ describe('betService', function betServiceTest() {
         });
 
         callFeeStub = sinon.stub(ethbetService, "callFee");
-        callFeeStub.callsFake(function () {
+        callFeeStub.callsFake(function (myGasPriceType) {
+          expect(myGasPriceType).to.eq(gasPriceType);
 
           return Promise.resolve(callFee);
         });
@@ -832,7 +838,7 @@ describe('betService', function betServiceTest() {
             }).catch(done);
           });
 
-          betService.callBet(bet.id, callerSeed, callerUser);
+          betService.callBet(bet.id, callerSeed, callerUser, gasPriceType);
         });
 
         after(function afterTest() {
@@ -910,7 +916,7 @@ describe('betService', function betServiceTest() {
             }).catch(done);
           });
 
-          betService.callBet(bet.id, callerSeed, callerUser);
+          betService.callBet(bet.id, callerSeed, callerUser, gasPriceType);
         });
 
         after(function afterTest() {

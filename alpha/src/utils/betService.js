@@ -5,10 +5,11 @@ import randomService from './randomService';
 
 import contractService from '../utils/contractService';
 
-async function makeBet(web3, newBet) {
+async function makeBet(web3, gasPriceType, newBet) {
   let newBetData = {
     amount: Math.round(parseFloat(newBet.amount) * 100),   // 2 decimals for EBET
     edge: parseFloat(newBet.edge),
+    gasPriceType,
     seed: randomService.generateSeed()
   };
 
@@ -24,9 +25,10 @@ async function makeBet(web3, newBet) {
   return await client.post(apiRoot + '/bets', message);
 }
 
-async function cancelBet(web3, betId) {
+async function cancelBet(web3, gasPriceType, betId) {
   let cancelBetData = {
-    id: betId
+    id: betId,
+    gasPriceType
   };
 
   let message = await web3Service.sign(web3, cancelBetData);
@@ -34,10 +36,11 @@ async function cancelBet(web3, betId) {
   return await client.post(`${apiRoot}/bets/cancel`, message);
 }
 
-async function callBet(web3, betId, betAmount) {
+async function callBet(web3, gasPriceType, betId, betAmount) {
   let callBetData = {
     id: betId,
-    seed: randomService.generateSeed()
+    seed: randomService.generateSeed(),
+    gasPriceType
   };
 
   // check balance is sufficient

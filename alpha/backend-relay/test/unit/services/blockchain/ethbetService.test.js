@@ -16,6 +16,7 @@ describe('ethbetService', function ethbetServiceTest() {
   let ethbetInstance;
   let getWeb3Stub, getGasPriceStub, getDeployedInstanceStub;
   let gasPrice = 20 * 10 ** 9;
+  let gasPriceType = "low";
 
   before(function beforeTest() {
     getWeb3Stub = sinon.stub(web3Service, 'getWeb3');
@@ -24,7 +25,9 @@ describe('ethbetService', function ethbetServiceTest() {
     });
 
     getGasPriceStub = sinon.stub(web3Service, 'getGasPrice');
-    getGasPriceStub.callsFake(function () {
+    getGasPriceStub.callsFake(function (myGasPriceType) {
+      expect(myGasPriceType).to.eq(gasPriceType);
+
       return gasPrice;
     });
 
@@ -139,14 +142,14 @@ describe('ethbetService', function ethbetServiceTest() {
       lockBalanceStub.callsFake(function (myUserAddress, myAmount, myFee) {
         expect(myUserAddress).to.eq(userAddress);
         expect(myAmount).to.eq(amount);
-        expect(myFee).to.eq(ethbetService.CREATE_GAS * gasPrice );
+        expect(myFee).to.eq(ethbetService.CREATE_GAS * gasPrice);
 
         return Promise.resolve(results);
       });
     });
 
     it('ok', async function it() {
-      let myResults = await ethbetService.lockBalance(userAddress, amount , "create");
+      let myResults = await ethbetService.lockBalance(userAddress, amount, "create", gasPriceType);
 
       expect(myResults).to.equal(results);
     });
@@ -174,7 +177,7 @@ describe('ethbetService', function ethbetServiceTest() {
     });
 
     it('ok', async function it() {
-      let myResults = await ethbetService.unlockBalance(userAddress, amount);
+      let myResults = await ethbetService.unlockBalance(userAddress, amount, gasPriceType);
 
       expect(myResults).to.equal(results);
     });
@@ -203,7 +206,7 @@ describe('ethbetService', function ethbetServiceTest() {
     });
 
     it('ok', async function it() {
-      let myResults = await ethbetService.executeBet(maker, caller, makerWon, amount);
+      let myResults = await ethbetService.executeBet(maker, caller, makerWon, amount,gasPriceType);
 
       expect(myResults).to.equal(results);
     });
@@ -215,7 +218,7 @@ describe('ethbetService', function ethbetServiceTest() {
 
   describe('createFee', function () {
     it('ok', async function it() {
-      let createFee = await ethbetService.createFee();
+      let createFee = await ethbetService.createFee(gasPriceType);
 
       expect(createFee).to.equal(ethbetService.CREATE_GAS * gasPrice);
     });
@@ -223,7 +226,7 @@ describe('ethbetService', function ethbetServiceTest() {
 
   describe('callFee', function () {
     it('ok', async function it() {
-      let callFee = await ethbetService.callFee();
+      let callFee = await ethbetService.callFee(gasPriceType);
 
       expect(callFee).to.equal(ethbetService.CALL_GAS * gasPrice);
     });
@@ -231,7 +234,7 @@ describe('ethbetService', function ethbetServiceTest() {
 
   describe('cancelFee', function () {
     it('ok', async function it() {
-      let cancelFee = await ethbetService.cancelFee();
+      let cancelFee = await ethbetService.cancelFee(gasPriceType);
 
       expect(cancelFee).to.equal(ethbetService.CANCEL_GAS * gasPrice);
     });

@@ -39,13 +39,13 @@ async function lockedBalanceOf(userAddress) {
   return lockedBalance.toNumber();
 }
 
-async function lockBalance(userAddress, amount, operationType) {
+async function lockBalance(userAddress, amount, operationType, gasPriceType) {
   const web3 = web3Service.getWeb3();
   const ethbetInstance = await contractService.getDeployedInstance(web3, "Ethbet");
 
-  let gasPrice = await web3Service.getGasPrice();
+  let gasPrice = await web3Service.getGasPrice(gasPriceType);
 
-  let results = await ethbetInstance.lockBalance(userAddress, amount, gasPrice * GAS[operationType], {
+  let results = await ethbetInstance.lockBalance(userAddress, amount, parseInt(gasPrice * GAS[operationType], 10), {
     gas: 100000,
     gasPrice: gasPrice
   });
@@ -55,13 +55,13 @@ async function lockBalance(userAddress, amount, operationType) {
   return results;
 }
 
-async function unlockBalance(userAddress, amount) {
+async function unlockBalance(userAddress, amount, gasPriceType) {
   const web3 = web3Service.getWeb3();
   const ethbetInstance = await contractService.getDeployedInstance(web3, "Ethbet");
 
-  let gasPrice = await web3Service.getGasPrice();
+  let gasPrice = await web3Service.getGasPrice(gasPriceType);
 
-  let results = await ethbetInstance.unlockBalance(userAddress, amount, gasPrice * CANCEL_GAS, {
+  let results = await ethbetInstance.unlockBalance(userAddress, amount, parseInt(gasPrice * CANCEL_GAS, 10), {
     gas: 100000,
     gasPrice: gasPrice
   });
@@ -71,11 +71,11 @@ async function unlockBalance(userAddress, amount) {
   return results;
 }
 
-async function executeBet(maker, caller, makerWon, amount) {
+async function executeBet(maker, caller, makerWon, amount, gasPriceType) {
   const web3 = web3Service.getWeb3();
   const ethbetInstance = await contractService.getDeployedInstance(web3, "Ethbet");
 
-  let gasPrice = await web3Service.getGasPrice();
+  let gasPrice = await web3Service.getGasPrice(gasPriceType);
 
   let results = await ethbetInstance.executeBet(maker, caller, makerWon, amount, {
     gas: 150000,
@@ -87,20 +87,20 @@ async function executeBet(maker, caller, makerWon, amount) {
   return results;
 }
 
-async function createFee() {
-  let gasPrice = await web3Service.getGasPrice();
+async function createFee(gasPriceType) {
+  let gasPrice = await web3Service.getGasPrice(gasPriceType);
 
   return gasPrice * CREATE_GAS;
 }
 
-async function callFee() {
-  let gasPrice = await web3Service.getGasPrice();
+async function callFee(gasPriceType) {
+  let gasPrice = await web3Service.getGasPrice(gasPriceType);
 
   return gasPrice * CALL_GAS;
 }
 
-async function cancelFee() {
-  let gasPrice = await web3Service.getGasPrice();
+async function cancelFee(gasPriceType) {
+  let gasPrice = await web3Service.getGasPrice(gasPriceType);
 
   return gasPrice * CANCEL_GAS;
 }

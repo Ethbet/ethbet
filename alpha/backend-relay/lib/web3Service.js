@@ -74,18 +74,33 @@ function getWeb3() {
   return web3;
 }
 
-async function getGasPrice() {
-  let MAX_GAS_PRICE = 30 * 10 ** 9;
+async function getGasPrice(type = "high") {
+  let MAX_GAS_PRICE = 40 * 10 ** 9;
   let DEFAULT_GAS_PRICE = 20 * 10 ** 9;
+
+  let multiplier = 1;
+  switch (type) {
+    case "high":
+      multiplier = 1;
+      break;
+    case "medium":
+      multiplier = 0.8;
+      break;
+    case "low":
+      multiplier = 0.6;
+      break;
+  }
+
 
   try {
     let response = await axiosClient.get('https://api.blockcypher.com/v1/eth/main');
 
-    return Math.min(response.data.medium_gas_price, MAX_GAS_PRICE); // MAX 30 GWEI
+    let gasPrice =  Math.min(response.data.high_gas_price * multiplier, MAX_GAS_PRICE);
+    return gasPrice;
   }
   catch (err) {
     console.log("getGasPrice", err);
-    return DEFAULT_GAS_PRICE;
+    return DEFAULT_GAS_PRICE * multiplier;
   }
 }
 

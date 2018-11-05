@@ -11,7 +11,7 @@ describe('betsApi', function betsApiTest() {
 
   describe('getActiveBets', function getActiveBetsTest() {
     let getActiveBetsStub;
-    let results = {stub: "results"};
+    let results = { stub: "results" };
 
     before(function beforeTest() {
       getActiveBetsStub = sinon.stub(betService, "getActiveBets");
@@ -19,7 +19,7 @@ describe('betsApi', function betsApiTest() {
         expect(opts).to.deep.eq({
           orderField: 'createdAt',
           orderDirection: 'DESC',
-          offset:10
+          offset: 10
         });
 
         return Promise.resolve(results);
@@ -47,7 +47,7 @@ describe('betsApi', function betsApiTest() {
 
   describe('getExecutedBets', function getExecutedBetsTest() {
     let getExecutedBetsStub;
-    let executedBets = [{stub: "executedBet"}];
+    let executedBets = [{ stub: "executedBet" }];
 
     before(function beforeTest() {
       getExecutedBetsStub = sinon.stub(betService, "getExecutedBets");
@@ -75,7 +75,7 @@ describe('betsApi', function betsApiTest() {
 
   describe('getBetInfo', function getBetInfoTest() {
     let getBetInfoStub;
-    let bet = {id: 44};
+    let bet = { id: 44 };
 
     before(function beforeTest() {
       getBetInfoStub = sinon.stub(betService, "getBetInfo");
@@ -84,7 +84,7 @@ describe('betsApi', function betsApiTest() {
 
     it('ok', function it(done) {
       request(app)
-        .get('/api/bets/'+ bet.id)
+        .get('/api/bets/' + bet.id)
         .expect(200)
         .end(function (error, result) {
           if (error) {
@@ -103,11 +103,12 @@ describe('betsApi', function betsApiTest() {
 
   describe('createBet', function createBetTest() {
     let createBetStub;
-    let bet = {stub: "bet"};
+    let bet = { stub: "bet" };
     let betData = {
       amount: 100,
       edge: 1,
-      seed: "123456123456abcd"
+      seed: "123456123456abcd",
+      gasPriceType: "high"
     };
     let message;
 
@@ -118,6 +119,7 @@ describe('betsApi', function betsApiTest() {
           amount: betData.amount,
           edge: betData.edge,
           seed: betData.seed,
+          gasPriceType: betData.gasPriceType,
           user: testAddress.public
         });
 
@@ -150,14 +152,16 @@ describe('betsApi', function betsApiTest() {
     let cancelBetStub;
     let data = {
       id: 36,
+      gasPriceType: "low"
     };
     let message;
 
     before(function beforeTest() {
       cancelBetStub = sinon.stub(betService, "cancelBet");
-      cancelBetStub.callsFake(function (betId, myAddress) {
+      cancelBetStub.callsFake(function (betId, myAddress, myGasPriceType) {
         expect(betId).to.eq(data.id);
         expect(myAddress).to.eq(testAddress.public);
+        expect(myGasPriceType).to.eq(data.gasPriceType);
 
         return Promise.resolve();
       });
@@ -188,16 +192,18 @@ describe('betsApi', function betsApiTest() {
     let callBetStub;
     let data = {
       id: 36,
-      seed: "1111222233334444"
+      seed: "1111222233334444",
+      gasPriceType: "low"
     };
     let message;
 
     before(function beforeTest() {
       callBetStub = sinon.stub(betService, "callBet");
-      callBetStub.callsFake(function (betId, seed, myAddress) {
+      callBetStub.callsFake(function (betId, seed, myAddress, myGasPriceType) {
         expect(betId).to.eq(data.id);
         expect(seed).to.eq(data.seed);
         expect(myAddress).to.eq(testAddress.public);
+        expect(myGasPriceType).to.eq(data.gasPriceType);
 
         return Promise.resolve();
       });

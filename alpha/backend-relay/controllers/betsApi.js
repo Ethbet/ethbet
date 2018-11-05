@@ -48,6 +48,7 @@ module.exports = {
         amount: req.objectData.amount,
         edge: req.objectData.edge,
         seed: req.objectData.seed,
+        gasPriceType: req.objectData.gasPriceType,
         user: req.body.address,
       };
 
@@ -63,8 +64,9 @@ module.exports = {
   cancelBet: async function cancelBet(req, res) {
     try {
       let id = req.objectData.id;
+      let gasPriceType = req.objectData.gasPriceType;
 
-      await betService.cancelBet(id, req.body.address);
+      await betService.cancelBet(id, req.body.address, gasPriceType);
 
       res.status(200).json({});
     }
@@ -77,8 +79,9 @@ module.exports = {
     try {
       let id = req.objectData.id;
       let seed = req.objectData.seed;
+      let gasPriceType = req.objectData.gasPriceType;
 
-      await betService.callBet(id, seed, req.body.address);
+      await betService.callBet(id, seed, req.body.address, gasPriceType);
 
       res.status(200).json({});
     }
