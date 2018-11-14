@@ -95,8 +95,8 @@ async function getGasPrice(type = "high") {
   try {
     let response = await axiosClient.get('https://api.blockcypher.com/v1/eth/main');
 
-    let gasPrice =  Math.min(response.data.high_gas_price * multiplier, MAX_GAS_PRICE);
-    return gasPrice;
+    let gasPrice = Math.min(response.data.high_gas_price * multiplier, MAX_GAS_PRICE);
+    return parseInt(gasPrice, 10);
   }
   catch (err) {
     console.log("getGasPrice", err);

@@ -45,7 +45,7 @@ async function lockBalance(userAddress, amount, operationType, gasPriceType) {
 
   let gasPrice = await web3Service.getGasPrice(gasPriceType);
 
-  let results = await ethbetInstance.lockBalance(userAddress, amount, parseInt(gasPrice * GAS[operationType], 10), {
+  let results = await ethbetInstance.lockBalance(userAddress, amount, gasPrice * GAS[operationType], {
     gas: 100000,
     gasPrice: gasPrice
   });
@@ -61,7 +61,7 @@ async function unlockBalance(userAddress, amount, gasPriceType) {
 
   let gasPrice = await web3Service.getGasPrice(gasPriceType);
 
-  let results = await ethbetInstance.unlockBalance(userAddress, amount, parseInt(gasPrice * CANCEL_GAS, 10), {
+  let results = await ethbetInstance.unlockBalance(userAddress, amount, gasPrice * CANCEL_GAS, {
     gas: 100000,
     gasPrice: gasPrice
   });
