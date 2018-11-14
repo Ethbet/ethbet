@@ -45,7 +45,7 @@ async function createBet(betData) {
       user: betData.user,
       amount: betData.amount,
       seed: betData.seed,
-      err: err
+      err: err.message
     });
   });
 }
@@ -166,7 +166,7 @@ async function cancelBet(betId, user, gasPriceType) {
       betId: bet.id,
       user: bet.user,
       amount: bet.amount,
-      err: err
+      err: err.message
     });
   });
 }
@@ -295,7 +295,7 @@ async function callBet(betId, callerSeed, callerUser, gasPriceType) {
       betId: bet.id,
       user: bet.user,
       amount: bet.amount,
-      err: err
+      err: err.message
     });
   });
 }
