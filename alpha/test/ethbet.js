@@ -155,7 +155,7 @@ contract('Ethbet', (accounts) => {
       assert.equal(contractEthBalance.toNumber(), web3.toWei(0.69, "ether"));
 
       let user0EthBalanceAfterLock = await proxiedWeb3.eth.getBalance(accounts[0]);
-      assert.isAbove(user0EthBalanceAfterLock.sub(user0EthBalance).toNumber(), web3.toWei(0.009, "ether")); // check fees transferred to relay
+      assert.isAbove(user0EthBalanceAfterLock.sub(user0EthBalance).toNumber(), parseInt(web3.toWei(0.009, "ether"))); // check fees transferred to relay
     });
 
   });
@@ -191,7 +191,7 @@ contract('Ethbet', (accounts) => {
       assert.equal(contractEthBalance.toNumber(), web3.toWei(0.67, "ether"));
 
       let user0EthBalanceAfterLock = await proxiedWeb3.eth.getBalance(accounts[0]);
-      assert.isAbove(user0EthBalanceAfterLock.sub(user0EthBalance).toNumber(), web3.toWei(0.019, "ether")); // check fees transferred to relay
+      assert.isAbove(user0EthBalanceAfterLock.sub(user0EthBalance).toNumber(), parseInt(web3.toWei(0.019, "ether"))); // check fees transferred to relay
 
     });
   });

@@ -2,13 +2,12 @@ const winston = require('winston');
 require('winston-daily-rotate-file');
 
 const transport = new (winston.transports.DailyRotateFile)({
-  name: 'bets-file',
-  filename: 'logs/bets.log',
-  prepend: true,
+  filename: '%DATE%.bets.log',
+  dirname: './logs',
   json: false
 });
 
-const logger = new (winston.Logger)({
+const logger = winston.createLogger({
   transports: [
     transport
   ]
@@ -16,7 +15,7 @@ const logger = new (winston.Logger)({
 
 
 if (process.env.NODE_ENV === "test") {
-  logger.remove('bets-file');
+  logger.remove(transport);
 }
 
 module.exports = {
