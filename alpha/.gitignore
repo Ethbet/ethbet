@@ -37,8 +37,6 @@ jspm_packages/
 # contracts build directory
 build/
 
-# frontend build
-build_webpack/
 
 # truffle config
 truffle.js
@@ -65,3 +63,7 @@ cert.crt
 backend-relay/logs/*
 
 truffle-scripts/oraclize-create*
+
+frontend/src/contracts
+
+frontend/build
