@@ -4,7 +4,6 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux'
 
 import Loader from 'react-loader';
-import _ from 'lodash';
 
 import * as notificationActions from '../actions/notificationActions';
 import * as balanceActions from '../actions/balanceActions';
@@ -82,21 +81,12 @@ class Balance extends Component {
         <div className="well">
           <div className="row">
             <div className="col-lg-6">
-              <h5>EBET</h5>
-              <legend>Balance: {balanceStore.get("balance") / 100} EBET</legend>
+              <legend>EBET</legend>
 
-              <ul className="balance-ul">
-                <li>Locked Balance: {balanceStore.get("lockedBalance") / 100} EBET</li>
-                <li>Wallet Balance: {balanceStore.get("walletBalance") / 100} EBET</li>
-              </ul>
             </div>
             <div className="col-lg-6">
-              <h5>ETH</h5>
-              <legend>Balance: {_.round(balanceStore.get("ethBalance"), 5)} ETH</legend>
+              <legend>ETH</legend>
 
-              <ul className="balance-ul">
-                <li>Wallet Balance: {_.round(balanceStore.get("walletEthBalance"), 4)} ETH</li>
-              </ul>
             </div>
           </div>
 
@@ -186,7 +176,8 @@ class Balance extends Component {
             
           </div>
 
-
+          <br/>
+          <br/>
 
         </div>
       </div>

@@ -102,3 +102,13 @@
     padding-left: 0px;
     list-style-type: none;
 }
+
+.home-footer{
+    z-index: 0;
+    padding: 10px;
+}
+
+.footer-ebet-logo{
+    height: 30px;
+}
+

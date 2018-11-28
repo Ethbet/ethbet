@@ -7,6 +7,7 @@ import {connect} from 'react-redux'
 import * as notificationActions from '../actions/notificationActions';
 
 import Navbar from './Navbar';
+import Footer from './Footer';
 
 import BetMaker from './BetMaker';
 import ActiveBets from "./ActiveBets";
@@ -51,6 +52,8 @@ class Home extends Component {
                 <p>You need <a href="https://metamask.io/">Metamask</a> in order to use Ethbet</p>
               </div>
           }
+
+          <Footer/>
         </div>
       </div>
     );
