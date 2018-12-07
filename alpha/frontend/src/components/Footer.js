@@ -6,7 +6,6 @@ import {connect} from 'react-redux'
 import _ from 'lodash';
 
 import * as notificationActions from '../actions/notificationActions';
-import * as balanceActions from '../actions/balanceActions';
 
 import EtherLogo from '../images/ether.png';
 
@@ -23,20 +22,23 @@ class Footer extends Component {
   }
 
   render() {
-    let { balanceStore } = this.props;
+    let { balanceStore, betStore } = this.props;
 
     return (
       <footer className="navbar-default navbar-fixed-bottom home-footer">
         <div className="row">
-          <div className="col-lg-3">
+          <div className="col-lg-2">
           </div>
           <div className="col-lg-3">
             <img className="footer-ebet-logo" src="https://ethbet.io/img/logo.png" alt="Ethbet Logo"/>
-            <span>{balanceStore.get("balance") / 100} ({balanceStore.get("lockedBalance") / 100} Locked| {balanceStore.get("walletBalance") / 100} Wallet)</span>
+            <span>{balanceStore.get("balance") / 100} deposited ({balanceStore.get("lockedBalance") / 100} locked, {balanceStore.get("walletBalance") / 100} wallet)</span>
           </div>
           <div className="col-lg-3">
             <img className="footer-eth-logo" src={EtherLogo} alt="Ether Logo"/>
-            <span>{_.round(balanceStore.get("ethBalance"), 5)} ({_.round(balanceStore.get("walletEthBalance"), 4)} Wallet)</span>
+            <span>{_.round(balanceStore.get("ethBalance"), 5)} deposited ({_.round(balanceStore.get("walletEthBalance"), 4)} wallet)</span>
+          </div>
+          <div className="col-lg-3">
+            <div className="footer-offered-bets">Offered Bets: <span>{betStore.get("userActiveBetsCount") || "N/A"}</span></div>
           </div>
         </div>
       </footer>
@@ -49,13 +51,13 @@ class Footer extends Component {
 const mapStateToProps = (state) => {
   return {
     balanceStore: state.balanceStore,
+    betStore: state.betStore,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     notificationActions: bindActionCreators(notificationActions, dispatch),
-    balanceActions: bindActionCreators(balanceActions, dispatch),
   };
 };
 

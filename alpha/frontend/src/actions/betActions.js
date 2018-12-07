@@ -38,6 +38,16 @@ export const fetchGetExecutedBets = {
   failure: (error) => action(FETCH_GET_EXECUTED_BETS.FAILURE, error),
 };
 
+export const GET_USER_ACTIVE_BETS_COUNT = 'GET_USER_ACTIVE_BETS_COUNT';
+export const getUserActiveBetsCount = data => action(GET_USER_ACTIVE_BETS_COUNT, data);
+
+export const FETCH_GET_USER_ACTIVE_BETS_COUNT = createRequestTypes('FETCH_GET_USER_ACTIVE_BETS_COUNT');
+export const fetchGetUserActiveBetsCount = {
+  request: () => action(FETCH_GET_USER_ACTIVE_BETS_COUNT.REQUEST),
+  success: (data) => action(FETCH_GET_USER_ACTIVE_BETS_COUNT.SUCCESS, data),
+  failure: (error) => action(FETCH_GET_USER_ACTIVE_BETS_COUNT.FAILURE, error),
+};
+
 
 export const BET_CREATED = 'BET_CREATED';
 export const betCreated = data => action(BET_CREATED, data);

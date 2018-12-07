@@ -11,7 +11,8 @@ import betService from '../utils/betService';
 function* loadInitialData(data) {
   yield all([
     put(betActions.getActiveBets()),
-    put(betActions.getExecutedBets())
+    put(betActions.getExecutedBets()),
+    put(betActions.getUserActiveBetsCount()),
   ])
 }
 
@@ -69,6 +70,25 @@ function* getActiveBets(data) {
     yield put(notificationActions.error({
       notification: {
         title: 'failed to get active bets',
+        message: error.message,
+        position: 'br'
+      }
+    }));
+  }
+}
+
+function* getUserActiveBetsCount(data) {
+  yield put(betActions.fetchGetUserActiveBetsCount.request());
+  try {
+    const web3 = yield select(state => state.web3Store.get("web3"));
+    const count = yield call(betService.getUserActiveBetsCount, web3);
+
+    yield put(betActions.fetchGetUserActiveBetsCount.success({ count }));
+  } catch (error) {
+    yield put(betActions.fetchGetUserActiveBetsCount.failure({ error }));
+    yield put(notificationActions.error({
+      notification: {
+        title: 'failed to get user active bets count',
         message: error.message,
         position: 'br'
       }
@@ -203,10 +223,15 @@ function* watchSaveNewBet() {
 
 function* watchBetCreated() {
   yield takeEvery(betActions.BET_CREATED, notifyBetCreated);
+  yield takeEvery(betActions.BET_CREATED, getUserActiveBetsCount);
 }
 
 function* watchGetActiveBets() {
   yield takeEvery(betActions.GET_ACTIVE_BETS, getActiveBets);
+}
+
+function* watchGetUserActiveBetsCount() {
+  yield takeEvery(betActions.GET_USER_ACTIVE_BETS_COUNT, getUserActiveBetsCount);
 }
 
 function* watchGetExecutedBets() {
@@ -223,6 +248,7 @@ function* watchCancelBet() {
 
 function* watchBetCanceled() {
   yield takeEvery(betActions.BET_CANCELED, notifyBetCanceled);
+  yield takeEvery(betActions.BET_CANCELED, getUserActiveBetsCount);
 }
 
 function* watchCallBet() {
@@ -231,6 +257,7 @@ function* watchCallBet() {
 
 function* watchBetCalled() {
   yield takeEvery(betActions.BET_CALLED, notifyBetCalled);
+  yield takeEvery(betActions.BET_CALLED, getUserActiveBetsCount);
 }
 
 function* watchEbetLoadInitialData() {
@@ -243,6 +270,7 @@ export default function* betSaga() {
     watchSaveNewBet(),
     watchBetCreated(),
     watchGetActiveBets(),
+    watchGetUserActiveBetsCount(),
     watchGetExecutedBets(),
     watchGetBetInfo(),
     watchCancelBet(),

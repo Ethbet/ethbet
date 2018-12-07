@@ -45,6 +45,39 @@ describe('betsApi', function betsApiTest() {
     });
   });
 
+  describe('getUserActiveBetsCount', function getUserActiveBetsCountTest() {
+    let getUserActiveBetsCountStub;
+    let count = 43;
+    let userAddress = "0x12345";
+
+    before(function beforeTest() {
+      getUserActiveBetsCountStub = sinon.stub(betService, "getUserActiveBetsCount");
+      getUserActiveBetsCountStub.callsFake(function (myUserAddress) {
+        expect(myUserAddress).to.eq(userAddress);
+
+        return Promise.resolve(count);
+      });
+    });
+
+    it('ok', function it(done) {
+      request(app)
+        .get(`/api/bets/user-active-bets-count?userAddress=${userAddress}`)
+        .expect(200)
+        .end(function (error, result) {
+          if (error) {
+            return done(error);
+          }
+
+          expect(result.body.count).to.eq(count);
+          done();
+        });
+    });
+
+    after(function afterTest() {
+      getUserActiveBetsCountStub.restore();
+    });
+  });
+
   describe('getExecutedBets', function getExecutedBetsTest() {
     let getExecutedBetsStub;
     let executedBets = [{ stub: "executedBet" }];

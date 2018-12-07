@@ -16,6 +16,7 @@ let initialData = {
   },
   executedBets: [],
   betsInfo: {},
+  userActiveBetsCount: null
 };
 
 export default function betReducer(state = new ImmutableMap(initialData), action) {
@@ -71,6 +72,24 @@ export default function betReducer(state = new ImmutableMap(initialData), action
     return state
       .set('gettingActiveBets', false);
   };
+
+
+  const fetchGetUserActiveBetsCountRequest = (state) => {
+    return state
+      .set('gettingUserActiveBetsCount', true);
+  };
+
+  const fetchGetUserActiveBetsCountSuccess = (state) => {
+    return state
+      .set('gettingUserActiveBetsCount', false)
+      .set('userActiveBetsCount', action.count);
+  };
+
+  const fetchGetUserActiveBetsCountFailure = (state) => {
+    return state
+      .set('gettingUserActiveBetsCount', false);
+  };
+
 
   const fetchGetExecutedBetsRequest = (state) => {
     return state
@@ -160,6 +179,9 @@ export default function betReducer(state = new ImmutableMap(initialData), action
     'FETCH_GET_ACTIVE_BETS_REQUEST': () => fetchGetActiveBetsRequest(state),
     'FETCH_GET_ACTIVE_BETS_SUCCESS': () => fetchGetActiveBetsSuccess(state),
     'FETCH_GET_ACTIVE_BETS_FAILURE': () => fetchGetActiveBetsFailure(state),
+    'FETCH_GET_USER_ACTIVE_BETS_COUNT_REQUEST': () => fetchGetUserActiveBetsCountRequest(state),
+    'FETCH_GET_USER_ACTIVE_BETS_COUNT_SUCCESS': () => fetchGetUserActiveBetsCountSuccess(state),
+    'FETCH_GET_USER_ACTIVE_BETS_COUNT_FAILURE': () => fetchGetUserActiveBetsCountFailure(state),
     'FETCH_GET_EXECUTED_BETS_REQUEST': () => fetchGetExecutedBetsRequest(state),
     'FETCH_GET_EXECUTED_BETS_SUCCESS': () => fetchGetExecutedBetsSuccess(state),
     'FETCH_GET_EXECUTED_BETS_FAILURE': () => fetchGetExecutedBetsFailure(state),

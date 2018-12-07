@@ -62,6 +62,12 @@ async function getActiveBets(opts) {
   return response.data.results;
 }
 
+async function getUserActiveBetsCount(web3) {
+  let response = await client.get(apiRoot + '/bets/user-active-bets-count', { params: {userAddress: web3.eth.defaultAccount} });
+
+  return response.data.count;
+}
+
 async function getExecutedBets() {
   let response = await client.get(apiRoot + '/bets/executed');
 
@@ -79,6 +85,7 @@ let betService = {
   cancelBet,
   callBet,
   getActiveBets,
+  getUserActiveBetsCount,
   getExecutedBets,
   getBetInfo,
 };

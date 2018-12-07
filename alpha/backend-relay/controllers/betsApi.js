@@ -20,6 +20,16 @@ module.exports = {
     }
   },
 
+  getUserActiveBetsCount: async function getUserActiveBetsCount(req, res) {
+    try {
+      let count = await betService.getUserActiveBetsCount(req.query.userAddress);
+      res.status(200).json({ count });
+    }
+    catch (err) {
+      res.status(500).json({ message: errorService.sanitize(err).message });
+    }
+  },
+
   getExecutedBets: async function getExecutedBets(req, res) {
     try {
       let bets = await betService.getExecutedBets();
@@ -30,7 +40,6 @@ module.exports = {
     }
   },
 
-
   getBetInfo: async function getBetInfo(req, res) {
     try {
       let bet = await betService.getBetInfo(req.params.id);
@@ -40,7 +49,6 @@ module.exports = {
       res.status(500).json({ message: errorService.sanitize(err).message });
     }
   },
-
 
   createBet: async function createBet(req, res) {
     try {

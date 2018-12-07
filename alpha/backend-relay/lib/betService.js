@@ -68,6 +68,17 @@ async function getActiveBets(opts = { orderField: 'createdAt', orderDirection: '
   return { bets: populatedBets, count: result.count };
 }
 
+async function getUserActiveBetsCount(userAddress) {
+  let count = await db.Bet.count({
+    where: {
+      user: userAddress,
+      cancelledAt: null,
+      executedAt: null,
+    },
+  });
+
+  return count;
+}
 
 async function getExecutedBets() {
   let bets = await db.Bet.findAll({
@@ -304,6 +315,7 @@ async function callBet(betId, callerSeed, callerUser, gasPriceType) {
 module.exports = {
   createBet,
   getActiveBets,
+  getUserActiveBetsCount,
   getExecutedBets,
   cancelBet,
   callBet,

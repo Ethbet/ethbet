@@ -147,6 +147,27 @@ describe('betService', function betServiceTest() {
     });
   });
 
+  describe('getUserActiveBetsCount', function () {
+    let userAddress_1 = "0x04bd37D5393cD877f64ad36f1791ED09d847b981";
+    let userAddress_2 = "0x04bd37D5393cD877f64ad36f1791ED09d847b982";
+
+    before(async function beforeTest() {
+      await Promise.all([
+        db.Bet.create(BetFactory.build({ user: userAddress_1 })),
+        db.Bet.create(BetFactory.build({ user: userAddress_1 })),
+        db.Bet.create(BetFactory.build({ user: userAddress_1, cancelledAt: new Date() })),
+        db.Bet.create(BetFactory.build({ user: userAddress_1, executedAt: new Date() })),
+        db.Bet.create(BetFactory.build({ user: userAddress_2 })),
+      ]);
+    });
+
+    it('ok', async function it() {
+      let count = await betService.getUserActiveBetsCount(userAddress_1);
+
+      expect(count).to.equal(2);
+    });
+  });
+
 
   describe('getExecutedBets', function () {
     let getUsernamesStub;
@@ -937,7 +958,6 @@ describe('betService', function betServiceTest() {
 
     });
   });
-
 
 });
 
