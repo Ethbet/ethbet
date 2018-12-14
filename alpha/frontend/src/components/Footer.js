@@ -38,7 +38,9 @@ class Footer extends Component {
             <span>{_.round(balanceStore.get("ethBalance"), 5)} deposited ({_.round(balanceStore.get("walletEthBalance"), 4)} wallet)</span>
           </div>
           <div className="col-lg-3">
-            <div className="footer-offered-bets">Offered Bets: <span>{betStore.get("userActiveBetsCount") || "N/A"}</span></div>
+            <div className="footer-offered-bets">Offered Bets: <span>
+              {_.isNumber(betStore.get("userActiveBetsCount")) ? betStore.get("userActiveBetsCount") : "N/A"}
+              </span></div>
           </div>
         </div>
       </footer>
