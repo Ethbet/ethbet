@@ -39,10 +39,22 @@ async function getActiveBets(opts) {
   return response.data.results;
 }
 
+async function getUserActiveBetsCount(web3) {
+  let response = await client.get(apiRoot + '/ether-bets/user-active-bets-count', { params: {userAddress: web3.eth.defaultAccount} });
+
+  return response.data.count;
+}
+
 async function getExecutedBets() {
   let response = await client.get(apiRoot + '/ether-bets/executed');
 
   return response.data.bets;
+}
+
+async function getBetInfo(betId) {
+  let response = await client.get(apiRoot + '/ether-bets/' + betId);
+
+  return response.data;
 }
 
 async function getPendingBets() {
@@ -56,7 +68,9 @@ let etherBetService = {
   cancelBet,
   callBet,
   getActiveBets,
+  getUserActiveBetsCount,
   getExecutedBets,
+  getBetInfo,
   getPendingBets,
 };
 

@@ -12,7 +12,7 @@ module.exports = function (deployer, network) {
   // avoid accidental deploy
   if (process.env.DEPLOY_ETHBET_ORACLIZE) {
     // deploy with 300000 max gas, 10 Gwei price
-    return deployer.deploy(EthbetOraclize, relayAddress, EthbetToken.address, 300000, 10 * Math.pow(10, 9), network === "development");
+    return deployer.deploy(EthbetOraclize, relayAddress, EthbetToken.address, 300000, 20 * Math.pow(10, 9), network === "development");
   }
   else {
     return true;

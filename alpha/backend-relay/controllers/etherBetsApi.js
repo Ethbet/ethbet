@@ -21,10 +21,30 @@ module.exports = {
     }
   },
 
+  getUserActiveBetsCount: async function getUserActiveBetsCount(req, res) {
+    try {
+      let count = await etherBetService.getUserActiveBetsCount(req.query.userAddress);
+      res.status(200).json({ count });
+    }
+    catch (err) {
+      res.status(500).json({ message: errorService.sanitize(err).message });
+    }
+  },
+
   getExecutedBets: async function getExecutedBets(req, res) {
     try {
       let bets = await etherBetService.getExecutedBets();
       res.status(200).json({ bets });
+    }
+    catch (err) {
+      res.status(500).json({ message: errorService.sanitize(err).message });
+    }
+  },
+
+  getBetInfo: async function getBetInfo(req, res) {
+    try {
+      let bet = await etherBetService.getBetInfo(req.params.id);
+      res.status(200).json(bet);
     }
     catch (err) {
       res.status(500).json({ message: errorService.sanitize(err).message });

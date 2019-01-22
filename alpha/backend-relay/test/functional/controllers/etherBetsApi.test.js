@@ -45,6 +45,40 @@ describe('etherBetsApi', function etherBetsApiTest() {
     });
   });
 
+  describe('getUserActiveBetsCount', function getUserActiveBetsCountTest() {
+    let getUserActiveBetsCountStub;
+    let count = 43;
+    let userAddress = "0x12345";
+
+    before(function beforeTest() {
+      getUserActiveBetsCountStub = sinon.stub(etherBetService, "getUserActiveBetsCount");
+      getUserActiveBetsCountStub.callsFake(function (myUserAddress) {
+        expect(myUserAddress).to.eq(userAddress);
+
+        return Promise.resolve(count);
+      });
+    });
+
+    it('ok', function it(done) {
+      request(app)
+        .get(`/api/ether-bets/user-active-bets-count?userAddress=${userAddress}`)
+        .expect(200)
+        .end(function (error, result) {
+          if (error) {
+            return done(error);
+          }
+
+          expect(result.body.count).to.eq(count);
+          done();
+        });
+    });
+
+    after(function afterTest() {
+      getUserActiveBetsCountStub.restore();
+    });
+  });
+
+
   describe('getExecutedBets', function getExecutedBetsTest() {
     let getExecutedBetsStub;
     let executedEtherBets = [{stub: "executedBet"}];
@@ -70,6 +104,34 @@ describe('etherBetsApi', function etherBetsApiTest() {
 
     after(function afterTest() {
       getExecutedBetsStub.restore();
+    });
+  });
+
+  describe('getBetInfo', function getBetInfoTest() {
+    let getBetInfoStub;
+    let bet = { id: 44 };
+
+    before(function beforeTest() {
+      getBetInfoStub = sinon.stub(etherBetService, "getBetInfo");
+      getBetInfoStub.resolves(bet);
+    });
+
+    it('ok', function it(done) {
+      request(app)
+        .get('/api/ether-bets/' + bet.id)
+        .expect(200)
+        .end(function (error, result) {
+          if (error) {
+            return done(error);
+          }
+
+          expect(result.body).to.deep.eq(bet);
+          done();
+        });
+    });
+
+    after(function afterTest() {
+      getBetInfoStub.restore();
     });
   });
 

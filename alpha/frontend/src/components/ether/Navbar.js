@@ -124,9 +124,14 @@ class Navbar extends Component {
               </li>
 
               <li className="dropdown">
-                <a href="##" className="dropdown-toggle" data-toggle="dropdown">
-                  <b>Account:</b> {web3 ? web3.eth.defaultAccount : null}
+                <a href="##" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                   aria-expanded="false">
+                  <b>Account:</b> {web3 ? _.truncate(web3.eth.defaultAccount, { length: 12 }) : null}
+                  <span className="caret"></span>
                 </a>
+                <ul className="dropdown-menu account-menu">
+                  <li><a>{web3 ? web3.eth.defaultAccount : null}</a></li>
+                </ul>
               </li>
 
               <li className="dropdown">

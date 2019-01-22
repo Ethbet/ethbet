@@ -10,7 +10,6 @@ import * as betActions from '../actions/betActions';
 
 import BetInfoModal from './BetInfoModal';
 
-
 class ExecutedBet extends Component {
 
   constructor(props) {

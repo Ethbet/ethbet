@@ -59,6 +59,18 @@ async function getActiveBets(opts = { orderField: 'createdAt', orderDirection: '
   return { bets: populatedEtherBets, count: result.count };
 }
 
+async function getUserActiveBetsCount(userAddress) {
+  let count = await db.EtherBet.count({
+    where: {
+      user: userAddress,
+      cancelledAt: null,
+      executedAt: null,
+    },
+  });
+
+  return count;
+}
+
 async function getExecutedBets() {
   let bets = await db.EtherBet.findAll({
     where: {
@@ -76,6 +88,14 @@ async function getExecutedBets() {
 
   return populatedEtherBets;
 }
+
+async function getBetInfo(betId) {
+  let bet = await db.EtherBet.findById(betId);
+
+  let populatedBets = await userService.populateUserNames([bet]);
+  return populatedBets[0];
+}
+
 
 async function getPendingBets() {
   let bets = await db.EtherBet.findAll({
@@ -304,10 +324,12 @@ async function checkPendingBets() {
 module.exports = {
   createBet,
   getActiveBets,
+  getUserActiveBetsCount,
   getExecutedBets,
   getPendingBets,
   cancelBet,
   callBet,
   checkBetExecution,
   checkPendingBets,
+  getBetInfo,
 };

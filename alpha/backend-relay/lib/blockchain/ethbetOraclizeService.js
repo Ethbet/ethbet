@@ -2,7 +2,7 @@ const contractService = require('../contractService');
 const web3Service = require('../web3Service');
 const ethUtil = require('ethereumjs-util');
 
-let GAS_PRICE = process.env.GAS_PRICE || 10 * 10 ** 9; // 10 GWei default
+let GAS_PRICE = process.env.GAS_PRICE || 20 * 10 ** 9; // 20 GWei default
 
 async function balanceOf(userAddress) {
   const web3 = web3Service.getWeb3();
@@ -19,7 +19,7 @@ async function ethBalanceOf(userAddress) {
 
   const ethBalance = await ethbetOraclizeInstance.ethBalanceOf(userAddress);
 
-  return web3.fromWei(ethBalance.toNumber(), 'ether');
+  return parseFloat(web3.fromWei(ethBalance.toNumber(), 'ether'));
 }
 
 async function lockedEthBalanceOf(userAddress) {

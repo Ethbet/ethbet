@@ -38,6 +38,17 @@ export const fetchGetExecutedBets = {
   failure: (error) => action(FETCH_GET_EXECUTED_BETS.FAILURE, error),
 };
 
+export const GET_USER_ACTIVE_BETS_COUNT = 'ETHER:GET_USER_ACTIVE_BETS_COUNT';
+export const getUserActiveBetsCount = data => action(GET_USER_ACTIVE_BETS_COUNT, data);
+
+export const FETCH_GET_USER_ACTIVE_BETS_COUNT = createRequestTypes('ETHER:FETCH_GET_USER_ACTIVE_BETS_COUNT');
+export const fetchGetUserActiveBetsCount = {
+  request: () => action(FETCH_GET_USER_ACTIVE_BETS_COUNT.REQUEST),
+  success: (data) => action(FETCH_GET_USER_ACTIVE_BETS_COUNT.SUCCESS, data),
+  failure: (error) => action(FETCH_GET_USER_ACTIVE_BETS_COUNT.FAILURE, error),
+};
+
+
 export const GET_PENDING_BETS = 'ETHER:GET_PENDING_BETS';
 export const getPendingBets = data => action(GET_PENDING_BETS, data);
 
@@ -84,3 +95,14 @@ export const betCalled = data => action(BET_CALLED, data);
 
 export const BET_EXECUTED = 'ETHER:BET_EXECUTED';
 export const betExecuted = data => action(BET_EXECUTED, data);
+
+
+export const GET_BET_INFO = 'ETHER:GET_BET_INFO';
+export const getBetInfo = data => action(GET_BET_INFO, data);
+
+export const FETCH_GET_BET_INFO = createRequestTypes('ETHER:FETCH_GET_BET_INFO');
+export const fetchGetBetInfo = {
+  request: (data) => action(FETCH_GET_BET_INFO.REQUEST, data),
+  success: (data) => action(FETCH_GET_BET_INFO.SUCCESS, data),
+  failure: (error) => action(FETCH_GET_BET_INFO.FAILURE, error),
+};

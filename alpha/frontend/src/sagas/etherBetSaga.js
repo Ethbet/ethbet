@@ -13,7 +13,8 @@ function* loadInitialData(data) {
   yield all([
     put(etherBetActions.getActiveBets()),
     put(etherBetActions.getExecutedBets()),
-    put(etherBetActions.getPendingBets())
+    put(etherBetActions.getPendingBets()),
+    put(etherBetActions.getUserActiveBetsCount()),
   ])
 }
 
@@ -74,6 +75,26 @@ function* getActiveBets(data) {
   }
 }
 
+
+function* getUserActiveBetsCount(data) {
+  yield put(etherBetActions.fetchGetUserActiveBetsCount.request());
+  try {
+    const web3 = yield select(state => state.web3Store.get("web3"));
+    const count = yield call(etherBetService.getUserActiveBetsCount, web3);
+
+    yield put(etherBetActions.fetchGetUserActiveBetsCount.success({ count }));
+  } catch (error) {
+    yield put(etherBetActions.fetchGetUserActiveBetsCount.failure({ error }));
+    yield put(notificationActions.error({
+      notification: {
+        title: 'failed to get user active bets count',
+        message: error.message,
+        position: 'br'
+      }
+    }));
+  }
+}
+
 function* getExecutedBets(data) {
   yield put(etherBetActions.fetchGetExecutedBets.request());
   try {
@@ -84,6 +105,23 @@ function* getExecutedBets(data) {
     yield put(notificationActions.error({
       notification: {
         title: 'failed to get executed bets',
+        message: error.message,
+        position: 'br'
+      }
+    }));
+  }
+}
+
+function* getBetInfo(data) {
+  yield put(etherBetActions.fetchGetBetInfo.request({ id: data.id }));
+  try {
+    const bet = yield call(etherBetService.getBetInfo, data.id);
+    yield put(etherBetActions.fetchGetBetInfo.success({ bet }));
+  } catch (error) {
+    yield put(etherBetActions.fetchGetBetInfo.failure({ error }));
+    yield put(notificationActions.error({
+      notification: {
+        title: 'failed to get bet info',
         message: error.message,
         position: 'br'
       }
@@ -183,9 +221,18 @@ function* watchGetActiveBets() {
   yield takeEvery(etherBetActions.GET_ACTIVE_BETS, getActiveBets);
 }
 
+function* watchGetUserActiveBetsCount() {
+  yield takeEvery(etherBetActions.GET_USER_ACTIVE_BETS_COUNT, getUserActiveBetsCount);
+}
+
 function* watchGetExecutedBets() {
   yield takeEvery(etherBetActions.GET_EXECUTED_BETS, getExecutedBets);
 }
+
+function* watchGetBetInfo() {
+  yield takeEvery(etherBetActions.GET_BET_INFO, getBetInfo);
+}
+
 
 function* watchGetPendingBets() {
   yield takeEvery(etherBetActions.GET_PENDING_BETS, getPendingBets);
@@ -208,7 +255,9 @@ export default function* betSaga() {
     watchEtherLoadInitialData(),
     watchSaveNewBet(),
     watchGetActiveBets(),
+    watchGetUserActiveBetsCount(),
     watchGetExecutedBets(),
+    watchGetBetInfo(),
     watchGetPendingBets(),
     watchCancelBet(),
     watchCallBet(),

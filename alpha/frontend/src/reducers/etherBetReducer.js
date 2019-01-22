@@ -15,7 +15,9 @@ let initialData = {
     offset: 0,
   },
   executedBets: [],
+  betsInfo: {},
   pendingBets: [],
+  userActiveBetsCount: null
 };
 
 export default function etherBetReducer(state = new ImmutableMap(initialData), action) {
@@ -72,6 +74,21 @@ export default function etherBetReducer(state = new ImmutableMap(initialData), a
       .set('gettingActiveBets', false);
   };
 
+  const fetchGetUserActiveBetsCountRequest = (state) => {
+    return state
+      .set('gettingUserActiveBetsCount', true);
+  };
+
+  const fetchGetUserActiveBetsCountSuccess = (state) => {
+    return state
+      .set('gettingUserActiveBetsCount', false)
+      .set('userActiveBetsCount', action.count);
+  };
+
+  const fetchGetUserActiveBetsCountFailure = (state) => {
+    return state
+      .set('gettingUserActiveBetsCount', false);
+  };
 
   const fetchGetExecutedBetsRequest = (state) => {
     return state
@@ -87,6 +104,26 @@ export default function etherBetReducer(state = new ImmutableMap(initialData), a
   const fetchGetExecutedBetsFailure = (state) => {
     return state
       .set('gettingExecutedBets', false);
+  };
+
+  const fetchGetBetInfoRequest = (state) => {
+    return state
+      .set('gettingBetInfo', action.id);
+  };
+
+  const fetchGetBetInfoSuccess = (state) => {
+    let betsInfo = state.get('betsInfo');
+    let bet = action.bet;
+    betsInfo[bet.id] = bet;
+
+    return state
+      .set('gettingBetInfo', false)
+      .set('betsInfo', betsInfo);
+  };
+
+  const fetchGetBetInfoFailure = (state) => {
+    return state
+      .set('gettingBetInfo', false);
   };
 
   const fetchGetPendingBetsRequest = (state) => {
@@ -172,9 +209,15 @@ export default function etherBetReducer(state = new ImmutableMap(initialData), a
     'ETHER:FETCH_GET_ACTIVE_BETS_REQUEST': () => fetchGetActiveBetsRequest(state),
     'ETHER:FETCH_GET_ACTIVE_BETS_SUCCESS': () => fetchGetActiveBetsSuccess(state),
     'ETHER:FETCH_GET_ACTIVE_BETS_FAILURE': () => fetchGetActiveBetsFailure(state),
+    'ETHER:FETCH_GET_USER_ACTIVE_BETS_COUNT_REQUEST': () => fetchGetUserActiveBetsCountRequest(state),
+    'ETHER:FETCH_GET_USER_ACTIVE_BETS_COUNT_SUCCESS': () => fetchGetUserActiveBetsCountSuccess(state),
+    'ETHER:FETCH_GET_USER_ACTIVE_BETS_COUNT_FAILURE': () => fetchGetUserActiveBetsCountFailure(state),
     'ETHER:FETCH_GET_EXECUTED_BETS_REQUEST': () => fetchGetExecutedBetsRequest(state),
     'ETHER:FETCH_GET_EXECUTED_BETS_SUCCESS': () => fetchGetExecutedBetsSuccess(state),
     'ETHER:FETCH_GET_EXECUTED_BETS_FAILURE': () => fetchGetExecutedBetsFailure(state),
+    'ETHER:FETCH_GET_BET_INFO_REQUEST': () => fetchGetBetInfoRequest(state),
+    'ETHER:FETCH_GET_BET_INFO_SUCCESS': () => fetchGetBetInfoSuccess(state),
+    'ETHER:FETCH_GET_BET_INFO_FAILURE': () => fetchGetBetInfoFailure(state),
     'ETHER:FETCH_GET_PENDING_BETS_REQUEST': () => fetchGetPendingBetsRequest(state),
     'ETHER:FETCH_GET_PENDING_BETS_SUCCESS': () => fetchGetPendingBetsSuccess(state),
     'ETHER:FETCH_GET_PENDING_BETS_FAILURE': () => fetchGetPendingBetsFailure(state),

@@ -35,6 +35,8 @@ module.exports = function (app) {
   app.get('/api/ether-bets/active', etherBetsApiController.getActiveBets);
   app.get('/api/ether-bets/executed', etherBetsApiController.getExecutedBets);
   app.get('/api/ether-bets/pending', etherBetsApiController.getPendingBets);
+  app.get('/api/ether-bets/user-active-bets-count', etherBetsApiController.getUserActiveBetsCount);
+  app.get('/api/ether-bets/:id', etherBetsApiController.getBetInfo);
 
   app.get('/api/ether-leaderboard', etherLeaderboardApiController.getLeaderboard);
 
